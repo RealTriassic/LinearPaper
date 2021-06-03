@@ -45,14 +45,14 @@ index a580b021c7d9727b82a67dedfc509c286feb8c7e..0741f71fc31c1bba096c3042321081cc
          serverModName = getString("settings.server-mod-name", serverModName);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 952ed520935dcfa966fff8ade375d1b99adf95b5..be87a7e486d649786088e19811296981643e507b 100644
+index e9d6c38a042195dae44109706cf5710e7ac3d316..f3db659d0794b2cbdc35800aac4d314eae9576eb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -230,7 +230,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
--    private final String serverName = "Purpur"; // Paper // Tuinity // Airplane // Purpur
+-    private final String serverName = "Purpur"; // Paper // Tuinity // Purpur
 +    private final String serverName = "Tentacles"; // Tentacles
      private final String serverVersion;
      private final String bukkitVersion = Versioning.getBukkitVersion();
