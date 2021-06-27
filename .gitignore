@@ -50,12 +50,9 @@ manifest.mf
 
 # other stuff
 run/
-docs/build/
 
-Tentacles-Server
+build-data/
 Tentacles-API
-mc-dev
-tentaclip.jar
-*clip.jar
-last-purpur
-mcdevimports.conf
+Tentacles-MojangAPI
+Tentacles-Server
+*.jar
