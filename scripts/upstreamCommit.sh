@@ -7,13 +7,13 @@ function changelog() {
     base=$(git ls-tree HEAD $1  | cut -d' ' -f3 | cut -f1)
     cd $1 && git log --oneline ${base}...HEAD
 }
-paper=$(changelog .gradle/caches/paperweight/upstreams/paper)
+purpur=$(changelog .gradle/caches/paperweight/upstreams/purpur)
 
 updated=""
 logsuffix=""
-if [ ! -z "$paper" ]; then
-    logsuffix="$logsuffix\n\nPaper Changes:\n$paper"
-    updated="Paper"
+if [ ! -z "$purpur" ]; then
+    logsuffix="$logsuffix\n\nPurpur Changes:\n$paper"
+    updated="Purpur"
 fi
 disclaimer="Upstream has released updates that appear to apply and compile correctly"
 

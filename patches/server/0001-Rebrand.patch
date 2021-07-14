@@ -1,0 +1,102 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Encode42 <me@encode42.dev>
+Date: Wed, 14 Jul 2021 18:38:23 -0400
+Subject: [PATCH] Rebrand
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 16f8f8dd9ddc105dde4401fa258207686e64ab3e..b597eb56ffa9217043395c80e0840149dc1a8fe0 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -36,7 +36,7 @@ repositories {
+ }
+ 
+ dependencies {
+-    implementation(project(":Purpur-API")) // Purpur
++    implementation(project(":Tentacles-API")) // Tentacles
+     implementation("io.papermc.paper:paper-mojangapi:1.17.1-R0.1-SNAPSHOT") // Purpur
+     // Paper start
+     implementation("org.jline:jline-terminal-jansi:3.12.1")
+@@ -88,7 +88,7 @@ tasks.jar {
+         attributes(
+             "Main-Class" to "org.bukkit.craftbukkit.Main",
+             "Implementation-Title" to "CraftBukkit",
+-            "Implementation-Version" to "git-Purpur-$implementationVersion", // Purpur
++            "Implementation-Version" to "git-Tentacles-$implementationVersion", // Tentacles
+             "Implementation-Vendor" to date, // Paper
+             "Specification-Title" to "Bukkit",
+             "Specification-Version" to project.version,
+diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
+index 4d8740678049aa749b42618470e9cc838555528d..d2334d2e440bfe595efed5b13e5c8efeac0b7270 100644
+--- a/src/main/java/com/destroystokyo/paper/Metrics.java
++++ b/src/main/java/com/destroystokyo/paper/Metrics.java
+@@ -593,7 +593,7 @@ public class Metrics {
+             boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
+             // Only start Metrics, if it's enabled in the config
+             if (config.getBoolean("enabled", true)) {
+-                Metrics metrics = new Metrics("Purpur", serverUUID, logFailedRequests, Bukkit.getLogger()); // Purpur
++                Metrics metrics = new Metrics("Tentacles", serverUUID, logFailedRequests, Bukkit.getLogger()); // Tentacles
+ 
+                 metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
+                     String minecraftVersion = Bukkit.getVersion();
+@@ -603,7 +603,7 @@ public class Metrics {
+ 
+                 metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> Bukkit.getOnlinePlayers().size()));
+                 metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> Bukkit.getOnlineMode() ? "online" : (PaperConfig.isProxyOnlineMode() ? "bungee" : "offline"))); // Purpur
+-                metrics.addCustomChart(new Metrics.SimplePie("purpur_version", () -> (Metrics.class.getPackage().getImplementationVersion() != null) ? Metrics.class.getPackage().getImplementationVersion() : "unknown")); // Purpur
++                metrics.addCustomChart(new Metrics.SimplePie("tentacles_version", () -> (Metrics.class.getPackage().getImplementationVersion() != null) ? Metrics.class.getPackage().getImplementationVersion() : "unknown")); // Tentacles
+ 
+                 metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
+                     Map<String, Map<String, Integer>> map = new HashMap<>();
+diff --git a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
+index 8c3c68465197fafc14849dc38a572e309931e2a2..a902080d65c5d7abd57b12ce977fc53f5ec09c69 100644
+--- a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
++++ b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
+@@ -17,7 +17,7 @@ public final class PaperConsole extends SimpleTerminalConsole {
+     @Override
+     protected LineReader buildReader(LineReaderBuilder builder) {
+         builder
+-                .appName("Purpur") // Purpur
++                .appName("Tentacles") // Tentacles
+                 .variable(LineReader.HISTORY_FILE, java.nio.file.Paths.get(".console_history"))
+                 .completer(new ConsoleCommandCompleter(this.server))
+                 .option(LineReader.Option.COMPLETE_IN_WORD, true);
+diff --git a/src/main/java/net/pl3x/purpur/PurpurConfig.java b/src/main/java/net/pl3x/purpur/PurpurConfig.java
+index f90256ef0806a61c434a0d062318267184177283..95bbb0da6d9d3dd49ef67ee22d584d861517b901 100644
+--- a/src/main/java/net/pl3x/purpur/PurpurConfig.java
++++ b/src/main/java/net/pl3x/purpur/PurpurConfig.java
+@@ -324,7 +324,7 @@ public class PurpurConfig {
+         if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
+     }
+ 
+-    public static String serverModName = "Purpur";
++    public static String serverModName = "Tentacles"; // Tentacles
+     private static void serverModName() {
+         serverModName = getString("settings.server-mod-name", serverModName);
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index ef1004a277e4ae0bdec410c42271b4060227313f..6f871de16a4f40cf57d76eeb086ec8f2fb2fba54 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -230,7 +230,7 @@ import javax.annotation.Nullable; // Paper
+ import javax.annotation.Nonnull; // Paper
+ 
+ public final class CraftServer implements Server {
+-    private final String serverName = "Purpur"; // Paper // Tuinity // Purpur
++    private final String serverName = "Tentacles"; // Tentacles
+     private final String serverVersion;
+     private final String bukkitVersion = Versioning.getBukkitVersion();
+     private final Logger logger = Logger.getLogger("Minecraft");
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index 13b98439320ac1401a920c01d7cf5a4b3a23deff..efc095bffbc5413a0e43ce4b1fda7c4f4a5708e3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -11,7 +11,7 @@ public final class Versioning {
+     public static String getBukkitVersion() {
+         String result = "Unknown-Version";
+ 
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.pl3x.purpur/purpur-api/pom.properties"); // Tuinity // Purpur
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.pl3x.tentacles/tentacles-api/pom.properties"); // Tentacles
+         Properties properties = new Properties();
+ 
+         if (stream != null) {

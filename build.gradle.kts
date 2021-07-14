@@ -1,7 +1,7 @@
 plugins {
     java
     id("com.github.johnrengelman.shadow") version "7.0.0" apply false
-    id("io.papermc.paperweight.patcher") version "1.1.6"
+    id("io.papermc.paperweight.patcher") version "1.1.8"
 }
 
 repositories {
@@ -49,26 +49,18 @@ subprojects {
         maven("https://nexus.velocitypowered.com/repository/velocity-artifacts-snapshots/")
         maven("https://oss.sonatype.org/content/repositories/snapshots/")
     }
-
-    configure<PublishingExtension> {
-        repositories.maven {
-            name = "maven"
-            url = uri("https://repo.pl3x.net/snapshots")
-            credentials(PasswordCredentials::class)
-        }
-    }
 }
 
 paperweight {
     serverProject.set(project(":Tentacles-Server"))
 
-    useStandardUpstream("purpur") {
+    useStandardUpstream("Purpur") {
         url.set(github("pl3xgaming", "Purpur"))
         ref.set(providers.gradleProperty("purpurCommit"))
 
         withStandardPatcher {
             baseName("Purpur")
-
+        
             apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
             apiOutputDir.set(layout.projectDirectory.dir("Tentacles-API"))
 

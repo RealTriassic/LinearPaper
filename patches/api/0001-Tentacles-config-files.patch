@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Encode42 <me@encode42.dev>
+Date: Wed, 14 Jul 2021 19:22:33 -0400
+Subject: [PATCH] Tentacles config files
+
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index f82023103a328f234c990d6787c9b97fd1e82590..e2730e851edd114c58c406e1903abff784eb0904 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -1649,6 +1649,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         }
+         // Purpur end
+ 
++        // Tentacles start
++        @NotNull
++        public org.bukkit.configuration.file.YamlConfiguration getTentaclesConfig() {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++        // Tentacles end
++
+         /**
+          * Sends the component to the player
+          *
