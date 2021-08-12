@@ -5,19 +5,19 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 16f8f8dd9ddc105dde4401fa258207686e64ab3e..b597eb56ffa9217043395c80e0840149dc1a8fe0 100644
+index b84b6e1d77411e3a62e086285b7217dd49f65dfb..4242febe40db7f93c7876518dccaf024443c26e6 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -36,7 +36,7 @@ repositories {
+@@ -35,7 +35,7 @@ repositories {
  }
  
  dependencies {
 -    implementation(project(":Purpur-API")) // Purpur
 +    implementation(project(":Tentacles-API")) // Tentacles
-     implementation("io.papermc.paper:paper-mojangapi:1.17.1-R0.1-SNAPSHOT") // Purpur
+     implementation("io.papermc.paper:paper-mojangapi:1.17.1-R0.1-SNAPSHOT") // Tuinity
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.12.1")
-@@ -88,7 +88,7 @@ tasks.jar {
+@@ -89,7 +89,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -48,8 +48,41 @@ index 4d8740678049aa749b42618470e9cc838555528d..d2334d2e440bfe595efed5b13e5c8efe
  
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
+diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+index 128b268539e956d0f78084b62c10138e6eb4c22a..73cb8af7524ea780f56bcd984bfa2d919d28578a 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
++++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+@@ -18,7 +18,7 @@ import java.util.stream.StreamSupport;
+ 
+ public class PaperVersionFetcher implements VersionFetcher {
+     private static final java.util.regex.Pattern VER_PATTERN = java.util.regex.Pattern.compile("^([0-9\\.]*)\\-.*R"); // R is an anchor, will always give '-R' at end
+-    private static final String JENKINS_URL = "https://ci.pl3x.net/job/Purpur/lastSuccessfulBuild/buildNumber"; // Purpur
++    private static final String JENKINS_URL = ""; // Purpur // Tentacles
+     private static @Nullable String mcVer;
+ 
+     @Override
+@@ -29,8 +29,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+     @Nonnull
+     @Override
+     public Component getVersionMessage(@Nonnull String serverVersion) {
+-        String[] parts = serverVersion.substring("git-Purpur-".length()).split("[-\\s]"); // Tuinity // Purpur
+-        final Component updateMessage = getUpdateStatusMessage("pl3xgaming/Purpur", "ver/" + getMinecraftVersion(), parts[0]); // Tuinity // Purpur
++        String[] parts = serverVersion.substring("git-Tentacles-".length()).split("[-\\s]"); // Tuinity // Purpur // Tentacles
++        final Component updateMessage = getUpdateStatusMessage("pl3xgaming/Tentacles", "ver/" + getMinecraftVersion(), parts[0]); // Tuinity // Purpur // Tentacles
+         final Component history = getHistory();
+ 
+         return history != null ? TextComponent.ofChildren(updateMessage, Component.newline(), history) : updateMessage;
+@@ -83,7 +83,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+         if (siteApiVersion == null) { return -1; }
+         try {
+             try (BufferedReader reader = Resources.asCharSource(
+-                new URL("https://api.pl3x.net/v2/purpur/" + siteApiVersion), // Purpur
++                new URL("" + siteApiVersion), // Purpur // Tentacles
+                 Charsets.UTF_8
+             ).openBufferedStream()) {
+                 JsonObject json = new Gson().fromJson(reader, JsonObject.class);
 diff --git a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
-index 8c3c68465197fafc14849dc38a572e309931e2a2..a902080d65c5d7abd57b12ce977fc53f5ec09c69 100644
+index 8c3c68465197fafc14849dc38a572e309931e2a2..b479de592dfeb83250f6ed081f2e5a9d2be4c4c9 100644
 --- a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
 +++ b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
 @@ -17,7 +17,7 @@ public final class PaperConsole extends SimpleTerminalConsole {
@@ -57,15 +90,15 @@ index 8c3c68465197fafc14849dc38a572e309931e2a2..a902080d65c5d7abd57b12ce977fc53f
      protected LineReader buildReader(LineReaderBuilder builder) {
          builder
 -                .appName("Purpur") // Purpur
-+                .appName("Tentacles") // Tentacles
++                .appName("Tentacles") // Purpur // Tentacles
                  .variable(LineReader.HISTORY_FILE, java.nio.file.Paths.get(".console_history"))
                  .completer(new ConsoleCommandCompleter(this.server))
                  .option(LineReader.Option.COMPLETE_IN_WORD, true);
 diff --git a/src/main/java/net/pl3x/purpur/PurpurConfig.java b/src/main/java/net/pl3x/purpur/PurpurConfig.java
-index f90256ef0806a61c434a0d062318267184177283..95bbb0da6d9d3dd49ef67ee22d584d861517b901 100644
+index 526a1032a2f61792c7f5791dbb3e9a7292fc186d..84a44a5f31d5460f5f31758a85e47894ffe58d5b 100644
 --- a/src/main/java/net/pl3x/purpur/PurpurConfig.java
 +++ b/src/main/java/net/pl3x/purpur/PurpurConfig.java
-@@ -324,7 +324,7 @@ public class PurpurConfig {
+@@ -326,7 +326,7 @@ public class PurpurConfig {
          if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
      }
  
@@ -75,20 +108,20 @@ index f90256ef0806a61c434a0d062318267184177283..95bbb0da6d9d3dd49ef67ee22d584d86
          serverModName = getString("settings.server-mod-name", serverModName);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index ef1004a277e4ae0bdec410c42271b4060227313f..6f871de16a4f40cf57d76eeb086ec8f2fb2fba54 100644
+index a0177be669c921728267bd48ed3c7af302d6d314..5ce7c4d1c7075afb13bb39596fa919c9dd464560 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -230,7 +230,7 @@ import javax.annotation.Nullable; // Paper
+@@ -240,7 +240,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
 -    private final String serverName = "Purpur"; // Paper // Tuinity // Purpur
-+    private final String serverName = "Tentacles"; // Tentacles
++    private final String serverName = "Tentacles"; // Paper // Tuinity // Purpur // Tentacles
      private final String serverVersion;
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index 13b98439320ac1401a920c01d7cf5a4b3a23deff..efc095bffbc5413a0e43ce4b1fda7c4f4a5708e3 100644
+index 13b98439320ac1401a920c01d7cf5a4b3a23deff..a0c67bbe339a64f00f7b7e902a67f6a18c9745f9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 @@ -11,7 +11,7 @@ public final class Versioning {
@@ -96,7 +129,7 @@ index 13b98439320ac1401a920c01d7cf5a4b3a23deff..efc095bffbc5413a0e43ce4b1fda7c4f
          String result = "Unknown-Version";
  
 -        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.pl3x.purpur/purpur-api/pom.properties"); // Tuinity // Purpur
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.pl3x.tentacles/tentacles-api/pom.properties"); // Tentacles
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.pl3x.tentacles/tentacles-api/pom.properties"); // Tuinity // Purpur // Tentacles
          Properties properties = new Properties();
  
          if (stream != null) {
