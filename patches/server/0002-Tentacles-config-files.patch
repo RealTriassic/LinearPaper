@@ -47,19 +47,15 @@ index 5e06dbb25359b593c6960652ee99f8227bf4deb0..8d7432444a40dfbcfed757de82f1a148
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 diff --git a/src/main/java/net/pl3x/tentacles/TentaclesConfig.java b/src/main/java/net/pl3x/tentacles/TentaclesConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0c0892535c1f6131c27d341b364cbf395cc3ce30
+index 0000000000000000000000000000000000000000..08de032c186b4481b141be2425bfc1f2aef1e0b6
 --- /dev/null
 +++ b/src/main/java/net/pl3x/tentacles/TentaclesConfig.java
-@@ -0,0 +1,152 @@
+@@ -0,0 +1,148 @@
 +package net.pl3x.tentacles;
 +
-+import co.aikar.timings.TimingsManager;
 +import com.google.common.base.Throwables;
 +import com.google.common.collect.ImmutableMap;
-+import net.kyori.adventure.bossbar.BossBar;
 +import net.minecraft.server.MinecraftServer;
-+import net.minecraft.world.entity.EntityDimensions;
-+import net.minecraft.world.entity.EntityType;
 +import net.pl3x.tentacles.command.TentaclesCommand;
 +import org.bukkit.Bukkit;
 +import org.bukkit.command.Command;
@@ -206,36 +202,19 @@ index 0000000000000000000000000000000000000000..0c0892535c1f6131c27d341b364cbf39
 \ No newline at end of file
 diff --git a/src/main/java/net/pl3x/tentacles/TentaclesWorldConfig.java b/src/main/java/net/pl3x/tentacles/TentaclesWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8e0c9ee00c38e18a0d277fc6abeba0caafbaeed5
+index 0000000000000000000000000000000000000000..a826e2cc5167a7ae9ec88d33efb890ad95917bf9
 --- /dev/null
 +++ b/src/main/java/net/pl3x/tentacles/TentaclesWorldConfig.java
-@@ -0,0 +1,97 @@
+@@ -0,0 +1,79 @@
 +package net.pl3x.tentacles;
 +
-+import net.minecraft.core.Registry;
-+import net.minecraft.resources.ResourceLocation;
 +import net.minecraft.server.level.ServerLevel;
-+import net.minecraft.world.Difficulty;
-+import net.minecraft.world.item.DyeColor;
-+import net.minecraft.world.item.Item;
-+import net.minecraft.world.item.Items;
-+import net.minecraft.world.level.Explosion;
-+import net.minecraft.world.level.block.Block;
-+import net.minecraft.world.level.block.Blocks;
-+import net.minecraft.world.level.block.state.properties.Tilt;
 +import org.apache.commons.lang.BooleanUtils;
-+import org.bukkit.ChatColor;
-+import org.bukkit.World;
 +import org.bukkit.configuration.ConfigurationSection;
 +
-+import java.util.ArrayList;
-+import java.util.HashMap;
-+import java.util.HashSet;
 +import java.util.List;
 +import java.util.Map;
-+import java.util.Set;
 +import java.util.function.Predicate;
-+import java.util.logging.Level;
 +import static net.pl3x.tentacles.TentaclesConfig.log;
 +
 +@SuppressWarnings("unused")
@@ -247,7 +226,6 @@ index 0000000000000000000000000000000000000000..8e0c9ee00c38e18a0d277fc6abeba0ca
 +    public TentaclesWorldConfig(ServerLevel level, String worldName) {
 +        this.level = level;
 +        this.worldName = worldName;
-+        this.environment = environment;
 +        init();
 +    }
 +
@@ -380,7 +358,7 @@ index 0000000000000000000000000000000000000000..c539c841dc990bac13d0f2eff006f4e1
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 64030c550bb520acde1a6700daaac6741351c43e..c779ca3c5ce42c8660d0bbe76d8bee5ac38269f8 100644
+index 64030c550bb520acde1a6700daaac6741351c43e..6c33dcbe536d391d7b0f07c60de979ce3e0d9b67 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -893,6 +893,7 @@ public final class CraftServer implements Server {
@@ -407,7 +385,7 @@ index 64030c550bb520acde1a6700daaac6741351c43e..c779ca3c5ce42c8660d0bbe76d8bee5a
 +        @Override
 +        public YamlConfiguration getTentaclesConfig() {
 +            return net.pl3x.tentacles.TentaclesConfig.config;
-+                }
++        }
 +        // Tentacles end
 +
          @Override
