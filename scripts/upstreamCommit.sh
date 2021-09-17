@@ -12,7 +12,7 @@ purpur=$(changelog .gradle/caches/paperweight/upstreams/purpur)
 updated=""
 logsuffix=""
 if [ ! -z "$purpur" ]; then
-    logsuffix="$logsuffix\n\nPurpur Changes:\n$paper"
+    logsuffix="$logsuffix\n\nPurpur Changes:\n$purpur"
     updated="Purpur"
 fi
 disclaimer="Upstream has released updates that appear to apply and compile correctly"
