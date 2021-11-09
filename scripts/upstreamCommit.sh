@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
+
+# requires curl & jq
+
+# upstreamCommit <baseHash>
+# param: bashHash - the commit hash to use for comparing commits (baseHash...HEAD)
+
 (
 set -e
 PS1="$"
 
-function changelog() {
-    base=$(git ls-tree HEAD $1  | cut -d' ' -f3 | cut -f1)
-    cd $1 && git log --oneline ${base}...HEAD
-}
-purpur=$(changelog .gradle/caches/paperweight/upstreams/purpur)
+purpur=$(curl -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/pl3xgaming/Purpur/compare/$1...HEAD | jq -r '.commits[] | "pl3xgaming/Purpur@\(.sha[:7]) \(.commit.message | split("\r\n")[0] | split("\n")[0])"')
 
 updated=""
 logsuffix=""
@@ -16,10 +18,6 @@ if [ ! -z "$purpur" ]; then
     updated="Purpur"
 fi
 disclaimer="Upstream has released updates that appear to apply and compile correctly"
-
-if [ ! -z "$1" ]; then
-    disclaimer="$@"
-fi
 
 log="${UP_LOG_PREFIX}Updated Upstream ($updated)\n\n${disclaimer}${logsuffix}"
 

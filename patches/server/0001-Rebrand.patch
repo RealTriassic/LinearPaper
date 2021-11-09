@@ -5,10 +5,10 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index c6b4a4d679614b13215768e0c38b9fe0e9ca76a7..74d8d1228ee47d9b9b1bf6e470ff88ac6aadae6a 100644
+index dc6c416bb2145bb684e1dedda626263d423cba67..0b35ffe8be23859373433a9019e15e73858b5b2c 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -32,7 +32,7 @@ repositories {
+@@ -25,7 +25,7 @@ repositories {
  }
  
  dependencies {
@@ -17,7 +17,7 @@ index c6b4a4d679614b13215768e0c38b9fe0e9ca76a7..74d8d1228ee47d9b9b1bf6e470ff88ac
      implementation("io.papermc.paper:paper-mojangapi:1.17.1-R0.1-SNAPSHOT") // Airplane
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.12.1")
-@@ -93,7 +93,7 @@ tasks.jar {
+@@ -87,7 +87,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -27,19 +27,10 @@ index c6b4a4d679614b13215768e0c38b9fe0e9ca76a7..74d8d1228ee47d9b9b1bf6e470ff88ac
              "Specification-Title" to "Bukkit",
              "Specification-Version" to project.version,
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index b6c1e50df4e0a69ac1e81613539bcc0731c67063..9e416620b281bb4e8c476d96fa407e44f843702c 100644
+index aadd6550a5892e403f7b0bbef008461c1566a1bb..9620609a19fe22681b0640ca3a0069f3d8212788 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-@@ -18,7 +18,7 @@ import java.util.stream.StreamSupport;
- 
- public class PaperVersionFetcher implements VersionFetcher {
-     private static final java.util.regex.Pattern VER_PATTERN = java.util.regex.Pattern.compile("^([0-9\\.]*)\\-.*R"); // R is an anchor, will always give '-R' at end
--    private static final String JENKINS_URL = "https://ci.pl3x.net/job/Purpur/lastSuccessfulBuild/buildNumber"; // Purpur
-+    private static final String JENKINS_URL = "https://ci.pl3x.net/job/Tentacles/lastSuccessfulBuild/buildNumber"; // Purpur // Tentacles
-     private static @Nullable String mcVer;
- 
-     @Override
-@@ -29,8 +29,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -31,8 +31,8 @@ public class PaperVersionFetcher implements VersionFetcher {
      @Nonnull
      @Override
      public Component getVersionMessage(@Nonnull String serverVersion) {
@@ -50,7 +41,7 @@ index b6c1e50df4e0a69ac1e81613539bcc0731c67063..9e416620b281bb4e8c476d96fa407e44
          final Component history = getHistory();
  
          return history != null ? TextComponent.ofChildren(updateMessage, Component.newline(), history) : updateMessage;
-@@ -83,7 +83,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -85,7 +85,7 @@ public class PaperVersionFetcher implements VersionFetcher {
          if (siteApiVersion == null) { return -1; }
          try {
              try (BufferedReader reader = Resources.asCharSource(
@@ -73,7 +64,7 @@ index 8c3c68465197fafc14849dc38a572e309931e2a2..b479de592dfeb83250f6ed081f2e5a9d
                  .completer(new ConsoleCommandCompleter(this.server))
                  .option(LineReader.Option.COMPLETE_IN_WORD, true);
 diff --git a/src/main/java/net/pl3x/purpur/PurpurConfig.java b/src/main/java/net/pl3x/purpur/PurpurConfig.java
-index 15963a7d4d721f3a8b665c1917cd5f2860814a62..6f792f52d73e85891e1c0c4d66fc5b2e722800b6 100644
+index 7e36bcda5b8caee9fb604d26f7b9b22a7b1fea98..74d8af6d6f536e0477fed56b1ef254cee1f3883d 100644
 --- a/src/main/java/net/pl3x/purpur/PurpurConfig.java
 +++ b/src/main/java/net/pl3x/purpur/PurpurConfig.java
 @@ -209,7 +209,7 @@ public class PurpurConfig {
@@ -86,10 +77,10 @@ index 15963a7d4d721f3a8b665c1917cd5f2860814a62..6f792f52d73e85891e1c0c4d66fc5b2e
          serverModName = getString("settings.server-mod-name", serverModName);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 3c7a337745839858c48aa5bf2f9f39d9d5e201d7..64030c550bb520acde1a6700daaac6741351c43e 100644
+index bb9aff9f3067b6249447287f5d9f9c6fe86c88d5..3e41120606f4eb2348ea29a78ded716bdbffbaca 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -246,7 +246,7 @@ import javax.annotation.Nullable; // Paper
+@@ -251,7 +251,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
