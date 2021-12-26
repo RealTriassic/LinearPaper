@@ -1,67 +1,120 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Encode42 <me@encode42.dev>
-Date: Thu, 16 Sep 2021 20:50:28 -0400
+Date: Sat, 25 Dec 2021 22:30:05 -0500
 Subject: [PATCH] Tentacles config files
 
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index d5c61053f6af91aa5d0894750ab86372a91c9a73..e8af393114fecd514f0671adf0154df561c01874 100644
+index 9412a238aa3538bf958cf3b5ce2be5a9beead90f..e08c1b9a4b6ba1e3112d42743c40d108a1a5c22e 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -239,6 +239,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -237,6 +237,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          }
-         net.pl3x.purpur.PurpurConfig.registerCommands();
+         org.purpurmc.purpur.PurpurConfig.registerCommands();
          // Purpur end
 +        // Tentacles start
 +        try {
-+            net.pl3x.tentacles.TentaclesConfig.init((java.io.File) options.valueOf("tentacles-settings"));
++            org.purpurmc.tentacles.TentaclesConfig.init((java.io.File) options.valueOf("tentacles-settings"));
 +        } catch (Exception e) {
 +            DedicatedServer.LOGGER.error("Unable to load server configuration", e);
 +            return false;
 +        }
-+        net.pl3x.tentacles.TentaclesConfig.registerCommands();
++        org.purpurmc.tentacles.TentaclesConfig.registerCommands();
 +        // Tentacles end
          com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
          io.papermc.paper.util.ObfHelper.INSTANCE.getClass(); // load mappings for stacktrace deobf and etc.
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 7a0462425f62ce1fb197fa2670e102286ef4c865..3432c7c24d5279a1f59dea9771ee4b252fc13ad1 100644
+index d7c6e530e5391bfd8831c1c6364a3aa405d40724..b2eecdb0638bb7248b32b6fa1e84e62a855760f8 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -170,6 +170,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -171,6 +171,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
-     public final net.pl3x.purpur.PurpurWorldConfig purpurConfig; // Purpur
+     public final org.purpurmc.purpur.PurpurWorldConfig purpurConfig; // Purpur
  
-+    public final net.pl3x.tentacles.TentaclesWorldConfig tentaclesConfig; // Tentacles
++    public final org.purpurmc.tentacles.TentaclesWorldConfig tentaclesConfig; // Purpur
 +
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
      public static BlockPos lastPhysicsProblem; // Spigot
      private org.spigotmc.TickLimiter entityLimiter;
-@@ -371,6 +373,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -357,6 +359,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = new com.destroystokyo.paper.PaperWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), this.spigotConfig); // Paper
-         this.purpurConfig = new net.pl3x.purpur.PurpurWorldConfig((ServerLevel) this, ((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
-+        this.tentaclesConfig = new net.pl3x.tentacles.TentaclesWorldConfig((ServerLevel) this, ((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Tentacles
+         this.purpurConfig = new org.purpurmc.purpur.PurpurWorldConfig((ServerLevel) this, ((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
++        this.tentaclesConfig = new org.purpurmc.tentacles.TentaclesWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Tentacles
          this.playerBreedingCooldowns = this.getNewBreedingCooldownCache(); // Purpur
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
-diff --git a/src/main/java/net/pl3x/tentacles/TentaclesConfig.java b/src/main/java/net/pl3x/tentacles/TentaclesConfig.java
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index a2a93a4c98c6a4c6e1add307f68da5ee7343111b..c3dc96f85154350134d9d7fb94187fb6888909e9 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -953,6 +953,7 @@ public final class CraftServer implements Server {
+         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
+         com.destroystokyo.paper.PaperConfig.init((File) console.options.valueOf("paper-settings")); // Paper
+         org.purpurmc.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
++        org.purpurmc.tentacles.TentaclesConfig.init((File) console.options.valueOf("tentacles-settings")); // Tentacles
+         for (ServerLevel world : this.console.getAllLevels()) {
+             // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
+             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
+@@ -994,6 +995,7 @@ public final class CraftServer implements Server {
+             world.spigotConfig.init(); // Spigot
+             world.paperConfig.init(); // Paper
+             world.purpurConfig.init(); // Purpur
++            world.tentaclesConfig.init(); // Purpur
+         }
+ 
+         Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
+@@ -2691,6 +2693,13 @@ public final class CraftServer implements Server {
+         }
+         // Purpur end
+ 
++        // Tentacles
++        @Override
++        public YamlConfiguration getTentaclesConfig() {
++            return org.purpurmc.tentacles.TentaclesConfig.config;
++        }
++        // Tentacles end
++
+         @Override
+         public void restart() {
+             org.spigotmc.RestartCommand.restart();
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 6f14a1b26e92d0170538ed60c6a651a031e7209e..fd08246891891c626f8db339bb657c30e147a3ad 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -161,6 +161,14 @@ public class Main {
+                     .describedAs("Yml file");
+                 // Purpur end
+ 
++                // Tentacles Start
++                acceptsAll(asList("tentacles", "tentacles-settings"), "File for tentacles settings")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("tentacles.yml"))
++                        .describedAs("Yml file");
++                // Tentacles end
++
+                 // Paper start
+                 acceptsAll(asList("server-name"), "Name of the server")
+                         .withRequiredArg()
+diff --git a/src/main/java/org/purpurmc/tentacles/TentaclesConfig.java b/src/main/java/org/purpurmc/tentacles/TentaclesConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..08de032c186b4481b141be2425bfc1f2aef1e0b6
+index 0000000000000000000000000000000000000000..1c8d72efc4afbf207f3595d17a0e5c3f73700b8c
 --- /dev/null
-+++ b/src/main/java/net/pl3x/tentacles/TentaclesConfig.java
++++ b/src/main/java/org/purpurmc/tentacles/TentaclesConfig.java
 @@ -0,0 +1,148 @@
-+package net.pl3x.tentacles;
++package org.purpurmc.tentacles;
 +
 +import com.google.common.base.Throwables;
 +import com.google.common.collect.ImmutableMap;
 +import net.minecraft.server.MinecraftServer;
-+import net.pl3x.tentacles.command.TentaclesCommand;
 +import org.bukkit.Bukkit;
 +import org.bukkit.command.Command;
 +import org.bukkit.configuration.ConfigurationSection;
 +import org.bukkit.configuration.InvalidConfigurationException;
 +import org.bukkit.configuration.file.YamlConfiguration;
++import org.purpurmc.tentacles.command.TentaclesCommand;
 +
 +import java.io.File;
 +import java.io.IOException;
@@ -83,7 +136,7 @@ index 0000000000000000000000000000000000000000..08de032c186b4481b141be2425bfc1f2
 +
 +    private static Map<String, Command> commands;
 +
-+    static int version;
++    public static int version;
 +    static boolean verbose;
 +
 +    public static void init(File configFile) {
@@ -199,14 +252,13 @@ index 0000000000000000000000000000000000000000..08de032c186b4481b141be2425bfc1f2
 +        return builder.build();
 +    }
 +}
-\ No newline at end of file
-diff --git a/src/main/java/net/pl3x/tentacles/TentaclesWorldConfig.java b/src/main/java/net/pl3x/tentacles/TentaclesWorldConfig.java
+diff --git a/src/main/java/org/purpurmc/tentacles/TentaclesWorldConfig.java b/src/main/java/org/purpurmc/tentacles/TentaclesWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a826e2cc5167a7ae9ec88d33efb890ad95917bf9
+index 0000000000000000000000000000000000000000..c093ec29f61d8d6d006b17126789788b95b18bc3
 --- /dev/null
-+++ b/src/main/java/net/pl3x/tentacles/TentaclesWorldConfig.java
-@@ -0,0 +1,79 @@
-+package net.pl3x.tentacles;
++++ b/src/main/java/org/purpurmc/tentacles/TentaclesWorldConfig.java
+@@ -0,0 +1,78 @@
++package org.purpurmc.tentacles;
 +
 +import net.minecraft.server.level.ServerLevel;
 +import org.apache.commons.lang.BooleanUtils;
@@ -215,16 +267,15 @@ index 0000000000000000000000000000000000000000..a826e2cc5167a7ae9ec88d33efb890ad
 +import java.util.List;
 +import java.util.Map;
 +import java.util.function.Predicate;
-+import static net.pl3x.tentacles.TentaclesConfig.log;
++
++import static org.purpurmc.tentacles.TentaclesConfig.log;
 +
 +@SuppressWarnings("unused")
 +public class TentaclesWorldConfig {
 +
-+    private final ServerLevel level;
 +    private final String worldName;
 +
-+    public TentaclesWorldConfig(ServerLevel level, String worldName) {
-+        this.level = level;
++    public TentaclesWorldConfig(String worldName) {
 +        this.worldName = worldName;
 +        init();
 +    }
@@ -285,21 +336,22 @@ index 0000000000000000000000000000000000000000..a826e2cc5167a7ae9ec88d33efb890ad
 +        return value.isEmpty() ? fallback : value;
 +    }
 +}
-diff --git a/src/main/java/net/pl3x/tentacles/command/TentaclesCommand.java b/src/main/java/net/pl3x/tentacles/command/TentaclesCommand.java
+\ No newline at end of file
+diff --git a/src/main/java/org/purpurmc/tentacles/command/TentaclesCommand.java b/src/main/java/org/purpurmc/tentacles/command/TentaclesCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c539c841dc990bac13d0f2eff006f4e1bdfd6c34
+index 0000000000000000000000000000000000000000..ec54a5972934ad75bb910d73ff187851fde834d8
 --- /dev/null
-+++ b/src/main/java/net/pl3x/tentacles/command/TentaclesCommand.java
++++ b/src/main/java/org/purpurmc/tentacles/command/TentaclesCommand.java
 @@ -0,0 +1,66 @@
-+package net.pl3x.tentacles.command;
++package org.purpurmc.tentacles.command;
 +
 +import net.minecraft.server.MinecraftServer;
 +import net.minecraft.server.level.ServerLevel;
-+import net.pl3x.tentacles.TentaclesConfig;
 +import org.bukkit.ChatColor;
 +import org.bukkit.Location;
 +import org.bukkit.command.Command;
 +import org.bukkit.command.CommandSender;
++import org.purpurmc.tentacles.TentaclesConfig;
 +
 +import java.io.File;
 +import java.util.Collections;
@@ -357,56 +409,3 @@ index 0000000000000000000000000000000000000000..c539c841dc990bac13d0f2eff006f4e1
 +        return true;
 +    }
 +}
-diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 3e41120606f4eb2348ea29a78ded716bdbffbaca..da3725de515dbc7bc25b34611b9f0c119af8f2d9 100644
---- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-+++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -925,6 +925,7 @@ public final class CraftServer implements Server {
-         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
-         com.destroystokyo.paper.PaperConfig.init((File) console.options.valueOf("paper-settings")); // Paper
-         net.pl3x.purpur.PurpurConfig.init((File) console.options.valueOf("purpur-settings")); // Purpur
-+        net.pl3x.tentacles.TentaclesConfig.init((File) console.options.valueOf("tentacles-settings")); // Tentacles
-         for (ServerLevel world : this.console.getAllLevels()) {
-             // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
-             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -966,6 +967,7 @@ public final class CraftServer implements Server {
-             world.spigotConfig.init(); // Spigot
-             world.paperConfig.init(); // Paper
-             world.purpurConfig.init(); // Purpur
-+            world.tentaclesConfig.init(); // Tentacles
-         }
- 
-         Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
-@@ -2600,6 +2602,13 @@ public final class CraftServer implements Server {
-         }
-         // Purpur end
- 
-+        // Tentacles start
-+        @Override
-+        public YamlConfiguration getTentaclesConfig() {
-+            return net.pl3x.tentacles.TentaclesConfig.config;
-+        }
-+        // Tentacles end
-+
-         @Override
-         public void restart() {
-             org.spigotmc.RestartCommand.restart();
-diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 56674053351962a75b2731dde137dbbc0c70dbde..bbdb893ae71ee6031cbdf72cecfecd901b8cd639 100644
---- a/src/main/java/org/bukkit/craftbukkit/Main.java
-+++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -155,6 +155,14 @@ public class Main {
-                     .describedAs("Yml file");
-                 // Purpur end
- 
-+                // Tentacles Start
-+                acceptsAll(asList("tentacles", "tentacles-settings"), "File for tentacles settings")
-+                        .withRequiredArg()
-+                        .ofType(File.class)
-+                        .defaultsTo(new File("tentacles.yml"))
-+                        .describedAs("Yml file");
-+                // Tentacles end
-+
-                 // Paper start
-                 acceptsAll(asList("server-name"), "Name of the server")
-                         .withRequiredArg()

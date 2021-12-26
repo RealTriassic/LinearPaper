@@ -1,3 +1,5 @@
+import java.util.Locale
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -5,5 +7,9 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Tentacles"
-include("Tentacles-API", "Tentacles-Server")
+rootProject.name = "tentacles"
+for (name in listOf("Tentacles-API", "Tentacles-Server")) {
+    val projName = name.toLowerCase(Locale.ENGLISH)
+    include(projName)
+    findProject(":$projName")!!.projectDir = file(name)
+}

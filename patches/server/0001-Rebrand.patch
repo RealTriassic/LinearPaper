@@ -1,72 +1,95 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Encode42 <me@encode42.dev>
-Date: Thu, 16 Sep 2021 20:39:45 -0400
+Date: Date: Thu, 16 Sep 2021 20:39:45 -0400
 Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 7168672c9d38f0f30ee8a683df7f60d686bada23..513863fc61cdd6137d7727247a051117476f8fd3 100644
+index 07f572b9aa249e154bc08ecf8517c3953392b74f..54be2ddfceb00bcc02f54a6430d126d9ab7d2a48 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -22,7 +22,7 @@ repositories {
- }
+@@ -19,7 +19,7 @@ repositories {
  
  dependencies {
--    implementation(project(":Purpur-API")) // Airplane // Purpur
-+    implementation(project(":Tentacles-API")) // Airplane // Purpur // Tentacles
-     implementation("io.papermc.paper:paper-mojangapi:1.17.1-R0.1-SNAPSHOT") // Airplane
-     // Paper start
-     implementation("org.jline:jline-terminal-jansi:3.21.0")
-@@ -83,7 +83,7 @@ tasks.jar {
+     // Purpur start
+-    implementation(project(":purpur-api"))
++    implementation(project(":tentacles-api")) // Tentacles
+     implementation("io.papermc.paper:paper-mojangapi:1.18.1-R0.1-SNAPSHOT") {
+         exclude("io.papermc.paper", "paper-api")
+     }
+@@ -74,7 +74,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
--            "Implementation-Version" to "git-Purpur-$implementationVersion", // Airplane // Purpur
-+            "Implementation-Version" to "git-Tentacles-$implementationVersion", // Airplane // Purpur // Tentacles
+-            "Implementation-Version" to "git-Purpur-$implementationVersion", // Purpur
++            "Implementation-Version" to "git-Tentacles-$implementationVersion", // Purpur // Tentacles
              "Implementation-Vendor" to date, // Paper
              "Specification-Title" to "Bukkit",
              "Specification-Version" to project.version,
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index aadd6550a5892e403f7b0bbef008461c1566a1bb..9620609a19fe22681b0640ca3a0069f3d8212788 100644
+index e93441d06da8c7f05aa451b0ffbb9059780da0d5..295093089b24e1b7406189a6eba3c5e5e6ecc413 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-@@ -31,8 +31,8 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -30,8 +30,8 @@ public class PaperVersionFetcher implements VersionFetcher {
      @Nonnull
      @Override
      public Component getVersionMessage(@Nonnull String serverVersion) {
--        String[] parts = serverVersion.substring("git-Purpur-".length()).split("[-\\s]"); // Airplane // Purpur
--        final Component updateMessage = getUpdateStatusMessage("pl3xgaming/Purpur", "ver/" + getMinecraftVersion(), parts[0]); // Airplane // Purpur
-+        String[] parts = serverVersion.substring("git-Tentacles-".length()).split("[-\\s]"); // Airplane // Purpur // Tentacles
-+        final Component updateMessage = getUpdateStatusMessage("pl3xgaming/Tentacles", "ver/" + getMinecraftVersion(), parts[0]); // Airplane // Purpur // Tentacles
+-        String[] parts = serverVersion.substring("git-Purpur-".length()).split("[-\\s]"); // Purpur
+-        final Component updateMessage = getUpdateStatusMessage("PurpurMC/Purpur", "ver/" + getMinecraftVersion(), parts[0]); // Purpur
++        String[] parts = serverVersion.substring("git-Tentacles-".length()).split("[-\\s]"); // Purpur // Tentacles
++        final Component updateMessage = getUpdateStatusMessage("PurpurMC/Tentacles", "ver/" + getMinecraftVersion(), parts[0]); // Purpur // Tentacles
          final Component history = getHistory();
  
          return history != null ? TextComponent.ofChildren(updateMessage, Component.newline(), history) : updateMessage;
-@@ -85,7 +85,7 @@ public class PaperVersionFetcher implements VersionFetcher {
-         if (siteApiVersion == null) { return -1; }
+@@ -55,6 +55,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+ 
+     private static Component getUpdateStatusMessage(@Nonnull String repo, @Nonnull String branch, @Nonnull String versionInfo) {
+         int distance;
++        /* // Tentacles start - disable jenkins/api checking
          try {
-             try (BufferedReader reader = Resources.asCharSource(
--                new URL("https://api.pl3x.net/v2/purpur/" + siteApiVersion), // Purpur
-+                new URL("https://api.pl3x.net/v2/tentacles/" + siteApiVersion), // Purpur // Tentacles
-                 Charsets.UTF_8
-             ).openBufferedStream()) {
-                 JsonObject json = new Gson().fromJson(reader, JsonObject.class);
-diff --git a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
-index 8c3c68465197fafc14849dc38a572e309931e2a2..b479de592dfeb83250f6ed081f2e5a9d2be4c4c9 100644
---- a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
-+++ b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
-@@ -17,7 +17,7 @@ public final class PaperConsole extends SimpleTerminalConsole {
-     @Override
-     protected LineReader buildReader(LineReaderBuilder builder) {
-         builder
--                .appName("Purpur") // Purpur
-+                .appName("Tentacles") // Purpur // Tentacles
-                 .variable(LineReader.HISTORY_FILE, java.nio.file.Paths.get(".console_history"))
-                 .completer(new ConsoleCommandCompleter(this.server))
-                 .option(LineReader.Option.COMPLETE_IN_WORD, true);
-diff --git a/src/main/java/net/pl3x/purpur/PurpurConfig.java b/src/main/java/net/pl3x/purpur/PurpurConfig.java
-index 7e36bcda5b8caee9fb604d26f7b9b22a7b1fea98..74d8af6d6f536e0477fed56b1ef254cee1f3883d 100644
---- a/src/main/java/net/pl3x/purpur/PurpurConfig.java
-+++ b/src/main/java/net/pl3x/purpur/PurpurConfig.java
+             int jenkinsBuild = Integer.parseInt(versionInfo);
+             distance = fetchDistanceFromSiteApi(jenkinsBuild, getMinecraftVersion());
+@@ -62,6 +63,10 @@ public class PaperVersionFetcher implements VersionFetcher {
+             versionInfo = versionInfo.replace("\"", "");
+             distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
+         }
++         */
++        versionInfo = versionInfo.replace("\"", "");
++        distance = fetchDistanceFromGitHub(repo, branch, versionInfo);
++        // Tentacles end
+ 
+         switch (distance) {
+             case -1:
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 1b7a3180ff88b0db2aab6e61b286f9b4d0da6862..a2a93a4c98c6a4c6e1add307f68da5ee7343111b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -254,7 +254,7 @@ import javax.annotation.Nullable; // Paper
+ import javax.annotation.Nonnull; // Paper
+ 
+ public final class CraftServer implements Server {
+-    private final String serverName = "Purpur"; // Paper // Purpur
++    private final String serverName = "Tentacles"; // Paper // Purpur // Tentacles
+     private final String serverVersion;
+     private final String bukkitVersion = Versioning.getBukkitVersion();
+     private final Logger logger = Logger.getLogger("Minecraft");
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index fb87620c742ff7912f5e8ccd2a7930dd605576d9..9c18acf824ea4d364e31cdee94a4bff2e21bcd0f 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -11,7 +11,7 @@ public final class Versioning {
+     public static String getBukkitVersion() {
+         String result = "Unknown-Version";
+ 
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Purpur
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.tentacles/tentacles-api/pom.properties"); // Purpur // Tentacles
+         Properties properties = new Properties();
+ 
+         if (stream != null) {
+diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
+index 5c9973374991446c39d6a84d745283eac3eb70ab..2d11a8aa07896dcbc1ef069fcfdbf0a120ac501c 100644
+--- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
++++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -209,7 +209,7 @@ public class PurpurConfig {
          if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
      }
@@ -76,29 +99,3 @@ index 7e36bcda5b8caee9fb604d26f7b9b22a7b1fea98..74d8af6d6f536e0477fed56b1ef254ce
      private static void serverModName() {
          serverModName = getString("settings.server-mod-name", serverModName);
      }
-diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 171207e4ba1a21143ea1db8b1d3646df50256484..bd0b958bab82acd0b630beb55cf38901bbc82dd4 100644
---- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-+++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -251,7 +251,7 @@ import javax.annotation.Nullable; // Paper
- import javax.annotation.Nonnull; // Paper
- 
- public final class CraftServer implements Server {
--    private final String serverName = "Purpur"; // Paper // Airplane // Purpur
-+    private final String serverName = "Tentacles"; // Paper // Airplane // Purpur // Tentacles
-     private final String serverVersion;
-     private final String bukkitVersion = Versioning.getBukkitVersion();
-     private final Logger logger = Logger.getLogger("Minecraft");
-diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index e7d740e191c5ac408ba1fa493e9367dd52900a02..26e23327f37b585343eccca0ed4105989436c636 100644
---- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-+++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-@@ -11,7 +11,7 @@ public final class Versioning {
-     public static String getBukkitVersion() {
-         String result = "Unknown-Version";
- 
--        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.pl3x.purpur/purpur-api/pom.properties"); // Airplane // Purpur
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/net.pl3x.tentacles/tentacles-api/pom.properties"); // Airplane // Purpur // Tentacles
-         Properties properties = new Properties();
- 
-         if (stream != null) {
