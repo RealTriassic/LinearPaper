@@ -13,18 +13,11 @@ jobs:
           java-version: 17
       - name: Configure Git
         run: git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
-      - name: Check for upstream updates
+      - name: Update upstream
         run: |
-          CURRENT_COMMIT=$(cat gradle.properties | grep purpurCommit | sed 's/purpurCommit = //')
-          UPSTREAM_COMMIT=$(git ls-remote https://github.com/PurpurMC/Purpur | grep HEAD | cut -f 1)
-      
-          if [ "$CURRENT_COMMIT" != "$UPSTREAM_COMMIT" ]; then
-            sed -i 's/purpurCommit = .*/purpurCommit = '"$CURRENT_COMMIT"'/' gradle.properties
-            ./gradlew applyPatches --stacktrace && {
-              ./gradlew build --stacktrace && {
-                ./gradlew rebuildPatches --stacktrace
-                git add .
-                ./scripts/updateUpstream "$CURRENT_COMMIT"
-              }
-            }
-          fi
+          ./scripts/updateUpstream.sh
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
