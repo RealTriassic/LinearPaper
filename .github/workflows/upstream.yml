@@ -1,0 +1,30 @@
+name: Upstream
+on: [ push, pull_request ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.commits[0].message, '[ci-skip]')"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gradle/wrapper-validation-action@v1
+      - uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Configure Git
+        run: git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+      - name: Check for upstream updates
+        run: |
+          CURRENT_COMMIT=$(cat gradle.properties | grep purpurCommit | sed 's/purpurCommit = //')
+          UPSTREAM_COMMIT=$(git ls-remote https://github.com/PurpurMC/Purpur | grep HEAD | cut -f 1)
+      
+          if [ "$CURRENT_COMMIT" != "$UPSTREAM_COMMIT" ]; then
+            sed -i 's/purpurCommit = .*/purpurCommit = '"$CURRENT_COMMIT"'/' gradle.properties
+            ./gradlew applyPatches --stacktrace && {
+              ./gradlew build --stacktrace && {
+                ./gradlew rebuildPatches --stacktrace
+                git add .
+                ./scripts/updateUpstream "$CURRENT_COMMIT"
+              }
+            }
+          fi
