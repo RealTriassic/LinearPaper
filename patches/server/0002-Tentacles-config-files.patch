@@ -5,7 +5,7 @@ Subject: [PATCH] Tentacles config files
 
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 9412a238aa3538bf958cf3b5ce2be5a9beead90f..e08c1b9a4b6ba1e3112d42743c40d108a1a5c22e 100644
+index d668c4545f1f02ad4e3ca1d860aff6aa46f41c70..1d82c97d87672b65ba3cd98eb8175ebbfcba5a3c 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -237,6 +237,15 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -25,7 +25,7 @@ index 9412a238aa3538bf958cf3b5ce2be5a9beead90f..e08c1b9a4b6ba1e3112d42743c40d108
          io.papermc.paper.util.ObfHelper.INSTANCE.getClass(); // load mappings for stacktrace deobf and etc.
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index d7c6e530e5391bfd8831c1c6364a3aa405d40724..b2eecdb0638bb7248b32b6fa1e84e62a855760f8 100644
+index 182b07219192a901289114a16b12eb32cc3caa4c..7346e877a6aba82fb32cddad021b6b408dc8cb5f 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -171,6 +171,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -40,13 +40,13 @@ index d7c6e530e5391bfd8831c1c6364a3aa405d40724..b2eecdb0638bb7248b32b6fa1e84e62a
 @@ -357,6 +359,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = new com.destroystokyo.paper.PaperWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), this.spigotConfig); // Paper
-         this.purpurConfig = new org.purpurmc.purpur.PurpurWorldConfig((ServerLevel) this, ((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
+         this.purpurConfig = new org.purpurmc.purpur.PurpurWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName(), env); // Purpur
 +        this.tentaclesConfig = new org.purpurmc.tentacles.TentaclesWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Tentacles
          this.playerBreedingCooldowns = this.getNewBreedingCooldownCache(); // Purpur
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a2a93a4c98c6a4c6e1add307f68da5ee7343111b..c3dc96f85154350134d9d7fb94187fb6888909e9 100644
+index 5f2ae1bfbc19e0ea49a1964e8026ffcea889d4b4..a73f05442034ef16b6bf8eb13f1f730cc5e5bdee 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -953,6 +953,7 @@ public final class CraftServer implements Server {

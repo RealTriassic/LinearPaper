@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 07f572b9aa249e154bc08ecf8517c3953392b74f..54be2ddfceb00bcc02f54a6430d126d9ab7d2a48 100644
+index e37f6b06554b8db8630bbb6a4483da8eb7fca7b6..c131bdae3d5ccb6be043af5001debf6032cdd2ea 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -19,7 +19,7 @@ repositories {
@@ -61,7 +61,7 @@ index e93441d06da8c7f05aa451b0ffbb9059780da0d5..295093089b24e1b7406189a6eba3c5e5
          switch (distance) {
              case -1:
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1b7a3180ff88b0db2aab6e61b286f9b4d0da6862..a2a93a4c98c6a4c6e1add307f68da5ee7343111b 100644
+index 1bf81515d3a9dd0055868930ed4d298bd485e7d3..5f2ae1bfbc19e0ea49a1964e8026ffcea889d4b4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -254,7 +254,7 @@ import javax.annotation.Nullable; // Paper
@@ -87,10 +87,10 @@ index fb87620c742ff7912f5e8ccd2a7930dd605576d9..9c18acf824ea4d364e31cdee94a4bff2
  
          if (stream != null) {
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 5c9973374991446c39d6a84d745283eac3eb70ab..2d11a8aa07896dcbc1ef069fcfdbf0a120ac501c 100644
+index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..41e55876d2362e1063bf725b9dcaebd0a2805982 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -209,7 +209,7 @@ public class PurpurConfig {
+@@ -216,7 +216,7 @@ public class PurpurConfig {
          if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
      }
  
