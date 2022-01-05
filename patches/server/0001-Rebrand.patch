@@ -5,24 +5,24 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index e37f6b06554b8db8630bbb6a4483da8eb7fca7b6..c131bdae3d5ccb6be043af5001debf6032cdd2ea 100644
+index 1bdcca4d1a25f4292ab9421d44fa3018af263341..2aaf7656ade0c7ecfb259006b919a4810ef59102 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -19,7 +19,7 @@ repositories {
+@@ -18,7 +18,7 @@ repositories {
+ }
  
  dependencies {
-     // Purpur start
--    implementation(project(":purpur-api"))
-+    implementation(project(":tentacles-api")) // Tentacles
+-    implementation(project(":purpur-api")) // Pufferfish // Paper // Purpur
++    implementation(project(":tentacles-api")) // Pufferfish // Paper // Purpur // Tentacles
+     // Pufferfish start
      implementation("io.papermc.paper:paper-mojangapi:1.18.1-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
-     }
-@@ -74,7 +74,7 @@ tasks.jar {
+@@ -82,7 +82,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
--            "Implementation-Version" to "git-Purpur-$implementationVersion", // Purpur
-+            "Implementation-Version" to "git-Tentacles-$implementationVersion", // Purpur // Tentacles
+-            "Implementation-Version" to "git-Purpur-$implementationVersion", // Pufferfish // Purpur
++            "Implementation-Version" to "git-Tentacles-$implementationVersion", // Pufferfish // Purpur // Tentacles
              "Implementation-Vendor" to date, // Paper
              "Specification-Title" to "Bukkit",
              "Specification-Version" to project.version,
@@ -61,28 +61,28 @@ index e93441d06da8c7f05aa451b0ffbb9059780da0d5..295093089b24e1b7406189a6eba3c5e5
          switch (distance) {
              case -1:
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1bf81515d3a9dd0055868930ed4d298bd485e7d3..5f2ae1bfbc19e0ea49a1964e8026ffcea889d4b4 100644
+index 9b474cebe9999068384e810b5f14d6b3a049a564..f3fd96e7e78ceb6d9db822099032fb0b4ef836a7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -254,7 +254,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
--    private final String serverName = "Purpur"; // Paper // Purpur
-+    private final String serverName = "Tentacles"; // Paper // Purpur // Tentacles
+-    private final String serverName = "Purpur"; // Paper // Pufferfish // Purpur
++    private final String serverName = "Tentacles"; // Paper // Pufferfish // Purpur // Tentacles
      private final String serverVersion;
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index fb87620c742ff7912f5e8ccd2a7930dd605576d9..9c18acf824ea4d364e31cdee94a4bff2e21bcd0f 100644
+index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..5e8569c0661d6cb38e8dafe47b812c7ba834dc0e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 @@ -11,7 +11,7 @@ public final class Versioning {
      public static String getBukkitVersion() {
          String result = "Unknown-Version";
  
--        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Purpur
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.tentacles/tentacles-api/pom.properties"); // Purpur // Tentacles
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Pufferfish // Purpur
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.tentacles/tentacles-api/pom.properties"); // Pufferfish // Purpur // Tentacles
          Properties properties = new Properties();
  
          if (stream != null) {
