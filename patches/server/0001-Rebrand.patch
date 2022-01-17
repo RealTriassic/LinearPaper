@@ -61,7 +61,7 @@ index e93441d06da8c7f05aa451b0ffbb9059780da0d5..295093089b24e1b7406189a6eba3c5e5
          switch (distance) {
              case -1:
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 9b474cebe9999068384e810b5f14d6b3a049a564..f3fd96e7e78ceb6d9db822099032fb0b4ef836a7 100644
+index 307bedbd84c2740a30145647d6dbc69c3480930b..f03a3391de8b4cb3fe84a993c3fed327eaf1462c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -254,7 +254,7 @@ import javax.annotation.Nullable; // Paper
@@ -87,10 +87,10 @@ index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..5e8569c0661d6cb38e8dafe47b812c7b
  
          if (stream != null) {
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index f19e6c9af8cd559ba5a1492b0d579bf6182f342a..41e55876d2362e1063bf725b9dcaebd0a2805982 100644
+index f36632cc8a5f842d58922d1a6b2ff41f180897ec..7408fa9a2fd1d0a023df9d569eea2392d919de2d 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -216,7 +216,7 @@ public class PurpurConfig {
+@@ -223,7 +223,7 @@ public class PurpurConfig {
          if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
      }
  
