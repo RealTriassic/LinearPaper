@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 1bdcca4d1a25f4292ab9421d44fa3018af263341..2aaf7656ade0c7ecfb259006b919a4810ef59102 100644
+index 81f0c8be31a6e58915b5300fd11917ab69785855..340badda117e7db21ce2656537f01ef6c3ab372c 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -18,7 +18,7 @@ repositories {
@@ -17,7 +17,7 @@ index 1bdcca4d1a25f4292ab9421d44fa3018af263341..2aaf7656ade0c7ecfb259006b919a481
      // Pufferfish start
      implementation("io.papermc.paper:paper-mojangapi:1.18.1-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
-@@ -82,7 +82,7 @@ tasks.jar {
+@@ -89,7 +89,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -61,7 +61,7 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..52a7692be6d7c77a09a6c1cc7a3be3a4
          switch (distance) {
              case -1:
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 307bedbd84c2740a30145647d6dbc69c3480930b..f03a3391de8b4cb3fe84a993c3fed327eaf1462c 100644
+index 437ba82a6ba122a346b795d96cd77120f685002e..8d394d9d5b6bd209c820b03c12d984b8bc647cf0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -254,7 +254,7 @@ import javax.annotation.Nullable; // Paper
@@ -87,7 +87,7 @@ index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..5e8569c0661d6cb38e8dafe47b812c7b
  
          if (stream != null) {
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index b211c90a7e0a614760e2a6f7c27cbfd6fe1cf9bd..d49d1882ee523ce1d8d14930df8d482a11368a09 100644
+index a001a09ea5fd0934eba81a5ee23b0c51c569d2fb..f0b2b2139beafb4d08e04503873ebfabb76e433c 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -233,7 +233,7 @@ public class PurpurConfig {
