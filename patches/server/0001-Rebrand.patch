@@ -61,10 +61,10 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..52a7692be6d7c77a09a6c1cc7a3be3a4
          switch (distance) {
              case -1:
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 437ba82a6ba122a346b795d96cd77120f685002e..8d394d9d5b6bd209c820b03c12d984b8bc647cf0 100644
+index 4f4d35a988e11a19ecdc4ed1215743be0737c1e0..c6f5ce323e875d64a25cbdbbbbce30b9837de4f3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -254,7 +254,7 @@ import javax.annotation.Nullable; // Paper
+@@ -251,7 +251,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
