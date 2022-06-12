@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index a9e3d314581b7ce5110266bdd53af1978b66e336..4fc08c4b11af27dbf8f9a32b0e3f29137a579470 100644
+index 347382587ca30b26ff26dd78622e9f2f20e64e6d..69344b3a406e53453502bb25087ec301f2b60ed7 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -9,7 +9,7 @@ plugins {
@@ -14,10 +14,10 @@ index a9e3d314581b7ce5110266bdd53af1978b66e336..4fc08c4b11af27dbf8f9a32b0e3f2913
  dependencies {
 -    implementation(project(":purpur-api")) // Purpur
 +    implementation(project(":tentacles-api")) // Purpur // Tentacles
-     implementation("io.papermc.paper:paper-mojangapi:1.18.2-R0.1-SNAPSHOT") { exclude("io.papermc.paper", "paper-api") } // Purpur // todo: 1.19
-     // Paper start
-     implementation("org.jline:jline-terminal-jansi:3.21.0")
-@@ -81,7 +81,7 @@ tasks.jar {
+     // Pufferfish start
+     implementation("io.papermc.paper:paper-mojangapi:1.19-R0.1-SNAPSHOT") {
+         exclude("io.papermc.paper", "paper-api")
+@@ -85,7 +85,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
