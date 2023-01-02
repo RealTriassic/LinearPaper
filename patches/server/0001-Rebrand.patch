@@ -61,7 +61,7 @@ index fba5dbdb7bcbb55400ef18342c9b54612972a718..d7fddab809b7514d93e7969eb574c5d6
          switch (distance) {
              case -1:
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index fbfd5ea459ab2751bf100c43c4f0398f579c8fdb..3d134895f326a997fb349b783fc7880cdd424ade 100644
+index b69634a5cf57e4086e644819f68638d6a2ab897c..67ebd0cb5cec61a5e17fe6be74d3ebfdf834bc9f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -262,7 +262,7 @@ import javax.annotation.Nullable; // Paper
@@ -87,11 +87,11 @@ index fb87620c742ff7912f5e8ccd2a7930dd605576d9..9c18acf824ea4d364e31cdee94a4bff2
  
          if (stream != null) {
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 76cbfb7e900bf2698776f54cfe498f4b42965221..81d7f0f9ee115b6cfa6b2efb20cc321474efa012 100644
+index c7c0ed8dfe58c841faf684a1fe228eeda6cd57b7..ddc3eabdc8acc506661fa8cd444d5a238828c709 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -244,7 +244,7 @@ public class PurpurConfig {
-         if (!TimingsManager.hiddenConfigs.contains("settings.seed")) TimingsManager.hiddenConfigs.add("settings.seed");
+@@ -227,7 +227,7 @@ public class PurpurConfig {
+         deathMessageOnlyBroadcastToAffectedPlayer = getBoolean("settings.broadcasts.death.only-broadcast-to-affected-player", deathMessageOnlyBroadcastToAffectedPlayer);
      }
  
 -    public static String serverModName = "Purpur";
