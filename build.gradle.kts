@@ -1,10 +1,11 @@
-import io.papermc.paperweight.util.constants.*
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
     `maven-publish`
     id("com.github.johnrengelman.shadow") version "8.1.0" apply false
-    id("io.papermc.paperweight.patcher") version "1.5.2"
+    id("io.papermc.paperweight.patcher") version "1.5.3"
 }
 
 allprojects {
@@ -31,6 +32,13 @@ subprojects {
     tasks.withType<ProcessResources> {
         filteringCharset = Charsets.UTF_8.name()
     }
+    tasks.withType<Test> {
+        testLogging {
+            showStackTraces = true
+            exceptionFormat = TestExceptionFormat.FULL
+            events(TestLogEvent.STANDARD_OUT)
+        }
+    }
 
     repositories {
         mavenCentral()
@@ -51,7 +59,7 @@ repositories {
 dependencies {
     remapper("net.fabricmc:tiny-remapper:0.8.6:fat")
     decompiler("net.minecraftforge:forgeflower:2.0.627.2")
-    paperclip("io.papermc:paperclip:3.0.2")
+    paperclip("io.papermc:paperclip:3.0.3")
 }
 
 paperweight {
