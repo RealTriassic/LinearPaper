@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 6c5b3f6a2c4f7b20e3388b63c36b7c4bc4cf179f..6e53bca01e0143f6198cf389ffbd1b8d69ebfa59 100644
+index 22470f0ab8354a9f31a0f195f3fe80f2f5ee2f0e..bb9cc0455416bc32900ffba05f570eb45e7a3a50 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -7,7 +7,7 @@ plugins {
@@ -17,7 +17,7 @@ index 6c5b3f6a2c4f7b20e3388b63c36b7c4bc4cf179f..6e53bca01e0143f6198cf389ffbd1b8d
      implementation("io.papermc.paper:paper-mojangapi:1.19.4-R0.1-SNAPSHOT") // Purpur
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
-@@ -82,7 +82,7 @@ tasks.jar {
+@@ -81,7 +81,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
