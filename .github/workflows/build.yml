@@ -11,7 +11,7 @@ jobs:
           distribution: temurin
           java-version: 17
       - name: Configure Git
-        run: git config --global user.email "no-reply@github.com" && git config --global user.name "Github Actions"
+        run: git config --global user.email "action@github.com" && git config --global user.name "Github Action"
       - name: Apply patches
         run: ./gradlew applyPatches --stacktrace
       - name: Build
