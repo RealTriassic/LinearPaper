@@ -5,10 +5,10 @@ Subject: [PATCH] Tentacles config files
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 615c47f069d429e14993c60253f719b514849a67..ba33965b8c5c3b317647fcbb8c5ad417566f5e70 100644
+index aaef58468a3c31f35e5067ed4263e9dd3fbddddd..414fc9220a181b82abdd0d2070dd6b689bfa99a8 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2093,6 +2093,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2133,6 +2133,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
          }
          // Purpur end
  
