@@ -14,11 +14,10 @@ jobs:
         run: git config --global user.email "action@github.com" && git config --global user.name "Github Action"
       - name: Apply patches
         run: ./gradlew applyPatches --stacktrace
-      - name: Build
-        run: ./gradlew build --stacktrace
-      - name: Create Paperclip Jar
+      - name: Build Paperclip Jar
         run: ./gradlew createReobfPaperclipJar --stacktrace
       - name: Upload Paperclip Jar
         uses: actions/upload-artifact@v3
         with:
+          name: linearpurpur.jar
           path: build/libs/linearpurpur-paperclip-*-reobf.jar
