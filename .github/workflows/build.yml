@@ -19,5 +19,5 @@ jobs:
       - name: Upload Paperclip Jar
         uses: actions/upload-artifact@v3
         with:
-          name: linearpurpur.jar
+          name: linearpurpur-artifacts
           path: build/libs/linearpurpur-paperclip-*-reobf.jar
