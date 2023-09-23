@@ -16,3 +16,9 @@ jobs:
         run: ./gradlew applyPatches --stacktrace
       - name: Build
         run: ./gradlew build --stacktrace
+      - name: Create Paperclip Jar
+        run: ./gradlew createReobfPaperclipJar --stacktrace
+      - name: Upload Paperclip Jar
+        uses: actions/upload-artifact@v3
+        with:
+          path: build/libs/linearpurpur-paperclip-*-reobf.jar
