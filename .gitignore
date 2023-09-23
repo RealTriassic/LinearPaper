@@ -33,7 +33,6 @@ target/
 dependency-reduced-pom.xml
 
 # various other potential build files
-build/
 bin/
 dist/
 manifest.mf
@@ -52,7 +51,7 @@ manifest.mf
 run/
 
 build-data/
-Tentacles-API
-Tentacles-MojangAPI
-Tentacles-Server
+LinearPurpur-API
+LinearPurpur-MojangAPI
+LinearPurpur-Server
 *.jar

@@ -15,22 +15,19 @@ if (!file(".git").exists()) {
     val errorText = """
         
         =====================[ ERROR ]=====================
-         The Tentacles project directory is not a properly cloned Git repository.
+         The LinearPurpur project directory is not a properly cloned Git repository.
          
-         In order to build Tentacles from source you must clone
+         In order to build LinearPurpur from source you must clone
          the repository using Git, not download a code zip from GitHub.
-         
-         See https://github.com/PurpurMC/Purpur/blob/HEAD/CONTRIBUTING.md
-         for further information on building and modifying Purpur.
         ===================================================
     """.trimIndent()
     error(errorText)
 }
 
-rootProject.name = "tentacles"
+rootProject.name = "linearpurpur"
 
-for (name in listOf("Tentacles-API", "Tentacles-Server")) {
-    val projName = name.toLowerCase(Locale.ENGLISH)
+for (name in listOf("LinearPurpur-API", "LinearPurpur-Server")) {
+    val projName = name.lowercase(Locale.ENGLISH)
     include(projName)
     findProject(":$projName")!!.projectDir = file(name)
 }
