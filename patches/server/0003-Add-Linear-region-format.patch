@@ -5,12 +5,12 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index f1f9986e1653bcb9db69d0c03ed2f3780bbb173a..9fd4692160f3ac08eeebe0f8d02fe524bb2322c3 100644
+index e398929377707572fdb92fc331d01de0d7dbf795..53134b9174e828583034048c4067221b1e885cc5 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -34,6 +34,10 @@ dependencies {
      alsoShade(log4jPlugins.output)
-     implementation("io.netty:netty-codec-haproxy:4.1.87.Final") // Paper - Add support for proxy protocol
+     implementation("io.netty:netty-codec-haproxy:4.1.97.Final") // Paper - Add support for proxy protocol
      // Paper end
 +    // LinearPurpur start - Linear format
 +    implementation("com.github.luben:zstd-jni:1.5.5-5")
@@ -123,7 +123,7 @@ index 513833c2ea23df5b079d157bc5cb89d5c9754c0b..5c0718146152db7655d10ed0a9477b1b
          long expectedChunks = (long)regionFiles.length * (32L * 32L);
  
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 28fbcd84146445dd0630aeea7c753da2f1a97c49..d755c41fb64d949f4ff6d8e70e19d881be3fdfff 100644
+index 3f4df62773dfe1045914325ce5bc13162192679c..2792a3f174531ed74bbc7075f5b8bb2b61e19b1e 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -210,7 +210,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -170,7 +170,7 @@ index 28fbcd84146445dd0630aeea7c753da2f1a97c49..d755c41fb64d949f4ff6d8e70e19d881
          regionFile.setStatus(chunkPos.x, chunkPos.z, ChunkSerializer.getStatus(compound));
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index ef654df11d946cb9560fa05dae86ba727832106e..afbda0df40e208f02a75c332802c80967bb4607c 100644
+index f86d6d6625f2ea6c4fce02fd19ffb9ac7cd64925..04374212c73e660c6d5d1a523cfb14d84103e626 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -425,8 +425,8 @@ public class ServerLevel extends Level implements WorldGenLevel {

@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index ffee77918e7390c810010e057d088c2967d1e7b0..f1f9986e1653bcb9db69d0c03ed2f3780bbb173a 100644
+index e372110a189857056e4fae3cd1d996ce8cb69493..e398929377707572fdb92fc331d01de0d7dbf795 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,12 +13,10 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -22,11 +22,11 @@ index ffee77918e7390c810010e057d088c2967d1e7b0..f1f9986e1653bcb9db69d0c03ed2f378
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -80,7 +78,7 @@ tasks.jar {
+@@ -93,7 +91,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
--            "Implementation-Version" to "git-Purpur-$implementationVersion", // Purpur
+-            "Implementation-Version" to "git-Purpur-$implementationVersion", // Pufferfish // Purpur
 +            "Implementation-Version" to "git-LinearPurpur-$implementationVersion", // Pufferfish // Purpur // LinearPurpur
              "Implementation-Vendor" to date, // Paper
              "Specification-Title" to "Bukkit",
@@ -66,27 +66,27 @@ index 462a6eed350fd660ddaf25d567bb6e97b77d0b2b..00067a12d3909ea4299d95c8b04970a2
          switch (distance) {
              case -1:
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index b02b0bd6aa9243e84b172203533762860840b1b8..4021eeda74d5aecc5c8c2adf150a037504197f05 100644
+index 3c83fc78af6ce549a821c0e030d3dea1790dca47..7b8444c8a6035ae7b888196e3665b836362941e1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -267,7 +267,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
--    private final String serverName = "Purpur"; // Paper // Purpur
+-    private final String serverName = "Purpur"; // Paper // Pufferfish // Purpur
 +    private final String serverName = "LinearPurpur"; // Paper // Pufferfish // Purpur // LinearPurpur
      private final String serverVersion;
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index fb87620c742ff7912f5e8ccd2a7930dd605576d9..9e83dfe18d289bff3f74d8f0bf3bbc47dd4ff731 100644
+index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..9e83dfe18d289bff3f74d8f0bf3bbc47dd4ff731 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 @@ -11,7 +11,7 @@ public final class Versioning {
      public static String getBukkitVersion() {
          String result = "Unknown-Version";
  
--        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Purpur
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Pufferfish // Purpur
 +        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.stupidcraft.linearpurpur/linearpurpur-api/pom.properties"); // Pufferfish // Purpur // LinearPurpur
          Properties properties = new Properties();
  
