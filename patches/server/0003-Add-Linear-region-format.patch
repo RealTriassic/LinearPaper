@@ -5,7 +5,7 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index e398929377707572fdb92fc331d01de0d7dbf795..53134b9174e828583034048c4067221b1e885cc5 100644
+index 9cc083d0d89f6b6ecc41f07013481ef82d0c14b5..d401edad0415dbed98929a2cd9033cf876eff7d9 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -34,6 +34,10 @@ dependencies {
@@ -123,7 +123,7 @@ index 513833c2ea23df5b079d157bc5cb89d5c9754c0b..5c0718146152db7655d10ed0a9477b1b
          long expectedChunks = (long)regionFiles.length * (32L * 32L);
  
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 3f4df62773dfe1045914325ce5bc13162192679c..2792a3f174531ed74bbc7075f5b8bb2b61e19b1e 100644
+index c629310a4a6eee76874eb8060c7fa8a4d0e9460c..d8d214cfb7228939c9f5425384cba19253196a91 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -210,7 +210,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -611,10 +611,10 @@ index 4aac1979cf57300825a999c876fcf24d3170e68e..79a389b9a139f6838adf32d3b5d4d7ec
          this.factory = factory;
          this.fixerUpper = dataFixer;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 52b48e40c3ee5f483c6cb04409459cf25abc3f0d..1d222e30771f0e0e08c960a0a501335964840dae 100644
+index 42040939ae5e1e576c59cd0e1e3bcdb51899139f..c13ad7611d9437cc3ce5011b270530c7aab8ad3a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -558,7 +558,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -559,7 +559,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
                  return true;
              }
  
