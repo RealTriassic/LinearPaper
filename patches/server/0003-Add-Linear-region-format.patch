@@ -123,10 +123,10 @@ index 513833c2ea23df5b079d157bc5cb89d5c9754c0b..5c0718146152db7655d10ed0a9477b1b
          long expectedChunks = (long)regionFiles.length * (32L * 32L);
  
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index c629310a4a6eee76874eb8060c7fa8a4d0e9460c..d8d214cfb7228939c9f5425384cba19253196a91 100644
+index 3771caa73b0b41428f3d629aca1f562df7bcfaff..86967ee581d3be1311d346cf9b70a212cc446fea 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -210,7 +210,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -248,7 +248,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      // Paper end - optimise chunk tick iteration
  
      public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop<Runnable> mainThreadExecutor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
@@ -135,7 +135,7 @@ index c629310a4a6eee76874eb8060c7fa8a4d0e9460c..d8d214cfb7228939c9f5425384cba192
          // Paper - rewrite chunk system
          this.tickingGenerated = new AtomicInteger();
          this.playerMap = new PlayerMap();
-@@ -255,7 +255,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -293,7 +293,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          this.lightEngine = new ThreadedLevelLightEngine(chunkProvider, this, this.level.dimensionType().hasSkyLight(), null, null); // Paper - rewrite chunk system
          this.distanceManager = new ChunkMap.ChunkDistanceManager(executor, mainThreadExecutor);
          this.overworldDataStorage = persistentStateManagerFactory;
@@ -144,7 +144,7 @@ index c629310a4a6eee76874eb8060c7fa8a4d0e9460c..d8d214cfb7228939c9f5425384cba192
          this.setServerViewDistance(viewDistance);
          // Paper start
          this.dataRegionManager = new io.papermc.paper.chunk.SingleThreadChunkRegionManager(this.level, 2, (1.0 / 3.0), 1, 6, "Data", DataRegionData::new, DataRegionSectionData::new);
-@@ -807,13 +807,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -887,13 +887,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
  
      // Paper start - chunk status cache "api"
      public ChunkStatus getChunkStatusOnDiskIfCached(ChunkPos chunkPos) {
@@ -160,7 +160,7 @@ index c629310a4a6eee76874eb8060c7fa8a4d0e9460c..d8d214cfb7228939c9f5425384cba192
  
          if (regionFile == null || !regionFileCache.chunkExists(chunkPos)) {
              return null;
-@@ -831,7 +831,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -911,7 +911,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      }
  
      public void updateChunkStatusOnDisk(ChunkPos chunkPos, @Nullable CompoundTag compound) throws IOException {
@@ -170,7 +170,7 @@ index c629310a4a6eee76874eb8060c7fa8a4d0e9460c..d8d214cfb7228939c9f5425384cba192
          regionFile.setStatus(chunkPos.x, chunkPos.z, ChunkSerializer.getStatus(compound));
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index f86d6d6625f2ea6c4fce02fd19ffb9ac7cd64925..04374212c73e660c6d5d1a523cfb14d84103e626 100644
+index c3239a2823d152b8de1f760216323936c8b3a1ff..42967d6cd2448746ec458d78c6884232950b7d9e 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -425,8 +425,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -611,7 +611,7 @@ index 4aac1979cf57300825a999c876fcf24d3170e68e..79a389b9a139f6838adf32d3b5d4d7ec
          this.factory = factory;
          this.fixerUpper = dataFixer;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 42040939ae5e1e576c59cd0e1e3bcdb51899139f..c13ad7611d9437cc3ce5011b270530c7aab8ad3a 100644
+index c2e9e44f7399ba7236ab30bfd1ab7f8a69cef4b8..a1fb70a481a89b0eb73fb6251293f93bfeaea684 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -559,7 +559,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
