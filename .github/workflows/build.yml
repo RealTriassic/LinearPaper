@@ -16,12 +16,13 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: 'gradle'
       - name: Configure Git
         run: git config --global user.email "action@github.com" && git config --global user.name "Github Action"
       - name: Apply patches
-        run: ./gradlew applyPatches --stacktrace
+        run: ./gradlew applyPatches --no-daemon --stacktrace
       - name: Build Paperclip Jar
-        run: ./gradlew createReobfPaperclipJar --stacktrace
+        run: ./gradlew createReobfPaperclipJar --no-daemon --stacktrace
       - name: Upload Paperclip Jar
         uses: actions/upload-artifact@v3
         with:
