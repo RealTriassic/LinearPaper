@@ -5,7 +5,7 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 9cc083d0d89f6b6ecc41f07013481ef82d0c14b5..d401edad0415dbed98929a2cd9033cf876eff7d9 100644
+index 9cc083d0d89f6b6ecc41f07013481ef82d0c14b5..edfd54a608f85ffe7afc7fe6b4d445e3b373fe09 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -34,6 +34,10 @@ dependencies {
@@ -170,7 +170,7 @@ index 3771caa73b0b41428f3d629aca1f562df7bcfaff..86967ee581d3be1311d346cf9b70a212
          regionFile.setStatus(chunkPos.x, chunkPos.z, ChunkSerializer.getStatus(compound));
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c3239a2823d152b8de1f760216323936c8b3a1ff..42967d6cd2448746ec458d78c6884232950b7d9e 100644
+index 1c8724fb56e790922c7e8fc73bc97442b7a6df83..ca18f08829d10d2fb6bd96192e9e17092bc09529 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -425,8 +425,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -611,10 +611,10 @@ index 4aac1979cf57300825a999c876fcf24d3170e68e..79a389b9a139f6838adf32d3b5d4d7ec
          this.factory = factory;
          this.fixerUpper = dataFixer;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index c2e9e44f7399ba7236ab30bfd1ab7f8a69cef4b8..a1fb70a481a89b0eb73fb6251293f93bfeaea684 100644
+index 8b32ed17c1511cfd313875d4c8d2d0e48a4c6e69..e0f2090c5eddf2cacc6b6535ec8af00ff3a793ad 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -559,7 +559,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -561,7 +561,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
                  return true;
              }
  
