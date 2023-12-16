@@ -5,10 +5,10 @@ Subject: [PATCH] Region format configuration
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index bc0dfdad161936d1881066f61de02e6c9a7ed8a7..792840aa3572b675eed6c971179d2b8bd5806851 100644
+index 39ecb12d4296852ee5865dcfa2b8b6c3233a4804..3a4c37635f5f3c0451af26a8be242080a4837fd0 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -841,7 +841,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -885,7 +885,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              // Paper start - rewrite chunk system
              worldserver.save((ProgressListener) null, flush, worldserver.noSave && !force, close);
              if (flush) {
@@ -17,7 +17,7 @@ index bc0dfdad161936d1881066f61de02e6c9a7ed8a7..792840aa3572b675eed6c971179d2b8b
              }
              // Paper end - rewrite chunk system
          }
-@@ -865,7 +865,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -909,7 +909,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  //MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // Paper - move up
              }
  
@@ -27,7 +27,7 @@ index bc0dfdad161936d1881066f61de02e6c9a7ed8a7..792840aa3572b675eed6c971179d2b8b
  
          return flag3;
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 1277be15f848b47346879f62488d726ab4f66f17..3c6b4373f378b7ab91e5b79a83acf2016d433fdc 100644
+index 501cd8fd2e85b2cdb4183bbbafda42bdc1a3b850..0f1c925236a519934dcdbb23e67e3e7f2a878b86 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 @@ -246,6 +246,19 @@ public class PurpurConfig {
@@ -51,7 +51,7 @@ index 1277be15f848b47346879f62488d726ab4f66f17..3c6b4373f378b7ab91e5b79a83acf201
      private static void disableGiveCommandDrops() {
          disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 64e172e6cbfb8134c2b36bce8279e1ef44085257..4b12c49e66e915d11bac7f66a2ad1200f5b40985 100644
+index bbf371428e343cfad0ae118c387fd2342541fe53..3718dd4e11af422f6fdd8883d4de642be2a1e3eb 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -27,6 +27,7 @@ import java.util.Map;
