@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
@@ -25,7 +25,7 @@ jobs:
       - name: Build Paperclip Jar
         run: ./gradlew createReobfPaperclipJar --no-daemon --stacktrace
       - name: Upload Paperclip Jar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linearpurpur-artifacts
           path: build/libs/linearpurpur-paperclip-*-reobf.jar
