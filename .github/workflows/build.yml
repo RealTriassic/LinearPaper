@@ -20,9 +20,9 @@ jobs:
       - name: Configure Git
         run: git config --global user.email "action@github.com" && git config --global user.name "Github Action"
       - name: Apply patches
-        run: ./gradlew applyPatches --no-daemon --stacktrace
+        run: ./gradlew applyPatches --stacktrace
       - name: Build Paperclip Jar
-        run: ./gradlew createReobfPaperclipJar --no-daemon --stacktrace
+        run: ./gradlew createReobfPaperclipJar --stacktrace
       - name: Upload Paperclip Jar
         uses: actions/upload-artifact@v4
         with:
