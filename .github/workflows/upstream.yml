@@ -6,7 +6,6 @@ on:
 jobs:
   upstream:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.commits[0].message, '[ci-skip]')"
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
@@ -20,6 +19,8 @@ jobs:
       - name: Update upstream
         run: |
           ./scripts/updateUpstream.sh
+      - name: Apply patches
+        run: ./gradlew applyPatches --stacktrace
       - name: Build Paperclip Jar
         run: ./gradlew createReobfPaperclipJar --stacktrace
       - name: Upload Paperclip Jar
