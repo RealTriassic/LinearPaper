@@ -1,10 +1,12 @@
 name: Build
+
 on:
   workflow_dispatch:
   pull_request:
   push:
     branches:
       - "ver/**"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,12 +19,16 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: 'gradle'
+
       - name: Configure Git
         run: git config --global user.email "action@github.com" && git config --global user.name "Github Action"
+
       - name: Apply patches
         run: ./gradlew applyPatches --stacktrace
+
       - name: Build Paperclip Jar
         run: ./gradlew createReobfPaperclipJar --stacktrace
+
       - name: Upload Paperclip Jar
         uses: actions/upload-artifact@v4
         with:

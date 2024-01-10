@@ -1,11 +1,13 @@
 name: Upstream
+
 on:
-  workflow_dispatch:
   schedule:
-    - cron: "0 */48 * * *"
+    - cron: "0 */72 * * *"
+
 jobs:
   upstream:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.commits[0].message, '[ci-skip]')"
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
@@ -14,20 +16,13 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: 'gradle'
+
       - name: Configure Git
         run: git config --global user.email "action@github.com" && git config --global user.name "Github Action"
-      - name: Update upstream
-        run: |
-          ./scripts/updateUpstream.sh
-      - name: Apply patches
-        run: ./gradlew applyPatches --stacktrace
-      - name: Build Paperclip Jar
-        run: ./gradlew createReobfPaperclipJar --stacktrace
-      - name: Upload Paperclip Jar
-        uses: actions/upload-artifact@v4
-        with:
-          name: linearpurpur-artifacts
-          path: build/libs/linearpurpur-paperclip-*-reobf.jar
+
+      - name: Pull upstream changes
+        run: ./scripts/updateUpstream.sh
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
