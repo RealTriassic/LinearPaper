@@ -3,7 +3,7 @@ name: Upstream
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 */72 * * *"
+    - cron: "0 0 */3 * *"
 
 jobs:
   upstream:
@@ -24,8 +24,20 @@ jobs:
       - name: Pull upstream changes
         run: ./scripts/updateUpstream.sh
 
+      - name: Apply patches
+        run: ./gradlew applyPatches --stacktrace
+
+      - name: Build Paperclip Jar
+        run: ./gradlew createReobfPaperclipJar --stacktrace
+
+      - name: Upload Paperclip Jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: linearpurpur-artifacts
+          path: build/libs/linearpurpur-paperclip-*-reobf.jar
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
