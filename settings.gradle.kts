@@ -25,7 +25,6 @@ if (!file(".git").exists()) {
 }
 
 rootProject.name = "linearpurpur"
-
 for (name in listOf("LinearPurpur-API", "LinearPurpur-Server")) {
     val projName = name.lowercase(Locale.ENGLISH)
     include(projName)
