@@ -5,7 +5,7 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 81ec1a0a7dac7f74f6b9709ae8b284a12c7e6433..3f6f9e9386d7c5d0f4a4715fb5ac9293784c1c75 100644
+index d88bfb0562a8c300127df219afb269f5817fb15e..2bb142c65c1a9a588c9443b3f44bd7a834d4f94c 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -34,6 +34,10 @@ dependencies {
@@ -17,8 +17,8 @@ index 81ec1a0a7dac7f74f6b9709ae8b284a12c7e6433..3f6f9e9386d7c5d0f4a4715fb5ac9293
 +    implementation("org.lz4:lz4-java:1.8.0")
 +    // LinearPurpur end
      implementation("org.apache.logging.log4j:log4j-iostreams:2.19.0") // Paper - remove exclusion
-     implementation("org.ow2.asm:asm:9.5")
-     implementation("org.ow2.asm:asm-commons:9.5") // Paper - ASM event executor generation
+     implementation("org.ow2.asm:asm-commons:9.5")
+     implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
 diff --git a/src/main/java/com/destroystokyo/paper/io/PaperFileIOThread.java b/src/main/java/com/destroystokyo/paper/io/PaperFileIOThread.java
 index f2c27e0ac65be4b75c1d86ef6fd45fdb538d96ac..bcd35b189bf5ec44733161df952ef6957f7fbe79 100644
 --- a/src/main/java/com/destroystokyo/paper/io/PaperFileIOThread.java
@@ -123,7 +123,7 @@ index 513833c2ea23df5b079d157bc5cb89d5c9754c0b..5c0718146152db7655d10ed0a9477b1b
          long expectedChunks = (long)regionFiles.length * (32L * 32L);
  
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 2631c05a3855c71eff3f8cf8d13920430f929a13..c7c633ae31b8a7d6e7926a3068d53518d2330ac9 100644
+index 172c7b94830c13835e48d68a039bd66e7e7622b0..f0696c21cfda47302e8db338e8aa72c7567087b9 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -247,7 +247,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -170,7 +170,7 @@ index 2631c05a3855c71eff3f8cf8d13920430f929a13..c7c633ae31b8a7d6e7926a3068d53518
          regionFile.setStatus(chunkPos.x, chunkPos.z, ChunkSerializer.getStatus(compound));
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 90000d74cfb009e2cbd7336ae11077d67ef67f7b..c630f62bf98f92fd4a5d91da20d2274f8af1b6fd 100644
+index 1309c9e63095a0484ee0fa119a41c29ef1da3a01..36fab43c0b29b369edb3bf4b2af430e9a18f09ec 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -426,8 +426,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -194,7 +194,7 @@ index 90000d74cfb009e2cbd7336ae11077d67ef67f7b..c630f62bf98f92fd4a5d91da20d2274f
          // this.entityManager = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage, this.entitySliceManager); // Paper // Paper - rewrite chunk system
          StructureTemplateManager structuretemplatemanager = minecraftserver.getStructureManager();
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index f2a7cb6ebed7a4b4019a09af2a025f624f6fe9c9..61c3730a1448e89c59983a1e92507592f61de964 100644
+index 47636aad5fa20d1c28d3520beb0729df9b30cf6c..e2235e8f0892c4d85dc07e5914e279c43add464d 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -61,7 +61,7 @@ public class WorldUpgrader {
@@ -611,7 +611,7 @@ index 4aac1979cf57300825a999c876fcf24d3170e68e..79a389b9a139f6838adf32d3b5d4d7ec
          this.factory = factory;
          this.fixerUpper = dataFixer;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index f6c6cd92e1eff044abefa6ca74477d361f4434ec..ffc77e81999ab80906ff299eef04c5c5abd2ec1b 100644
+index ae01fa8872c138afbd2d3f2b036392c3f47845c1..50fcdb1725ce6d84bb44d35173b454f71faf4ec7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -567,7 +567,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
