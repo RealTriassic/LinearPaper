@@ -5,10 +5,10 @@ Subject: [PATCH] Region format configuration
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 09a290feb90751f3630fd23346c2cc8900fc841a..a8f210995ecbfa4e5bc10b6bf449eb5d177fe40a 100644
+index 2b53c6fb21b08f04c378278f1a5e78e1e4b276d7..b22893f37628c5da632e5fcd988ca48804db2f1f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -884,7 +884,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -885,7 +885,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              // Paper start - rewrite chunk system
              worldserver.save((ProgressListener) null, flush, worldserver.noSave && !force, close);
              if (flush) {
@@ -17,7 +17,7 @@ index 09a290feb90751f3630fd23346c2cc8900fc841a..a8f210995ecbfa4e5bc10b6bf449eb5d
              }
              // Paper end - rewrite chunk system
          }
-@@ -908,7 +908,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -909,7 +909,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  //MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // Paper - move up
              }
  
@@ -51,7 +51,7 @@ index 501cd8fd2e85b2cdb4183bbbafda42bdc1a3b850..0f1c925236a519934dcdbb23e67e3e7f
      private static void disableGiveCommandDrops() {
          disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index dab252cbadffbcdf19bacc0b378d671b29393e9c..7848aedd5f616ddbc96cf075a28b6bd0aa30c46c 100644
+index a78173ac1a8a71048bd6dbad84c0163e51cd150f..cfee0e84961c99da794bd395fcbe00c7334f399d 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -27,6 +27,7 @@ import java.util.Map;

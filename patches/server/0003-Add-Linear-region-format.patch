@@ -609,10 +609,10 @@ index 4aac1979cf57300825a999c876fcf24d3170e68e..79a389b9a139f6838adf32d3b5d4d7ec
          this.factory = factory;
          this.fixerUpper = dataFixer;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 7a2e6d1c4b1d553c172f7d704036e3dfb39228a7..e8951d6a173bb58d07bd3a0747d3aad0cefdff8e 100644
+index 9f2d1e3bc19ef541550e4d088343d10ea641cd23..b2598272737a4e595f5b4831b5c2e8cb6ca34a05 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -565,7 +565,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -567,7 +567,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
                  world.getChunk(x, z); // make sure we're at ticket level 32 or lower
                  return true;
              }
