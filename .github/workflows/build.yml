@@ -33,3 +33,4 @@ jobs:
         with:
           name: linearpurpur-artifacts
           path: build/libs/linearpurpur-paperclip-*-reobf.jar
+          compression-level: 0
