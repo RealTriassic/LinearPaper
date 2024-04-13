@@ -5,7 +5,7 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 41693b30161ebb4ad04b3372db950bab3f0091af..128169d4db0f727d853ce6ae3ad23b0464f1c53e 100644
+index 41693b30161ebb4ad04b3372db950bab3f0091af..eb721e09dc4bfc45592ef68954b7146cc8e0b133 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -34,6 +34,10 @@ dependencies {
@@ -13,7 +13,7 @@ index 41693b30161ebb4ad04b3372db950bab3f0091af..128169d4db0f727d853ce6ae3ad23b04
      implementation("io.netty:netty-codec-haproxy:4.1.97.Final") // Paper - Add support for proxy protocol
      // Paper end
 +    // LinearPurpur start - Linear format
-+    implementation("com.github.luben:zstd-jni:1.5.5-11")
++    implementation("com.github.luben:zstd-jni:1.5.6-2")
 +    implementation("org.lz4:lz4-java:1.8.0")
 +    // LinearPurpur end
      implementation("org.apache.logging.log4j:log4j-iostreams:2.19.0") // Paper - remove exclusion
