@@ -5,7 +5,7 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 3b0871e513d299532f10edf8eefba784e6969ced..9c001e6c52987ba94210be9b794e3b7af59cbdca 100644
+index 41693b30161ebb4ad04b3372db950bab3f0091af..128169d4db0f727d853ce6ae3ad23b0464f1c53e 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -34,6 +34,10 @@ dependencies {
@@ -17,7 +17,7 @@ index 3b0871e513d299532f10edf8eefba784e6969ced..9c001e6c52987ba94210be9b794e3b7a
 +    implementation("org.lz4:lz4-java:1.8.0")
 +    // LinearPurpur end
      implementation("org.apache.logging.log4j:log4j-iostreams:2.19.0") // Paper - remove exclusion
-     implementation("org.ow2.asm:asm-commons:9.5")
+     implementation("org.ow2.asm:asm-commons:9.7")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
 diff --git a/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java b/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
 index 2934f0cf0ef09c84739312b00186c2ef0019a165..e67543ef424d448096379bef118b8cb24b938964 100644
@@ -108,7 +108,7 @@ index 9017907c0ec67a37a506f09b7e4499cef7885279..5cfdc3fb47883419c0a0a8e0f817bf8d
          long expectedChunks = (long)regionFiles.length * (32L * 32L);
  
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 06554a000da1f6ba7360fa907deeead7341b09ea..13ccc04c72d23403e8a9d3a024afea1462efbad6 100644
+index bb412ca874b85d777c0e3565fcefcee15b23182b..ddc04524e921058bffe929960f695b9b6efab73b 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -247,7 +247,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -155,7 +155,7 @@ index 06554a000da1f6ba7360fa907deeead7341b09ea..13ccc04c72d23403e8a9d3a024afea14
          regionFile.setStatus(chunkPos.x, chunkPos.z, ChunkSerializer.getStatus(compound));
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 75b3de5c1e26815aa04dba3f09f2ef7807767154..b4dc17d57a2230f1701b1473cf8104f44ca72721 100644
+index ec5d2b572d614d710dcbfbd39a08fbf7c2288659..d1319e59d268bf8f881628272e2912b66094124c 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -421,8 +421,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -229,7 +229,7 @@ index 77dd632a266f4abed30b87b7909d77857c01e316..4938d86f62071f578822684f576b8382
                          try {
                              for (int i1 = 0; i1 < 32; ++i1) {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-index 12a7aaeaa8b4b788b620b1985591c3b93253ccd5..af639cc29999a49f4f2d494dc82f99577c6d9d1a 100644
+index 1a52a9eee62a8d464e1014dbe5a48905df50d3da..bd20470b68a0c618f82300b50a913bf6ce426f1d 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
 @@ -57,8 +57,8 @@ public class PoiManager extends SectionStorage<PoiSection> {
@@ -579,25 +579,33 @@ index fe312b1aef579cb4bf81bdd967cf72ff880d7505..e87725d9f8c02420f3556ef213303fd1
              regionfile.flush();
          }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
-index 4aac1979cf57300825a999c876fcf24d3170e68e..79a389b9a139f6838adf32d3b5d4d7ecdd87bcc3 100644
+index 4ac5024936987c15f927e3148af4bfa57228ad1e..72cf6907e020f84a126cc108cc92e20669f74762 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
-@@ -47,8 +47,8 @@ public class SectionStorage<R> extends RegionFileStorage implements AutoCloseabl
-     public final RegistryAccess registryAccess; // Paper - rewrite chunk system
+@@ -48,6 +48,9 @@ public class SectionStorage<R> extends RegionFileStorage implements AutoCloseabl
      protected final LevelHeightAccessor levelHeightAccessor;
  
--    public SectionStorage(Path path, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, RegistryAccess dynamicRegistryManager, LevelHeightAccessor world) {
+     public SectionStorage(
++        org.purpurmc.purpur.region.RegionFileFormat format, // LinearPurpur
++        int linearCompression, // LinearPurpur
++        boolean linearCrashOnBrokenSymlink, // LinearPurpur
+         Path path,
+         Function<Runnable, Codec<R>> codecFactory,
+         Function<Runnable, R> factory,
+@@ -57,7 +60,7 @@ public class SectionStorage<R> extends RegionFileStorage implements AutoCloseabl
+         RegistryAccess dynamicRegistryManager,
+         LevelHeightAccessor world
+     ) {
 -        super(path, dsync); // Paper - remove mojang I/O thread
-+    public SectionStorage(org.purpurmc.purpur.region.RegionFileFormat format, int linearCompression, boolean linearCrashOnBrokenSymlink, Path path, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, RegistryAccess dynamicRegistryManager, LevelHeightAccessor world) { // LinearPurpur
 +        super(format, linearCompression, linearCrashOnBrokenSymlink, path, dsync); // Paper - remove mojang I/O thread // LinearPurpur
          this.codec = codecFactory;
          this.factory = factory;
          this.fixerUpper = dataFixer;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 69f0c853ed7287c5a93b0a67e266255090e2a9ca..0a3cecf9a8f7a49da3d8ae6d3261ae3a929ecc62 100644
+index b5222519f646b303ea7f2b914f749df815489937..08b0a26e8fc395a883e3ce584feca66ecb32f51f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -573,7 +573,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -574,7 +574,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
                  world.getChunk(x, z); // make sure we're at ticket level 32 or lower
                  return true;
              }
