@@ -58,7 +58,7 @@ repositories {
 
 dependencies {
     remapper("net.fabricmc:tiny-remapper:0.10.1:fat")
-    decompiler("org.vineflower:vineflower:1.11.0-20240412.144930-14")
+    decompiler("org.vineflower:vineflower:1.10.1")
     paperclip("io.papermc:paperclip:3.0.3")
 }
 
@@ -66,7 +66,7 @@ paperweight {
     serverProject = project(":linearpurpur-server")
 
     remapRepo = paperMavenPublicUrl
-    decompileRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+    decompileRepo = paperMavenPublicUrl
 
     useStandardUpstream("purpur") {
         url = github("PurpurMC", "Purpur")
