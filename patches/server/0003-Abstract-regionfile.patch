@@ -72,7 +72,7 @@ index 2934f0cf0ef09c84739312b00186c2ef0019a165..137775250cf8d57192dab9bca723bb8d
              }
          }
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 4e6fccec4f5ca14562bf5bae495ac36c14982d85..51c9b678234a49ce23d6d76e435086ea7f608e58 100644
+index 4e6fccec4f5ca14562bf5bae495ac36c14982d85..849c95b793b73ec640c3c17197ec698598be6349 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -890,13 +890,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -80,14 +80,14 @@ index 4e6fccec4f5ca14562bf5bae495ac36c14982d85..51c9b678234a49ce23d6d76e435086ea
  
      public ChunkStatus getChunkStatusOnDiskIfCached(ChunkPos chunkPos) {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos);
++        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos); // LinearPurpur - Abstract regionfile
  
          return regionFile == null ? null : regionFile.getStatusIfCached(chunkPos.x, chunkPos.z);
      }
  
      public ChunkStatus getChunkStatusOnDisk(ChunkPos chunkPos) throws IOException {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true);
++        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true); // LinearPurpur - Abstract regionfile
  
          if (regionFile == null || !regionFileCache.chunkExists(chunkPos)) {
              return null;
@@ -96,12 +96,12 @@ index 4e6fccec4f5ca14562bf5bae495ac36c14982d85..51c9b678234a49ce23d6d76e435086ea
  
      public void updateChunkStatusOnDisk(ChunkPos chunkPos, @Nullable CompoundTag compound) throws IOException {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false);
++        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false); // LinearPurpur - Abstract regionfile
  
          regionFile.setStatus(chunkPos.x, chunkPos.z, ChunkSerializer.getStatus(compound));
      }
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index 3e582c49069f2a820ba3baac03917493877d9875..f0354c1b304e43a918fdf5b25f54f0be1f655615 100644
+index 3e582c49069f2a820ba3baac03917493877d9875..28313e62b77e1d944d050c4374186d6d5051d0a1 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -344,7 +344,7 @@ public class WorldUpgrader {
@@ -109,7 +109,7 @@ index 3e582c49069f2a820ba3baac03917493877d9875..f0354c1b304e43a918fdf5b25f54f0be
                                      this.onFileFinished(worldupgrader_e.file);
                                  } else {
 -                                    WorldUpgrader.LOGGER.error("Failed to convert region file {}", worldupgrader_e.file.getPath());
-+                                    WorldUpgrader.LOGGER.error("Failed to convert region file {}", worldupgrader_e.file.getRegionFile());
++                                    WorldUpgrader.LOGGER.error("Failed to convert region file {}", worldupgrader_e.file.getRegionFile()); // LinearPurpur - Abstract regionfile
                                  }
                              }
                          }
@@ -118,7 +118,7 @@ index 3e582c49069f2a820ba3baac03917493877d9875..f0354c1b304e43a918fdf5b25f54f0be
  
                          try {
 -                            RegionFile regionfile = new RegionFile(key, file.toPath(), regionDirectory, true);
-+                            org.purpurmc.purpur.region.AbstractRegionFile regionfile = org.purpurmc.purpur.region.AbstractRegionFileFactory.getAbstractRegionFile(key, file.toPath(), regionDirectory, true);
++                            org.purpurmc.purpur.region.AbstractRegionFile regionfile = org.purpurmc.purpur.region.AbstractRegionFileFactory.getAbstractRegionFile(key, file.toPath(), regionDirectory, true); // LinearPurpur - Abstract regionfile
  
                              try {
                                  for (int i1 = 0; i1 < 32; ++i1) {
@@ -127,14 +127,14 @@ index 3e582c49069f2a820ba3baac03917493877d9875..f0354c1b304e43a918fdf5b25f54f0be
          protected abstract boolean tryProcessOnePosition(T storage, ChunkPos chunkPos, ResourceKey<Level> worldKey);
  
 -        private void onFileFinished(RegionFile regionFile) {
-+        private void onFileFinished(org.purpurmc.purpur.region.AbstractRegionFile regionFile) {
++        private void onFileFinished(org.purpurmc.purpur.region.AbstractRegionFile regionFile) { // LinearPurpur - Abstract regionfile
              if (WorldUpgrader.this.recreateRegionFiles) {
                  if (this.previousWriteFuture != null) {
                      this.previousWriteFuture.join();
                  }
  
 -                Path path = regionFile.getPath();
-+                Path path = regionFile.getRegionFile();
++                Path path = regionFile.getRegionFile(); // LinearPurpur - Abstract regionfile
                  Path path1 = path.getParent();
                  Path path2 = WorldUpgrader.resolveRecreateDirectory(path1).resolve(path.getFileName().toString());
  
@@ -143,7 +143,7 @@ index 3e582c49069f2a820ba3baac03917493877d9875..f0354c1b304e43a918fdf5b25f54f0be
      }
  
 -    static record FileToUpgrade(RegionFile file, List<ChunkPos> chunksToUpgrade) {
-+    static record FileToUpgrade(org.purpurmc.purpur.region.AbstractRegionFile file, List<ChunkPos> chunksToUpgrade) {
++    static record FileToUpgrade(org.purpurmc.purpur.region.AbstractRegionFile file, List<ChunkPos> chunksToUpgrade) { // LinearPurpur - Abstract regionfile
  
      }
  
@@ -207,7 +207,7 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..81ef0fe3b19571716a27dbd2a21f128d
          try (DataInputStream out = new DataInputStream(new java.io.BufferedInputStream(new InflaterInputStream(Files.newInputStream(file))))) {
              return NbtIo.read((java.io.DataInput) out);
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index f6e3b745fc417354380d4a969f83aee430bad785..44968ea24690b07ec732c5bb64044cc6da55fa98 100644
+index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77320eea26 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -21,7 +21,7 @@ public class RegionFileStorage implements AutoCloseable {
@@ -311,7 +311,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..44968ea24690b07ec732c5bb64044cc6
          // Paper start
          if (regionfile.isOversized(pos.x, pos.z)) {
 -            printOversizedLog("Loading Oversized Chunk!", regionfile.getPath(), pos.x, pos.z);
-+            printOversizedLog("Loading Oversized Chunk!", regionfile.getRegionFile(), pos.x, pos.z);
++            printOversizedLog("Loading Oversized Chunk!", regionfile.getRegionFile(), pos.x, pos.z); // LinearPurpur - Abstract regionfile
              return readOversizedChunk(regionfile, pos);
          }
          // Paper end
@@ -320,14 +320,14 @@ index f6e3b745fc417354380d4a969f83aee430bad785..44968ea24690b07ec732c5bb64044cc6
                          ChunkPos chunkPos = ChunkSerializer.getChunkCoordinate(nbttagcompound);
                          if (!chunkPos.equals(pos)) {
 -                            net.minecraft.server.MinecraftServer.LOGGER.error("Attempting to read chunk data at " + pos + " but got chunk data for " + chunkPos + " instead! Attempting regionfile recalculation for regionfile " + regionfile.getPath().toAbsolutePath());
-+                            net.minecraft.server.MinecraftServer.LOGGER.error("Attempting to read chunk data at " + pos + " but got chunk data for " + chunkPos + " instead! Attempting regionfile recalculation for regionfile " + regionfile.getRegionFile().toAbsolutePath());
++                            net.minecraft.server.MinecraftServer.LOGGER.error("Attempting to read chunk data at " + pos + " but got chunk data for " + chunkPos + " instead! Attempting regionfile recalculation for regionfile " + regionfile.getRegionFile().toAbsolutePath()); // LinearPurpur - Abstract regionfile
                              if (regionfile.recalculateHeader()) {
 -                                regionfile.fileLock.lock(); // otherwise we will unlock twice and only lock once.
 +                                regionfile.getFileLock().lock(); // otherwise we will unlock twice and only lock once. // LinearPurpur - Abstract regionfile
                                  return this.read(pos, regionfile);
                              }
 -                            net.minecraft.server.MinecraftServer.LOGGER.error("Can't recalculate regionfile header, regenerating chunk " + pos + " for " + regionfile.getPath().toAbsolutePath());
-+                            net.minecraft.server.MinecraftServer.LOGGER.error("Can't recalculate regionfile header, regenerating chunk " + pos + " for " + regionfile.getRegionFile().toAbsolutePath());
++                            net.minecraft.server.MinecraftServer.LOGGER.error("Can't recalculate regionfile header, regenerating chunk " + pos + " for " + regionfile.getRegionFile().toAbsolutePath()); // LinearPurpur - Abstract regionfile
                              return null;
                          }
                      }
