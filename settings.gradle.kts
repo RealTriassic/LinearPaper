@@ -30,3 +30,20 @@ for (name in listOf("LinearPurpur-API", "LinearPurpur-Server")) {
     include(projName)
     findProject(":$projName")!!.projectDir = file(name)
 }
+
+optionalInclude("test-plugin")
+
+fun optionalInclude(name: String, op: (ProjectDescriptor.() -> Unit)? = null) {
+    val settingsFile = file("$name.settings.gradle.kts")
+    if (settingsFile.exists()) {
+        apply(from = settingsFile)
+        findProject(":$name")?.let { op?.invoke(it) }
+    } else {
+        settingsFile.writeText(
+            """
+            // Uncomment to enable the '$name' project
+            // include(":$name")
+            """.trimIndent()
+        )
+    }
+}

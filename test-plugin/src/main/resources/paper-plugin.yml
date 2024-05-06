@@ -1,0 +1,12 @@
+name: LinearPurpur-Test-Plugin
+version: ${version}
+main: org.stupidcraft.testplugin.TestPlugin
+description: LinearPurpur Test Plugin
+author: StupidCraft
+api-version: ${apiversion}
+load: STARTUP
+bootstrapper: org.stupidcraft.testplugin.TestPluginBootstrap
+loader: org.stupidcraft.testplugin.TestPluginLoader
+defaultPerm: FALSE
+permissions:
+dependencies:
