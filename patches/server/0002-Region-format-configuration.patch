@@ -27,10 +27,10 @@ index dfeae138e830e95ab823b6349a91160b02622208..a79d48659e43699b712c4f46f94473f7
  
          return flag3;
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 5aeeafc4ea7e70857d4a135dc945546d9e34c872..afe8e007cbe6b75e989c50f0d50b1e54de5f5c87 100644
+index 5aeeafc4ea7e70857d4a135dc945546d9e34c872..08443f8fe54a6d41c524c3a99b47c6d914ba8c3a 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -246,6 +246,19 @@ public class PurpurConfig {
+@@ -246,6 +246,14 @@ public class PurpurConfig {
          useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
      }
  
@@ -40,18 +40,13 @@ index 5aeeafc4ea7e70857d4a135dc945546d9e34c872..afe8e007cbe6b75e989c50f0d50b1e54
 +    private static void regionFormatSettings() {
 +        linearFlushFrequency = getInt("region-format.linear.flush-frequency", linearFlushFrequency);
 +        linearFlushThreads = getInt("region-format.linear.flush-max-threads", linearFlushThreads);
-+        if (linearFlushThreads < 0)
-+            linearFlushThreads = Math.max(Runtime.getRuntime().availableProcessors() + linearFlushThreads, 1);
-+        else
-+            linearFlushThreads = Math.max(linearFlushThreads, 1);
 +    }
-+    // LinearPurpur end
 +
      public static boolean disableGiveCommandDrops = false;
      private static void disableGiveCommandDrops() {
          disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 7a9a5985b1429c25467db732678d0658aafcfafa..d614feb25fc9f4ee65b01d0df103af7d39ce92b0 100644
+index 7a9a5985b1429c25467db732678d0658aafcfafa..e8f2ccda034986ed69184392589d828c628a25fb 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -27,6 +27,7 @@ import java.util.Map;
@@ -62,30 +57,17 @@ index 7a9a5985b1429c25467db732678d0658aafcfafa..d614feb25fc9f4ee65b01d0df103af7d
  
  @SuppressWarnings("unused")
  public class PurpurWorldConfig {
-@@ -118,6 +119,27 @@ public class PurpurWorldConfig {
+@@ -118,6 +119,14 @@ public class PurpurWorldConfig {
          arrowMovementResetsDespawnCounter = getBoolean("gameplay-mechanics.arrow.movement-resets-despawn-counter", arrowMovementResetsDespawnCounter);
      }
  
 +    // LinearPurpur start - region format configuration
 +    public RegionFileFormat regionFormatName = RegionFileFormat.ANVIL;
-+    public boolean linearCrashOnBrokenSymlink = true;
 +    public int regionFormatLinearCompressionLevel = 1;
 +    private void regionFormatSettings() {
 +        regionFormatName = RegionFileFormat.fromString(getString("region-format.format", regionFormatName.name()));
-+        if (regionFormatName.equals(RegionFileFormat.INVALID)) {
-+            log(Level.SEVERE, "Unknown region format in purpur.yml: " + regionFormatName);
-+            log(Level.SEVERE, "Falling back to ANVIL region file format.");
-+            regionFormatName = RegionFileFormat.ANVIL;
-+        }
 +        regionFormatLinearCompressionLevel = getInt("region-format.linear.compression-level", regionFormatLinearCompressionLevel);
-+        if (regionFormatLinearCompressionLevel > 23 || regionFormatLinearCompressionLevel < 1) {
-+            log(Level.SEVERE, "Linear region compression level should be between 1 and 22 in purpur.yml: " + regionFormatLinearCompressionLevel);
-+            log(Level.SEVERE, "Falling back to compression level 1.");
-+            regionFormatLinearCompressionLevel = 1;
-+        }
-+        linearCrashOnBrokenSymlink = getBoolean("region-format.linear.crash-on-broken-symlink", linearCrashOnBrokenSymlink);
 +    }
-+    // LinearPurpur end
 +
      public boolean useBetterMending = false;
      public double mendingMultiplier = 1.0;
