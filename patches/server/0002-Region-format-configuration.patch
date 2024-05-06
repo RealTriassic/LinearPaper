@@ -46,14 +46,14 @@ index 5aeeafc4ea7e70857d4a135dc945546d9e34c872..08443f8fe54a6d41c524c3a99b47c6d9
      private static void disableGiveCommandDrops() {
          disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
 diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 7a9a5985b1429c25467db732678d0658aafcfafa..e8f2ccda034986ed69184392589d828c628a25fb 100644
+index 7a9a5985b1429c25467db732678d0658aafcfafa..363e4891b7f9b973f532060ccbfa98b7499814cf 100644
 --- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -27,6 +27,7 @@ import java.util.Map;
  import java.util.function.Predicate;
  import java.util.logging.Level;
  import static org.purpurmc.purpur.PurpurConfig.log;
-+import org.purpurmc.purpur.region.RegionFileFormat;
++import org.purpurmc.purpur.region.RegionFileFormat; // LinearPurpur - region format configuration
  
  @SuppressWarnings("unused")
  public class PurpurWorldConfig {
