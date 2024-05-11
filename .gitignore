@@ -50,7 +50,6 @@ manifest.mf
 # other stuff
 run/
 
-build-data/
 LinearPaper-API
 LinearPaper-MojangAPI
 LinearPaper-Server
