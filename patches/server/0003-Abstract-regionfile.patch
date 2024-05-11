@@ -5,7 +5,7 @@ Subject: [PATCH] Abstract regionfile
 
 
 diff --git a/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java b/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
-index 2934f0cf0ef09c84739312b00186c2ef0019a165..137775250cf8d57192dab9bca723bb8dbd77ff0b 100644
+index 2934f0cf0ef09c84739312b00186c2ef0019a165..c7cb3b4297ed3e20d0d845dd674ea24c35cef2d7 100644
 --- a/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
 +++ b/src/main/java/io/papermc/paper/chunk/system/io/RegionFileIOThread.java
 @@ -816,7 +816,7 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
@@ -13,7 +13,7 @@ index 2934f0cf0ef09c84739312b00186c2ef0019a165..137775250cf8d57192dab9bca723bb8d
          final ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
          if (intendingToBlock) {
 -            return taskController.computeForRegionFile(chunkX, chunkZ, true, (final RegionFile file) -> {
-+            return taskController.computeForRegionFile(chunkX, chunkZ, true, (final org.purpurmc.purpur.region.AbstractRegionFile file) -> { // LinearPurpur - Abstract regionfile
++            return taskController.computeForRegionFile(chunkX, chunkZ, true, (final org.stupidcraft.linearpaper.region.AbstractRegionFile file) -> { // LinearPaper
                  if (file == null) { // null if no regionfile exists
                      return Boolean.FALSE;
                  }
@@ -22,7 +22,7 @@ index 2934f0cf0ef09c84739312b00186c2ef0019a165..137775250cf8d57192dab9bca723bb8d
              } // else: it either exists or is not known, fall back to checking the loaded region file
  
 -            return taskController.computeForRegionFileIfLoaded(chunkX, chunkZ, (final RegionFile file) -> {
-+            return taskController.computeForRegionFileIfLoaded(chunkX, chunkZ, (final org.purpurmc.purpur.region.AbstractRegionFile file) -> { // LinearPurpur - Abstract regionfile
++            return taskController.computeForRegionFileIfLoaded(chunkX, chunkZ, (final org.stupidcraft.linearpaper.region.AbstractRegionFile file) -> { // LinearPaper
                  if (file == null) { // null if not loaded
                      // not sure at this point, let the I/O thread figure it out
                      return Boolean.TRUE;
@@ -31,10 +31,10 @@ index 2934f0cf0ef09c84739312b00186c2ef0019a165..137775250cf8d57192dab9bca723bb8d
          }
  
 -        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<RegionFile, T> function) {
-+        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<org.purpurmc.purpur.region.AbstractRegionFile, T> function) { // LinearPurpur - Abstract regionfile
++        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<org.stupidcraft.linearpaper.region.AbstractRegionFile, T> function) { // LinearPaper
              final RegionFileStorage cache = this.getCache();
 -            final RegionFile regionFile;
-+            final org.purpurmc.purpur.region.AbstractRegionFile regionFile; // LinearPurpur - Abstract regionfile
++            final org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile; // LinearPaper
              synchronized (cache) {
                  try {
                      regionFile = cache.getRegionFile(new ChunkPos(chunkX, chunkZ), existingOnly, true);
@@ -43,22 +43,22 @@ index 2934f0cf0ef09c84739312b00186c2ef0019a165..137775250cf8d57192dab9bca723bb8d
              } finally {
                  if (regionFile != null) {
 -                    regionFile.fileLock.unlock();
-+                    regionFile.getFileLock().unlock(); // LinearPurpur - Abstract regionfile
++                    regionFile.getFileLock().unlock(); // LinearPaper
                  }
              }
          }
  
 -        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<RegionFile, T> function) {
-+        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<org.purpurmc.purpur.region.AbstractRegionFile, T> function) { // LinearPurpur - Abstract regionfile
++        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<org.stupidcraft.linearpaper.region.AbstractRegionFile, T> function) { // LinearPaper
              final RegionFileStorage cache = this.getCache();
 -            final RegionFile regionFile;
-+            final org.purpurmc.purpur.region.AbstractRegionFile regionFile; // LinearPurpur - Abstract regionfile
++            final org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile; // LinearPaper
  
              synchronized (cache) {
                  regionFile = cache.getRegionFileIfLoaded(new ChunkPos(chunkX, chunkZ));
                  if (regionFile != null) {
 -                    regionFile.fileLock.lock();
-+                    regionFile.getFileLock().lock(); // LinearPurpur - Abstract regionfile
++                    regionFile.getFileLock().lock(); // LinearPaper
                  }
              }
  
@@ -67,12 +67,12 @@ index 2934f0cf0ef09c84739312b00186c2ef0019a165..137775250cf8d57192dab9bca723bb8d
              } finally {
                  if (regionFile != null) {
 -                    regionFile.fileLock.unlock();
-+                    regionFile.getFileLock().unlock(); // LinearPurpur - Abstract regionfile
++                    regionFile.getFileLock().unlock(); // LinearPaper
                  }
              }
          }
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 4e6fccec4f5ca14562bf5bae495ac36c14982d85..849c95b793b73ec640c3c17197ec698598be6349 100644
+index 7fb9ba3dadb1eca4a1000ea8cf4d13fed2b7db1e..228c1d184d93ee2f054f48f74e3bf7d85b773d08 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -890,13 +890,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -80,14 +80,14 @@ index 4e6fccec4f5ca14562bf5bae495ac36c14982d85..849c95b793b73ec640c3c17197ec6985
  
      public ChunkStatus getChunkStatusOnDiskIfCached(ChunkPos chunkPos) {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos); // LinearPurpur - Abstract regionfile
++        org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile = regionFileCache.getRegionFileIfLoaded(chunkPos); // LinearPaper
  
          return regionFile == null ? null : regionFile.getStatusIfCached(chunkPos.x, chunkPos.z);
      }
  
      public ChunkStatus getChunkStatusOnDisk(ChunkPos chunkPos) throws IOException {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true); // LinearPurpur - Abstract regionfile
++        org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, true); // LinearPaper
  
          if (regionFile == null || !regionFileCache.chunkExists(chunkPos)) {
              return null;
@@ -96,12 +96,12 @@ index 4e6fccec4f5ca14562bf5bae495ac36c14982d85..849c95b793b73ec640c3c17197ec6985
  
      public void updateChunkStatusOnDisk(ChunkPos chunkPos, @Nullable CompoundTag compound) throws IOException {
 -        net.minecraft.world.level.chunk.storage.RegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false); // LinearPurpur - Abstract regionfile
++        org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile = regionFileCache.getRegionFile(chunkPos, false); // LinearPaper
  
          regionFile.setStatus(chunkPos.x, chunkPos.z, ChunkSerializer.getStatus(compound));
      }
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index 3e582c49069f2a820ba3baac03917493877d9875..28313e62b77e1d944d050c4374186d6d5051d0a1 100644
+index 3e582c49069f2a820ba3baac03917493877d9875..6c1faa9b5cf099029bcb122731e3e50e46a4abf0 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -344,7 +344,7 @@ public class WorldUpgrader {
@@ -109,7 +109,7 @@ index 3e582c49069f2a820ba3baac03917493877d9875..28313e62b77e1d944d050c4374186d6d
                                      this.onFileFinished(worldupgrader_e.file);
                                  } else {
 -                                    WorldUpgrader.LOGGER.error("Failed to convert region file {}", worldupgrader_e.file.getPath());
-+                                    WorldUpgrader.LOGGER.error("Failed to convert region file {}", worldupgrader_e.file.getRegionFile()); // LinearPurpur - Abstract regionfile
++                                    WorldUpgrader.LOGGER.error("Failed to convert region file {}", worldupgrader_e.file.getRegionFile()); // LinearPaper
                                  }
                              }
                          }
@@ -118,7 +118,7 @@ index 3e582c49069f2a820ba3baac03917493877d9875..28313e62b77e1d944d050c4374186d6d
  
                          try {
 -                            RegionFile regionfile = new RegionFile(key, file.toPath(), regionDirectory, true);
-+                            org.purpurmc.purpur.region.AbstractRegionFile regionfile = org.purpurmc.purpur.region.AbstractRegionFileFactory.getAbstractRegionFile(key, file.toPath(), regionDirectory, true); // LinearPurpur - Abstract regionfile
++                            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(key, file.toPath(), regionDirectory, true); // LinearPaper
  
                              try {
                                  for (int i1 = 0; i1 < 32; ++i1) {
@@ -127,14 +127,14 @@ index 3e582c49069f2a820ba3baac03917493877d9875..28313e62b77e1d944d050c4374186d6d
          protected abstract boolean tryProcessOnePosition(T storage, ChunkPos chunkPos, ResourceKey<Level> worldKey);
  
 -        private void onFileFinished(RegionFile regionFile) {
-+        private void onFileFinished(org.purpurmc.purpur.region.AbstractRegionFile regionFile) { // LinearPurpur - Abstract regionfile
++        private void onFileFinished(org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile) { // LinearPaper
              if (WorldUpgrader.this.recreateRegionFiles) {
                  if (this.previousWriteFuture != null) {
                      this.previousWriteFuture.join();
                  }
  
 -                Path path = regionFile.getPath();
-+                Path path = regionFile.getRegionFile(); // LinearPurpur - Abstract regionfile
++                Path path = regionFile.getRegionFile(); // LinearPaper
                  Path path1 = path.getParent();
                  Path path2 = WorldUpgrader.resolveRecreateDirectory(path1).resolve(path.getFileName().toString());
  
@@ -143,12 +143,12 @@ index 3e582c49069f2a820ba3baac03917493877d9875..28313e62b77e1d944d050c4374186d6d
      }
  
 -    static record FileToUpgrade(RegionFile file, List<ChunkPos> chunksToUpgrade) {
-+    static record FileToUpgrade(org.purpurmc.purpur.region.AbstractRegionFile file, List<ChunkPos> chunksToUpgrade) { // LinearPurpur - Abstract regionfile
++    static record FileToUpgrade(org.stupidcraft.linearpaper.region.AbstractRegionFile file, List<ChunkPos> chunksToUpgrade) { // LinearPaper
  
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
-index 1362a47943cf1a51a185a15094b1f74c94bf40ef..81ef0fe3b19571716a27dbd2a21f128d61f57466 100644
+index 1362a47943cf1a51a185a15094b1f74c94bf40ef..3a8dca55e169b627ad071e4f21a773962be42ac9 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 @@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtIo; // Paper
@@ -156,7 +156,7 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..81ef0fe3b19571716a27dbd2a21f128d
  import org.slf4j.Logger;
  
 -public class RegionFile implements AutoCloseable {
-+public class RegionFile implements AutoCloseable, org.purpurmc.purpur.region.AbstractRegionFile { // LinearPurpur - Abstract regionfile
++public class RegionFile implements AutoCloseable, org.stupidcraft.linearpaper.region.AbstractRegionFile { // LinearPaper
  
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int SECTOR_BYTES = 4096;
@@ -164,7 +164,7 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..81ef0fe3b19571716a27dbd2a21f128d
          long sign = -remainingBytes; // sign is 1 if nonzero
          return sectors + (sign >>> 63);
      }
-+    // LinearPurpur start - Abstract getters
++    // LinearPaper start - Abstract getters
 +    public Path getRegionFile() {
 +        return this.path;
 +    }
@@ -180,7 +180,7 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..81ef0fe3b19571716a27dbd2a21f128d
  
      // note: only call for CHUNK regionfiles
 -    boolean recalculateHeader() throws IOException {
-+    public boolean recalculateHeader() throws IOException { // LinearPurpur - Abstract regionfile
++    public boolean recalculateHeader() throws IOException { // LinearPaper
          if (!this.canRecalcHeader) {
              return false;
          }
@@ -189,11 +189,11 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..81ef0fe3b19571716a27dbd2a21f128d
          return (x & 31) + (z & 31) * 32;
      }
 -    synchronized boolean isOversized(int x, int z) {
-+    public synchronized boolean isOversized(int x, int z) { // LinearPurpur - Abstract regionfile
++    public synchronized boolean isOversized(int x, int z) { // LinearPaper
          return this.oversized[getChunkIndex(x, z)] == 1;
      }
 -    synchronized void setOversized(int x, int z, boolean oversized) throws IOException {
-+    public synchronized void setOversized(int x, int z, boolean oversized) throws IOException { // LinearPurpur - Abstract regionfile
++    public synchronized void setOversized(int x, int z, boolean oversized) throws IOException { // LinearPaper
          final int offset = getChunkIndex(x, z);
          boolean previous = this.oversized[offset] == 1;
          this.oversized[offset] = (byte) (oversized ? 1 : 0);
@@ -202,12 +202,12 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..81ef0fe3b19571716a27dbd2a21f128d
      }
  
 -    synchronized CompoundTag getOversizedData(int x, int z) throws IOException {
-+    public synchronized CompoundTag getOversizedData(int x, int z) throws IOException { // LinearPurpur - Abstract regionfile
++    public synchronized CompoundTag getOversizedData(int x, int z) throws IOException { // LinearPaper
          Path file = getOversizedFile(x, z);
          try (DataInputStream out = new DataInputStream(new java.io.BufferedInputStream(new InflaterInputStream(Files.newInputStream(file))))) {
              return NbtIo.read((java.io.DataInput) out);
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77320eea26 100644
+index f6e3b745fc417354380d4a969f83aee430bad785..0d6f458d2830eadc0938c75a80666f9d3603cbee 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -21,7 +21,7 @@ public class RegionFileStorage implements AutoCloseable {
@@ -215,7 +215,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
      public static final String ANVIL_EXTENSION = ".mca";
      private static final int MAX_CACHE_SIZE = 256;
 -    public final Long2ObjectLinkedOpenHashMap<RegionFile> regionCache = new Long2ObjectLinkedOpenHashMap();
-+    public final Long2ObjectLinkedOpenHashMap<org.purpurmc.purpur.region.AbstractRegionFile> regionCache = new Long2ObjectLinkedOpenHashMap(); // LinearPurpur - Abstract regionfile
++    public final Long2ObjectLinkedOpenHashMap<org.stupidcraft.linearpaper.region.AbstractRegionFile> regionCache = new Long2ObjectLinkedOpenHashMap(); // LinearPaper
      private final RegionStorageInfo info;
      private final Path folder;
      private final boolean sync;
@@ -224,34 +224,34 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
      }
      
 -    public synchronized RegionFile getRegionFileIfLoaded(ChunkPos chunkcoordintpair) {
-+    public synchronized org.purpurmc.purpur.region.AbstractRegionFile getRegionFileIfLoaded(ChunkPos chunkcoordintpair) { // LinearPurpur - Abstract regionfile
++    public synchronized org.stupidcraft.linearpaper.region.AbstractRegionFile getRegionFileIfLoaded(ChunkPos chunkcoordintpair) { // LinearPaper
          return this.regionCache.getAndMoveToFirst(ChunkPos.asLong(chunkcoordintpair.getRegionX(), chunkcoordintpair.getRegionZ()));
      }
  
      public synchronized boolean chunkExists(ChunkPos pos) throws IOException {
 -        RegionFile regionfile = getRegionFile(pos, true);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionfile = getRegionFile(pos, true); // LinearPurpur - Abstract regionfile
++        org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = getRegionFile(pos, true); // LinearPaper
  
          return regionfile != null ? regionfile.hasChunk(pos) : false;
      }
  
 -    public synchronized RegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit
-+    public synchronized org.purpurmc.purpur.region.AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit // LinearPurpur - Abstract regionfile
++    public synchronized org.stupidcraft.linearpaper.region.AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit // LinearPaper
          return this.getRegionFile(chunkcoordintpair, existingOnly, false);
      }
 -    public synchronized RegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly, boolean lock) throws IOException {
-+    public synchronized org.purpurmc.purpur.region.AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly, boolean lock) throws IOException { // LinearPurpur - Abstract regionfile
++    public synchronized org.stupidcraft.linearpaper.region.AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly, boolean lock) throws IOException { // LinearPaper
          // Paper end
          long i = ChunkPos.asLong(chunkcoordintpair.getRegionX(), chunkcoordintpair.getRegionZ()); final long regionPos = i; // Paper - OBFHELPER
 -        RegionFile regionfile = (RegionFile) this.regionCache.getAndMoveToFirst(i);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionfile = (org.purpurmc.purpur.region.AbstractRegionFile) this.regionCache.getAndMoveToFirst(i); // LinearPurpur - Abstract regionfile
++        org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = (org.stupidcraft.linearpaper.region.AbstractRegionFile) this.regionCache.getAndMoveToFirst(i); // LinearPaper
  
          if (regionfile != null) {
              // Paper start
              if (lock) {
                  // must be in this synchronized block
 -                regionfile.fileLock.lock();
-+                regionfile.getFileLock().lock(); // LinearPurpur - Abstract regionfile
++                regionfile.getFileLock().lock(); // LinearPaper
              }
              // Paper end
              return regionfile;
@@ -260,7 +260,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
              // Paper end - cache regionfile does not exist state
              if (this.regionCache.size() >= io.papermc.paper.configuration.GlobalConfiguration.get().misc.regionFileCacheSize) { // Paper - Sanitise RegionFileCache and make configurable
 -                ((RegionFile) this.regionCache.removeLast()).close();
-+                ((org.purpurmc.purpur.region.AbstractRegionFile) this.regionCache.removeLast()).close(); // LinearPurpur - Abstract regionfile
++                ((org.stupidcraft.linearpaper.region.AbstractRegionFile) this.regionCache.removeLast()).close(); // LinearPaper
              }
  
              // Paper - only create directory if not existing only - moved down
@@ -269,14 +269,14 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
              // Paper end - cache regionfile does not exist state
              FileUtil.createDirectoriesSafe(this.folder); // Paper - only create directory if not existing only - moved from above
 -            RegionFile regionfile1 = new RegionFile(this.info, path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header
-+            org.purpurmc.purpur.region.AbstractRegionFile regionfile1 = org.purpurmc.purpur.region.AbstractRegionFileFactory.getAbstractRegionFile(this.info, path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // LinearPurpur - Abstract regionfile
++            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile1 = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(this.info, path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // LinearPaper
  
              this.regionCache.putAndMoveToFirst(i, regionfile1);
              // Paper start
              if (lock) {
                  // must be in this synchronized block
 -                regionfile1.fileLock.lock();
-+                regionfile1.getFileLock().lock(); // LinearPurpur - Abstract regionfile
++                regionfile1.getFileLock().lock(); // LinearPaper
              }
              // Paper end
              return regionfile1;
@@ -285,7 +285,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
      }
  
 -    private static CompoundTag readOversizedChunk(RegionFile regionfile, ChunkPos chunkCoordinate) throws IOException {
-+    private static CompoundTag readOversizedChunk(org.purpurmc.purpur.region.AbstractRegionFile regionfile, ChunkPos chunkCoordinate) throws IOException { // LinearPurpur - Abstract regionfile
++    private static CompoundTag readOversizedChunk(org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile, ChunkPos chunkCoordinate) throws IOException { // LinearPaper
          synchronized (regionfile) {
              try (DataInputStream datainputstream = regionfile.getChunkDataInputStream(chunkCoordinate)) {
                  CompoundTag oversizedData = regionfile.getOversizedData(chunkCoordinate.x, chunkCoordinate.z);
@@ -294,7 +294,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
      public CompoundTag read(ChunkPos pos) throws IOException {
          // CraftBukkit start - SPIGOT-5680: There's no good reason to preemptively create files on read, save that for writing
 -        RegionFile regionfile = this.getRegionFile(pos, true, true); // Paper
-+        org.purpurmc.purpur.region.AbstractRegionFile regionfile = this.getRegionFile(pos, true, true); // Paper // LinearPurpur - Abstract regionfile
++        org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(pos, true, true); // Paper // LinearPaper
          if (regionfile == null) {
              return null;
          }
@@ -302,7 +302,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
          return this.read(pos, regionfile);
      }
 -    public CompoundTag read(ChunkPos pos, RegionFile regionfile) throws IOException {
-+    public CompoundTag read(ChunkPos pos, org.purpurmc.purpur.region.AbstractRegionFile regionfile) throws IOException { // LinearPurpur - Abstract regionfile
++    public CompoundTag read(ChunkPos pos, org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile) throws IOException { // LinearPaper
          // We add the regionfile parameter to avoid the potential deadlock (on fileLock) if we went back to obtain a regionfile
          // if we decide to re-read
          // Paper end
@@ -311,7 +311,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
          // Paper start
          if (regionfile.isOversized(pos.x, pos.z)) {
 -            printOversizedLog("Loading Oversized Chunk!", regionfile.getPath(), pos.x, pos.z);
-+            printOversizedLog("Loading Oversized Chunk!", regionfile.getRegionFile(), pos.x, pos.z); // LinearPurpur - Abstract regionfile
++            printOversizedLog("Loading Oversized Chunk!", regionfile.getRegionFile(), pos.x, pos.z); // LinearPaper
              return readOversizedChunk(regionfile, pos);
          }
          // Paper end
@@ -320,14 +320,14 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
                          ChunkPos chunkPos = ChunkSerializer.getChunkCoordinate(nbttagcompound);
                          if (!chunkPos.equals(pos)) {
 -                            net.minecraft.server.MinecraftServer.LOGGER.error("Attempting to read chunk data at " + pos + " but got chunk data for " + chunkPos + " instead! Attempting regionfile recalculation for regionfile " + regionfile.getPath().toAbsolutePath());
-+                            net.minecraft.server.MinecraftServer.LOGGER.error("Attempting to read chunk data at " + pos + " but got chunk data for " + chunkPos + " instead! Attempting regionfile recalculation for regionfile " + regionfile.getRegionFile().toAbsolutePath()); // LinearPurpur - Abstract regionfile
++                            net.minecraft.server.MinecraftServer.LOGGER.error("Attempting to read chunk data at " + pos + " but got chunk data for " + chunkPos + " instead! Attempting regionfile recalculation for regionfile " + regionfile.getRegionFile().toAbsolutePath()); // LinearPaper
                              if (regionfile.recalculateHeader()) {
 -                                regionfile.fileLock.lock(); // otherwise we will unlock twice and only lock once.
-+                                regionfile.getFileLock().lock(); // otherwise we will unlock twice and only lock once. // LinearPurpur - Abstract regionfile
++                                regionfile.getFileLock().lock(); // otherwise we will unlock twice and only lock once. // LinearPaper
                                  return this.read(pos, regionfile);
                              }
 -                            net.minecraft.server.MinecraftServer.LOGGER.error("Can't recalculate regionfile header, regenerating chunk " + pos + " for " + regionfile.getPath().toAbsolutePath());
-+                            net.minecraft.server.MinecraftServer.LOGGER.error("Can't recalculate regionfile header, regenerating chunk " + pos + " for " + regionfile.getRegionFile().toAbsolutePath()); // LinearPurpur - Abstract regionfile
++                            net.minecraft.server.MinecraftServer.LOGGER.error("Can't recalculate regionfile header, regenerating chunk " + pos + " for " + regionfile.getRegionFile().toAbsolutePath()); // LinearPaper
                              return null;
                          }
                      }
@@ -336,14 +336,14 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
          return nbttagcompound;
          } finally { // Paper start
 -            regionfile.fileLock.unlock();
-+            regionfile.getFileLock().unlock(); // LinearPurpur - Abstract regionfile
++            regionfile.getFileLock().unlock(); // LinearPaper
          } // Paper end
      }
  
      public void scanChunk(ChunkPos chunkPos, StreamTagVisitor scanner) throws IOException {
          // CraftBukkit start - SPIGOT-5680: There's no good reason to preemptively create files on read, save that for writing
 -        RegionFile regionfile = this.getRegionFile(chunkPos, true);
-+        org.purpurmc.purpur.region.AbstractRegionFile regionfile = this.getRegionFile(chunkPos, true); // LinearPurpur - Abstract regionfile
++        org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(chunkPos, true); // LinearPaper
          if (regionfile == null) {
              return;
          }
@@ -352,7 +352,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
      protected void write(ChunkPos pos, @Nullable CompoundTag nbt) throws IOException {
          // Paper start - rewrite chunk system
 -        RegionFile regionfile = this.getRegionFile(pos, nbt == null, true); // CraftBukkit
-+        org.purpurmc.purpur.region.AbstractRegionFile regionfile = this.getRegionFile(pos, nbt == null, true); // CraftBukkit // LinearPurpur - Abstract regionfile
++        org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(pos, nbt == null, true); // CraftBukkit // LinearPaper
          if (nbt == null && regionfile == null) {
              return;
          }
@@ -361,7 +361,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
          // Paper start - rewrite chunk system
          } finally {
 -            regionfile.fileLock.unlock();
-+            regionfile.getFileLock().unlock(); // LinearPurpur - Abstract regionfile
++            regionfile.getFileLock().unlock(); // LinearPaper
          }
          // Paper end - rewrite chunk system
      }
@@ -370,7 +370,7 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
  
          while (objectiterator.hasNext()) {
 -            RegionFile regionfile = (RegionFile) objectiterator.next();
-+            org.purpurmc.purpur.region.AbstractRegionFile regionfile = (org.purpurmc.purpur.region.AbstractRegionFile) objectiterator.next(); // LinearPurpur - Abstract regionfile
++            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = (org.stupidcraft.linearpaper.region.AbstractRegionFile) objectiterator.next(); // LinearPaper
  
              try {
                  regionfile.close();
@@ -379,12 +379,12 @@ index f6e3b745fc417354380d4a969f83aee430bad785..323bcc0588273b098282666f18095c77
  
          while (objectiterator.hasNext()) {
 -            RegionFile regionfile = (RegionFile) objectiterator.next();
-+            org.purpurmc.purpur.region.AbstractRegionFile regionfile = (org.purpurmc.purpur.region.AbstractRegionFile) objectiterator.next(); // LinearPurpur - Abstract regionfile
++            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = (org.stupidcraft.linearpaper.region.AbstractRegionFile) objectiterator.next(); // LinearPaper
  
              regionfile.flush();
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 226ff7c6048b510be2e71ecc5d5ff3581092aa5e..df683c32129300e0350f8050fb9b3d094e828937 100644
+index f2b20ed5063a293f0b464548f590d652170cd1d8..4c0cc09d91d6f19154c477dd5678c1bb89e4dfc4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -584,7 +584,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -392,17 +392,17 @@ index 226ff7c6048b510be2e71ecc5d5ff3581092aa5e..df683c32129300e0350f8050fb9b3d09
                  return true;
              }
 -            net.minecraft.world.level.chunk.storage.RegionFile file;
-+            org.purpurmc.purpur.region.AbstractRegionFile file; // LinearPurpur - Abstract regionfile
++            org.stupidcraft.linearpaper.region.AbstractRegionFile file; // LinearPaper
              try {
                  file = world.getChunkSource().chunkMap.regionFileCache.getRegionFile(chunkPos, false);
              } catch (java.io.IOException ex) {
-diff --git a/src/main/java/org/purpurmc/purpur/region/AbstractRegionFile.java b/src/main/java/org/purpurmc/purpur/region/AbstractRegionFile.java
+diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..02fa74a35e4ea88f6194e8c23bd4266e090eb744
+index 0000000000000000000000000000000000000000..87bdcfcdd1be66b121024cc9df1786bb5e752c4a
 --- /dev/null
-+++ b/src/main/java/org/purpurmc/purpur/region/AbstractRegionFile.java
++++ b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java
 @@ -0,0 +1,42 @@
-+package org.purpurmc.purpur.region;
++package org.stupidcraft.linearpaper.region;
 +
 +import java.io.DataInputStream;
 +import java.io.DataOutputStream;
@@ -444,13 +444,13 @@ index 0000000000000000000000000000000000000000..02fa74a35e4ea88f6194e8c23bd4266e
 +
 +    Path getRegionFile();
 +}
-diff --git a/src/main/java/org/purpurmc/purpur/region/AbstractRegionFileFactory.java b/src/main/java/org/purpurmc/purpur/region/AbstractRegionFileFactory.java
+diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f72171533a2e74a0743818e49ab2985546d5a810
+index 0000000000000000000000000000000000000000..a2ac8e822564ce0bc903c902aa5566afdc400314
 --- /dev/null
-+++ b/src/main/java/org/purpurmc/purpur/region/AbstractRegionFileFactory.java
++++ b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
 @@ -0,0 +1,25 @@
-+package org.purpurmc.purpur.region;
++package org.stupidcraft.linearpaper.region;
 +
 +import java.io.IOException;
 +import java.nio.file.Path;
