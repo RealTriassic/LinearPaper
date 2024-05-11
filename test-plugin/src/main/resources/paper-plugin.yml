@@ -1,7 +1,7 @@
-name: LinearPurpur-Test-Plugin
+name: LinearPaper-Test-Plugin
 version: ${version}
 main: org.stupidcraft.testplugin.TestPlugin
-description: LinearPurpur Test Plugin
+description: LinearPaper Test Plugin
 author: StupidCraft
 api-version: ${apiversion}
 load: STARTUP

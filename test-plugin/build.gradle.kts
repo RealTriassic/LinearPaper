@@ -1,7 +1,7 @@
 version = "1.0.0-SNAPSHOT"
 
 dependencies {
-    compileOnly(project(":linearpurpur-api"))
+    compileOnly(project(":linearpaper-api"))
 }
 
 tasks.processResources {
