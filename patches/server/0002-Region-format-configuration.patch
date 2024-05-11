@@ -4,81 +4,83 @@ Date: Fri, 22 Sep 2023 23:27:14 +0300
 Subject: [PATCH] Region format configuration
 
 
+diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+index 2874bc3001c4e7d9191e47ba512c5a68369c21f1..4b4e796b1084c2e65f06fa1554f4dfd04379ed2b 100644
+--- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+@@ -30,6 +30,15 @@ public class GlobalConfiguration extends ConfigurationPart {
+         return instance;
+     }
+ 
++    // LinearPaper start
++    public RegionFormat regionFormat;
++
++    public class RegionFormat extends ConfigurationPart {
++        public int linearFlushFrequency = 10;
++        public int linearFlushThreads = 1;
++    }
++    // LinearPaper end
++
+     public ChunkLoadingBasic chunkLoadingBasic;
+ 
+     public class ChunkLoadingBasic extends ConfigurationPart {
+diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+index efc91ff91827872c62b8bd060282549ccdcf67dd..fa5fc8148baffe455c038555b2f885b0745e133a 100644
+--- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
+@@ -56,6 +56,7 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable;
+ import org.spongepowered.configurate.objectmapping.meta.PostProcess;
+ import org.spongepowered.configurate.objectmapping.meta.Required;
+ import org.spongepowered.configurate.objectmapping.meta.Setting;
++import org.stupidcraft.linearpaper.region.RegionFileFormat; // LinearPaper
+ 
+ @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
+ public class WorldConfiguration extends ConfigurationPart {
+@@ -77,6 +78,15 @@ public class WorldConfiguration extends ConfigurationPart {
+     @Setting(Configuration.VERSION_FIELD)
+     public int version = CURRENT_VERSION;
+ 
++    // LinearPaper start
++    public RegionFormat regionFormat;
++
++    public class RegionFormat extends ConfigurationPart {
++        public RegionFileFormat regionFormatName = RegionFileFormat.ANVIL;
++        public int regionFormatLinearCompressionLevel = 1;
++    }
++    // LinearPaper end
++
+     public Anticheat anticheat;
+ 
+     public class Anticheat extends ConfigurationPart {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index dfeae138e830e95ab823b6349a91160b02622208..6f46fc5ab474652c1f662658ae4b22bb555202fe 100644
+index c814d92940fa46a6211fe5f8587414b7f6fb0232..f67a21d09d09a7968eff831cc6606f93b9504c89 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -891,7 +891,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -888,7 +888,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              // Paper start - rewrite chunk system
              worldserver.save((ProgressListener) null, flush, worldserver.noSave && !force, close);
              if (flush) {
 -                MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName());
-+                MinecraftServer.LOGGER.info("ThreadedChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName()); // LinearPurpur - region format configuration
++                MinecraftServer.LOGGER.info("ThreadedChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName()); // LinearPaper
              }
              // Paper end - rewrite chunk system
          }
-@@ -915,7 +915,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -912,7 +912,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  //MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // Paper - move up
              }
  
 -            MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
-+            MinecraftServer.LOGGER.info("ThreadedChunkStorage: All dimensions are saved"); // LinearPurpur - region format configuration
++            MinecraftServer.LOGGER.info("ThreadedChunkStorage: All dimensions are saved"); // LinearPaper
          }
  
          return flag3;
-diff --git a/src/main/java/org/purpurmc/purpur/PurpurConfig.java b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-index 5aeeafc4ea7e70857d4a135dc945546d9e34c872..08443f8fe54a6d41c524c3a99b47c6d914ba8c3a 100644
---- a/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-+++ b/src/main/java/org/purpurmc/purpur/PurpurConfig.java
-@@ -246,6 +246,14 @@ public class PurpurConfig {
-         useAlternateKeepAlive = getBoolean("settings.use-alternate-keepalive", useAlternateKeepAlive);
-     }
- 
-+    // LinearPurpur start - region format configuration
-+    public static int linearFlushFrequency = 10;
-+    public static int linearFlushThreads = 1;
-+    private static void regionFormatSettings() {
-+        linearFlushFrequency = getInt("region-format.linear.flush-frequency", linearFlushFrequency);
-+        linearFlushThreads = getInt("region-format.linear.flush-max-threads", linearFlushThreads);
-+    }
-+
-     public static boolean disableGiveCommandDrops = false;
-     private static void disableGiveCommandDrops() {
-         disableGiveCommandDrops = getBoolean("settings.disable-give-dropping", disableGiveCommandDrops);
-diff --git a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-index 7a9a5985b1429c25467db732678d0658aafcfafa..363e4891b7f9b973f532060ccbfa98b7499814cf 100644
---- a/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-+++ b/src/main/java/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -27,6 +27,7 @@ import java.util.Map;
- import java.util.function.Predicate;
- import java.util.logging.Level;
- import static org.purpurmc.purpur.PurpurConfig.log;
-+import org.purpurmc.purpur.region.RegionFileFormat; // LinearPurpur - region format configuration
- 
- @SuppressWarnings("unused")
- public class PurpurWorldConfig {
-@@ -118,6 +119,14 @@ public class PurpurWorldConfig {
-         arrowMovementResetsDespawnCounter = getBoolean("gameplay-mechanics.arrow.movement-resets-despawn-counter", arrowMovementResetsDespawnCounter);
-     }
- 
-+    // LinearPurpur start - region format configuration
-+    public RegionFileFormat regionFormatName = RegionFileFormat.ANVIL;
-+    public int regionFormatLinearCompressionLevel = 1;
-+    private void regionFormatSettings() {
-+        regionFormatName = RegionFileFormat.fromString(getString("region-format.format", regionFormatName.name()));
-+        regionFormatLinearCompressionLevel = getInt("region-format.linear.compression-level", regionFormatLinearCompressionLevel);
-+    }
-+
-     public boolean useBetterMending = false;
-     public double mendingMultiplier = 1.0;
-     public boolean alwaysTameInCreative = false;
-diff --git a/src/main/java/org/purpurmc/purpur/region/RegionFileFormat.java b/src/main/java/org/purpurmc/purpur/region/RegionFileFormat.java
+diff --git a/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java b/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..593d684da10368e8cb37628445b36a826719e79e
+index 0000000000000000000000000000000000000000..64831ea14eef5cd7a9c3bcf87517ea8dd7d26795
 --- /dev/null
-+++ b/src/main/java/org/purpurmc/purpur/region/RegionFileFormat.java
++++ b/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java
 @@ -0,0 +1,16 @@
-+package org.purpurmc.purpur.region;
++package org.stupidcraft.linearpaper.region;
 +
 +public enum RegionFileFormat {
 +    ANVIL,

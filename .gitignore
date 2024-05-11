@@ -51,9 +51,9 @@ manifest.mf
 run/
 
 build-data/
-LinearPurpur-API
-LinearPurpur-MojangAPI
-LinearPurpur-Server
+LinearPaper-API
+LinearPaper-MojangAPI
+LinearPaper-Server
 paper-api-generator
 *.jar
 test-plugin.settings.gradle.kts

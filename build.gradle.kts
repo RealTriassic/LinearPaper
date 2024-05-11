@@ -42,7 +42,6 @@ subprojects {
     repositories {
         mavenCentral()
         maven(paperMavenPublicUrl)
-        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         maven("https://jitpack.io")
     }
 }
@@ -63,23 +62,18 @@ dependencies {
 }
 
 paperweight {
-    serverProject = project(":linearpurpur-server")
+    serverProject = project(":linearpaper-server")
 
     remapRepo = paperMavenPublicUrl
     decompileRepo = paperMavenPublicUrl
 
-    useStandardUpstream("purpur") {
-        url = github("PurpurMC", "Purpur")
-        ref = providers.gradleProperty("purpurCommit")
-
-        withStandardPatcher {
-            baseName("Purpur")
-
+    usePaperUpstream(providers.gradleProperty("paperCommit")) {
+        withPaperPatcher {
             apiPatchDir = layout.projectDirectory.dir("patches/api")
-            apiOutputDir = layout.projectDirectory.dir("LinearPurpur-API")
+            apiOutputDir = layout.projectDirectory.dir("LinearPaper-API")
 
             serverPatchDir = layout.projectDirectory.dir("patches/server")
-            serverOutputDir = layout.projectDirectory.dir("LinearPurpur-Server")
+            serverOutputDir = layout.projectDirectory.dir("LinearPaper-Server")
         }
 
         patchTasks.register("generatedApi") {
@@ -92,25 +86,12 @@ paperweight {
 }
 
 tasks.generateDevelopmentBundle {
-    apiCoordinates = "org.stupidcraft.linearpurpur:linearpurpur-api"
+    apiCoordinates = "org.stupidcraft.linearpaper:linearpaper-api"
     mojangApiCoordinates = "io.papermc.paper:paper-mojangapi"
     libraryRepositories = listOf(
         "https://repo.maven.apache.org/maven2/",
         paperMavenPublicUrl,
-        "https://repo.purpurmc.org/snapshots",
-        "https://s01.oss.sonatype.org/content/repositories/snapshots/",
     )
-}
-
-allprojects {
-    publishing {
-        repositories {
-            maven("https://repo.purpurmc.org/snapshots") {
-                name = "linearpurpur"
-                credentials(PasswordCredentials::class)
-            }
-        }
-    }
 }
 
 publishing {
@@ -127,7 +108,7 @@ tasks.register("printMinecraftVersion") {
     }
 }
 
-tasks.register("printLinearPurpurVersion") {
+tasks.register("printLinearPaperVersion") {
     doLast {
         println(project.version)
     }
