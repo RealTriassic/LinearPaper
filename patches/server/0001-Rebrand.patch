@@ -5,24 +5,19 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 87bb3fd9b97506f61734ae7f2e6860610ba794e7..97fcb1d9639635693800f1b76054b43bdbe01cb3 100644
+index 87bb3fd9b97506f61734ae7f2e6860610ba794e7..dd44de960db4faf8c71430c28b501fd2156ba4c3 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -12,7 +12,12 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
+@@ -12,7 +12,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
  val alsoShade: Configuration by configurations.creating
  
  dependencies {
 -    implementation(project(":paper-api"))
-+    // LinearPaper start
-+    implementation(project(":linearpaper-api"))
-+    implementation("io.papermc.paper:paper-mojangapi:${project.version}") {
-+        exclude("io.papermc.paper", "paper-api")
-+    }
-+    // LinearPaper end
++    implementation(project(":linearpaper-api")) // LinearPaper
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -78,7 +83,7 @@ tasks.jar {
+@@ -78,7 +78,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",

@@ -5,10 +5,10 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 97fcb1d9639635693800f1b76054b43bdbe01cb3..1749a8bf8786a33e877be4ffd6b61607b4a141c0 100644
+index dd44de960db4faf8c71430c28b501fd2156ba4c3..ec8a3f139d984dc461c5d214bd7d58e6ebf071c2 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -34,6 +34,10 @@ dependencies {
+@@ -29,6 +29,10 @@ dependencies {
      alsoShade(log4jPlugins.output)
      implementation("io.netty:netty-codec-haproxy:4.1.97.Final") // Paper - Add support for proxy protocol
      // Paper end
