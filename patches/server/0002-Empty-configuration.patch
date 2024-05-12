@@ -90,7 +90,7 @@ index c988afa496d25314451435eedd64079a0d87cef0..a2ee1fcf14ab7472ed2ef5cb9f4d987c
  
 diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8147df133d02848d55acb8a4d47b1adf2e8333b8
+index 0000000000000000000000000000000000000000..1b74e1800ca9cf892cdf10b9c006a77e5be725ee
 --- /dev/null
 +++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 @@ -0,0 +1,170 @@
@@ -114,11 +114,11 @@ index 0000000000000000000000000000000000000000..8147df133d02848d55acb8a4d47b1adf
 +@SuppressWarnings("unused")
 +public class LinearConfig {
 +    protected static final String HEADER = "This is the main configuration file for Linear.\n"
-+        + "Here be dragons! Linear is an experimental region file format"
-+        + "that may, or may not, break your server. Please remember"
-+        + "to always keep and create backups, even if not using Linear."
++        + "Linear is an experimental region file format\n"
++        + "that may, or may not, break your server. Please remember\n"
++        + "to always keep and create backups, even if not using Linear.\n"
 +        + "\n"
-+        + "If you run into any issues, make sure to report them on GitHub."
++        + "If you run into any issues, make sure to report them on GitHub.\n"
 +        + "\n"
 +        + "GitHub: https://github.com/StupidCraft/LinearPaper";
 +    public static YamlConfiguration config;

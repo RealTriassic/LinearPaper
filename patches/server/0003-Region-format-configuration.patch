@@ -27,25 +27,9 @@ index 6a04f0ed36bd92b408591ae81b5870f63da28f17..31da4e94e10673ecdd27dd2213575b2d
  
          return flag3;
 diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
-index 8147df133d02848d55acb8a4d47b1adf2e8333b8..55f8467912c6b8ec0be5a8c7ae015ca5c6005647 100644
+index 1b74e1800ca9cf892cdf10b9c006a77e5be725ee..2add25762a9ded65a832481e2a1f8323b2352d15 100644
 --- a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 +++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
-@@ -18,11 +18,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
- @SuppressWarnings("unused")
- public class LinearConfig {
-     protected static final String HEADER = "This is the main configuration file for Linear.\n"
--        + "Here be dragons! Linear is an experimental region file format"
--        + "that may, or may not, break your server. Please remember"
--        + "to always keep and create backups, even if not using Linear."
-+        + "Here be dragons! Linear is an experimental region file format\n"
-+        + "that may, or may not, break your server. Please remember\n"
-+        + "to always keep and create backups, even if not using Linear.\n"
-         + "\n"
--        + "If you run into any issues, make sure to report them on GitHub."
-+        + "If you run into any issues, make sure to report them on GitHub.\n"
-         + "\n"
-         + "GitHub: https://github.com/StupidCraft/LinearPaper";
-     public static YamlConfiguration config;
 @@ -167,4 +167,12 @@ public class LinearConfig {
          }
          return builder.build();
