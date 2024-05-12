@@ -1,0 +1,108 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Triassic <techbyteofficial9@gmail.com>
+Date: Fri, 22 Sep 2023 23:27:14 +0300
+Subject: [PATCH] Region format configuration
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 6a04f0ed36bd92b408591ae81b5870f63da28f17..31da4e94e10673ecdd27dd2213575b2de3ce8ea9 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -890,7 +890,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             // Paper start - rewrite chunk system
+             worldserver.save((ProgressListener) null, flush, worldserver.noSave && !force, close);
+             if (flush) {
+-                MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName());
++                MinecraftServer.LOGGER.info("ThreadedChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName()); // LinearPaper
+             }
+             // Paper end - rewrite chunk system
+         }
+@@ -914,7 +914,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 //MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // Paper - move up
+             }
+ 
+-            MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
++            MinecraftServer.LOGGER.info("ThreadedChunkStorage: All dimensions are saved"); // LinearPaper
+         }
+ 
+         return flag3;
+diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
+index 8147df133d02848d55acb8a4d47b1adf2e8333b8..55f8467912c6b8ec0be5a8c7ae015ca5c6005647 100644
+--- a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
++++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
+@@ -18,11 +18,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
+ @SuppressWarnings("unused")
+ public class LinearConfig {
+     protected static final String HEADER = "This is the main configuration file for Linear.\n"
+-        + "Here be dragons! Linear is an experimental region file format"
+-        + "that may, or may not, break your server. Please remember"
+-        + "to always keep and create backups, even if not using Linear."
++        + "Here be dragons! Linear is an experimental region file format\n"
++        + "that may, or may not, break your server. Please remember\n"
++        + "to always keep and create backups, even if not using Linear.\n"
+         + "\n"
+-        + "If you run into any issues, make sure to report them on GitHub."
++        + "If you run into any issues, make sure to report them on GitHub.\n"
+         + "\n"
+         + "GitHub: https://github.com/StupidCraft/LinearPaper";
+     public static YamlConfiguration config;
+@@ -167,4 +167,12 @@ public class LinearConfig {
+         }
+         return builder.build();
+     }
++
++    public static int linearFlushFrequency = 10;
++    public static int linearFlushThreads = 1;
++
++    private static void linearSettings() {
++        linearFlushFrequency = getInt("linear.flush-frequency", linearFlushFrequency);
++        linearFlushThreads = getInt("linear.flush-max-threads", linearFlushThreads);
++    }
+ }
+diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
+index c1e15de29d24b33a6abb16f641c1fffaf2ac0939..c240f481508f93cf80572e5cfabea20da0e145cc 100644
+--- a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
++++ b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
+@@ -5,6 +5,7 @@ import java.util.Map;
+ import java.util.function.Predicate;
+ import org.apache.commons.lang.BooleanUtils;
+ import org.bukkit.configuration.ConfigurationSection;
++import org.stupidcraft.linearpaper.region.RegionFileFormat;
+ 
+ @SuppressWarnings("unused")
+ public class LinearWorldConfig {
+@@ -108,4 +109,12 @@ public class LinearWorldConfig {
+         final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null);
+         return value.isEmpty() ? fallback : value;
+     }
++
++    public RegionFileFormat regionFormat = RegionFileFormat.ANVIL;
++    public int linearCompressionLevel = 1;
++
++    private void regionFormatSettings() {
++        regionFormat = RegionFileFormat.fromString(getString("format", regionFormat.name()));
++        linearCompressionLevel = getInt("linear.compression-level", linearCompressionLevel);
++    }
+ }
+diff --git a/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java b/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..64831ea14eef5cd7a9c3bcf87517ea8dd7d26795
+--- /dev/null
++++ b/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java
+@@ -0,0 +1,16 @@
++package org.stupidcraft.linearpaper.region;
++
++public enum RegionFileFormat {
++    ANVIL,
++    LINEAR,
++    INVALID;
++
++    public static RegionFileFormat fromString(String format) {
++        for (RegionFileFormat rff : values()) {
++            if (rff.name().equalsIgnoreCase(format)) {
++                return rff;
++            }
++        }
++        return RegionFileFormat.INVALID;
++    }
++}

@@ -1,0 +1,383 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Triassic <techbyteofficial9@gmail.com>
+Date: Sun, 12 May 2024 17:31:52 +0300
+Subject: [PATCH] Empty configuration
+
+
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 2eb9c584cc77237f1c82d880a51a3f8b51008d73..edbcbbb0a6cbc2d278cec861a0670cd5e27a6522 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -222,6 +222,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         this.paperConfigurations.initializeGlobalConfiguration(this.registryAccess());
+         this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
+         // Paper end - initialize global and world-defaults configuration
++        org.stupidcraft.linearpaper.LinearConfig.init((java.io.File) this.options.valueOf("linear-settings")); // LinearPaper
+         // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
+         if (this.convertOldUsers()) {
+             this.getProfileCache().save(false); // Paper
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index b4ef3ad2c17168085372f1fe46809f02d9dfe74a..b8a552cc348b7ceb87de5eba0936b6af83266266 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -168,6 +168,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         return this.paperConfig;
+     }
+     // Paper end - add paper world config
++    public final org.stupidcraft.linearpaper.LinearWorldConfig linearConfig; // LinearPaper
+ 
+     public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
+     public final co.aikar.timings.WorldTimingsHandler timings; // Paper
+@@ -216,6 +217,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config; Async-Anti-Xray: Pass executor
+         this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
+         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
++        this.linearConfig = new org.stupidcraft.linearpaper.LinearWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // LinearPaper
+         this.generator = gen;
+         this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index c63889ad02984a9c990144ec6167ca4b77827ae4..80099db877b50811bbe28d56fd3b9eaf71daa590 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1038,6 +1038,7 @@ public final class CraftServer implements Server {
+ 
+         org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
+         this.console.paperConfigurations.reloadConfigs(this.console);
++        org.stupidcraft.linearpaper.LinearConfig.init((File) console.options.valueOf("linear-settings")); // LinearPaper
+         for (ServerLevel world : this.console.getAllLevels()) {
+             // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
+             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
+@@ -1053,6 +1054,7 @@ public final class CraftServer implements Server {
+                 }
+             }
+             world.spigotConfig.init(); // Spigot
++            world.linearConfig.init(); // LinearPaper
+         }
+ 
+         Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
+@@ -3039,6 +3041,12 @@ public final class CraftServer implements Server {
+             return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
+         }
+ 
++        @Override
++        public YamlConfiguration getLinearConfig()
++        {
++            return org.stupidcraft.linearpaper.LinearConfig.config;
++        }
++
+         @Override
+         public void restart() {
+             org.spigotmc.RestartCommand.restart();
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index c988afa496d25314451435eedd64079a0d87cef0..a2ee1fcf14ab7472ed2ef5cb9f4d987cc3fe9162 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -182,6 +182,14 @@ public class Main {
+                         .defaultsTo("Unknown Server")
+                         .describedAs("Name");
+                 // Paper end
++
++                // LinearPaper start
++                acceptsAll(asList("linear", "linear-settings"), "File for Linear settings")
++                    .withRequiredArg()
++                    .ofType(File.class)
++                    .defaultsTo(new File(io.papermc.paper.configuration.PaperConfigurations.CONFIG_DIR, "linear.yml"))
++                    .describedAs("Yml file");
++                // LinearPaper end
+             }
+         };
+ 
+diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8147df133d02848d55acb8a4d47b1adf2e8333b8
+--- /dev/null
++++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
+@@ -0,0 +1,170 @@
++package org.stupidcraft.linearpaper;
++
++import com.google.common.base.Throwables;
++import com.google.common.collect.ImmutableMap;
++import java.io.File;
++import java.io.IOException;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++import java.util.List;
++import java.util.Map;
++import java.util.logging.Level;
++import org.bukkit.Bukkit;
++import org.bukkit.configuration.ConfigurationSection;
++import org.bukkit.configuration.InvalidConfigurationException;
++import org.bukkit.configuration.file.YamlConfiguration;
++
++@SuppressWarnings("unused")
++public class LinearConfig {
++    protected static final String HEADER = "This is the main configuration file for Linear.\n"
++        + "Here be dragons! Linear is an experimental region file format"
++        + "that may, or may not, break your server. Please remember"
++        + "to always keep and create backups, even if not using Linear."
++        + "\n"
++        + "If you run into any issues, make sure to report them on GitHub."
++        + "\n"
++        + "GitHub: https://github.com/StupidCraft/LinearPaper";
++    public static YamlConfiguration config;
++    public static int version;
++    protected static File CONFIG_FILE;
++    static boolean verbose;
++
++    public static void init(File configFile) {
++        CONFIG_FILE = configFile;
++        config = new YamlConfiguration();
++        if (configFile.exists()) {
++            try {
++                config.load(CONFIG_FILE);
++            } catch (InvalidConfigurationException ex) {
++                Bukkit.getLogger().log(Level.SEVERE, "Could not load linear.yml, please correct your syntax errors", ex);
++                throw Throwables.propagate(ex);
++            } catch (IOException ignore) {
++            }
++        }
++        config.options().header(HEADER);
++        config.options().copyDefaults(true);
++        verbose = getBoolean("verbose", false);
++
++        version = getInt("config-version", 1);
++        set("config-version", 1);
++
++        readConfig(LinearConfig.class, null);
++    }
++
++    protected static void log(String s) {
++        if (verbose) {
++            log(Level.INFO, s);
++        }
++    }
++
++    protected static void log(Level level, String s) {
++        Bukkit.getLogger().log(level, s);
++    }
++
++    static void readConfig(Class<?> clazz, Object instance) {
++        for (Method method : clazz.getDeclaredMethods()) {
++            if (Modifier.isPrivate(method.getModifiers())) {
++                if (method.getParameterTypes().length == 0 && method.getReturnType() == Void.TYPE) {
++                    try {
++                        method.setAccessible(true);
++                        method.invoke(instance);
++                    } catch (InvocationTargetException ex) {
++                        throw Throwables.propagate(ex.getCause());
++                    } catch (Exception ex) {
++                        Bukkit.getLogger().log(Level.SEVERE, "Error invoking " + method, ex);
++                    }
++                }
++            }
++        }
++        try {
++            config.save(CONFIG_FILE);
++        } catch (IOException ex) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not save " + CONFIG_FILE, ex);
++        }
++    }
++
++    protected static void set(String path, Object val) {
++        config.addDefault(path, val);
++        config.set(path, val);
++    }
++
++    protected static String getString(String path, String def, String... comment) {
++        config.addDefault(path, def);
++        return config.getString(path, config.getString(path));
++    }
++
++    protected static boolean getBoolean(String path, boolean def, String... comment) {
++        config.addDefault(path, def);
++        return config.getBoolean(path, config.getBoolean(path));
++    }
++
++    protected static double getDouble(String path, double def, String... comment) {
++        config.addDefault(path, def);
++        return config.getDouble(path, config.getDouble(path));
++    }
++
++    protected static int getInt(String path, int def, String... comment) {
++        config.addDefault(path, def);
++        return config.getInt(path, config.getInt(path));
++    }
++
++    protected static <T> List getList(String path, T def, String... comment) {
++        config.addDefault(path, def);
++        return config.getList(path, config.getList(path));
++    }
++
++    static Map<String, Object> getMap(String path, Map<String, Object> def, String... comment) {
++        if (def != null && config.getConfigurationSection(path) == null) {
++            config.addDefault(path, def);
++            return def;
++        }
++        return toMap(config.getConfigurationSection(path));
++    }
++
++    protected static String getString(String path, String def) {
++        config.addDefault(path, def);
++        return config.getString(path, config.getString(path));
++    }
++
++    protected static boolean getBoolean(String path, boolean def) {
++        config.addDefault(path, def);
++        return config.getBoolean(path, config.getBoolean(path));
++    }
++
++    protected static double getDouble(String path, double def) {
++        config.addDefault(path, def);
++        return config.getDouble(path, config.getDouble(path));
++    }
++
++    protected static int getInt(String path, int def) {
++        config.addDefault(path, def);
++        return config.getInt(path, config.getInt(path));
++    }
++
++    protected static <T> List getList(String path, T def) {
++        config.addDefault(path, def);
++        return config.getList(path, config.getList(path));
++    }
++
++    static Map<String, Object> getMap(String path, Map<String, Object> def) {
++        if (def != null && config.getConfigurationSection(path) == null) {
++            config.addDefault(path, def);
++            return def;
++        }
++        return toMap(config.getConfigurationSection(path));
++    }
++
++    protected static Map<String, Object> toMap(ConfigurationSection section) {
++        ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
++        if (section != null) {
++            for (String key : section.getKeys(false)) {
++                Object obj = section.get(key);
++                if (obj != null) {
++                    builder.put(key, obj instanceof ConfigurationSection val ? toMap(val) : obj);
++                }
++            }
++        }
++        return builder.build();
++    }
++}
+diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..c1e15de29d24b33a6abb16f641c1fffaf2ac0939
+--- /dev/null
++++ b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
+@@ -0,0 +1,111 @@
++package org.stupidcraft.linearpaper;
++
++import java.util.List;
++import java.util.Map;
++import java.util.function.Predicate;
++import org.apache.commons.lang.BooleanUtils;
++import org.bukkit.configuration.ConfigurationSection;
++
++@SuppressWarnings("unused")
++public class LinearWorldConfig {
++
++    private final String worldName;
++
++    public LinearWorldConfig(String worldName) {
++        this.worldName = worldName;
++        init();
++    }
++
++    public void init() {
++        LinearConfig.log("-------- World Settings For [" + worldName + "] --------");
++        LinearConfig.readConfig(LinearWorldConfig.class, this);
++    }
++
++    private void set(String path, Object val) {
++        LinearConfig.config.addDefault("world-settings.default." + path, val);
++        LinearConfig.config.set("world-settings.default." + path, val);
++        if (LinearConfig.config.get("world-settings." + worldName + "." + path) != null) {
++            LinearConfig.config.addDefault("world-settings." + worldName + "." + path, val);
++            LinearConfig.config.set("world-settings." + worldName + "." + path, val);
++        }
++    }
++
++    protected ConfigurationSection getConfigurationSection(String path) {
++        ConfigurationSection section = LinearConfig.config.getConfigurationSection("world-settings." + worldName + "." + path);
++        return section != null ? section : LinearConfig.config.getConfigurationSection("world-settings.default." + path);
++    }
++
++    protected String getString(String path, String def, String... comment) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getString("world-settings." + worldName + "." + path, LinearConfig.config.getString("world-settings.default." + path));
++    }
++
++    protected boolean getBoolean(String path, boolean def, String... comment) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getBoolean("world-settings." + worldName + "." + path, LinearConfig.config.getBoolean("world-settings.default." + path));
++    }
++
++    protected boolean getBoolean(String path, Predicate<Boolean> predicate, String... comment) {
++        String val = getString(path, "default", comment).toLowerCase();
++        Boolean bool = BooleanUtils.toBooleanObject(val, "true", "false", "default");
++        return predicate.test(bool);
++    }
++
++    protected double getDouble(String path, double def, String... comment) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getDouble("world-settings." + worldName + "." + path, LinearConfig.config.getDouble("world-settings.default." + path));
++    }
++
++    protected int getInt(String path, int def, String... comment) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getInt("world-settings." + worldName + "." + path, LinearConfig.config.getInt("world-settings.default." + path));
++    }
++
++    protected <T> List<?> getList(String path, T def, String... comment) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getList("world-settings." + worldName + "." + path, LinearConfig.config.getList("world-settings.default." + path));
++    }
++
++    protected Map<String, Object> getMap(String path, Map<String, Object> def, String... comment) {
++        final Map<String, Object> fallback = getMap("world-settings.default." + path, def, comment);
++        final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null, comment);
++        return value.isEmpty() ? fallback : value;
++    }
++
++    protected String getString(String path, String def) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getString("world-settings." + worldName + "." + path, LinearConfig.config.getString("world-settings.default." + path));
++    }
++
++    protected boolean getBoolean(String path, boolean def) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getBoolean("world-settings." + worldName + "." + path, LinearConfig.config.getBoolean("world-settings.default." + path));
++    }
++
++    private boolean getBoolean(String path, Predicate<Boolean> predicate) {
++        String val = getString(path, "default").toLowerCase();
++        Boolean bool = BooleanUtils.toBooleanObject(val, "true", "false", "default");
++        return predicate.test(bool);
++    }
++
++    protected double getDouble(String path, double def) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getDouble("world-settings." + worldName + "." + path, LinearConfig.config.getDouble("world-settings.default." + path));
++    }
++
++    protected int getInt(String path, int def) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getInt("world-settings." + worldName + "." + path, LinearConfig.config.getInt("world-settings.default." + path));
++    }
++
++    protected <T> List<?> getList(String path, T def) {
++        LinearConfig.config.addDefault("world-settings.default." + path, def);
++        return LinearConfig.config.getList("world-settings." + worldName + "." + path, LinearConfig.config.getList("world-settings.default." + path));
++    }
++
++    protected Map<String, Object> getMap(String path, Map<String, Object> def) {
++        final Map<String, Object> fallback = getMap("world-settings.default." + path, def);
++        final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null);
++        return value.isEmpty() ? fallback : value;
++    }
++}

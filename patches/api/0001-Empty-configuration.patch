@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Triassic <techbyteofficial9@gmail.com>
+Date: Sun, 12 May 2024 17:33:01 +0300
+Subject: [PATCH] Empty configuration
+
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index c8595ffcfcbdd79794d464415287d46acef72b72..d17818a180a5e73e5a099b7cc608195ffd5ee295 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -2257,6 +2257,14 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         }
+         // Paper end
+ 
++        // LinearPaper start
++        @NotNull
++        public org.bukkit.configuration.file.YamlConfiguration getLinearConfig()
++        {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++        // LinearPaper end
++
+         /**
+          * Sends the component to the player
+          *
