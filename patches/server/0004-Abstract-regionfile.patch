@@ -398,10 +398,10 @@ index f2b20ed5063a293f0b464548f590d652170cd1d8..4c0cc09d91d6f19154c477dd5678c1bb
              } catch (java.io.IOException ex) {
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..87bdcfcdd1be66b121024cc9df1786bb5e752c4a
+index 0000000000000000000000000000000000000000..1325ac1d603bc65224860170b5ffad3f8cca2e9c
 --- /dev/null
 +++ b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,30 @@
 +package org.stupidcraft.linearpaper.region;
 +
 +import java.io.DataInputStream;
@@ -415,33 +415,21 @@ index 0000000000000000000000000000000000000000..87bdcfcdd1be66b121024cc9df1786bb
 +
 +public interface AbstractRegionFile {
 +    void flush() throws IOException;
-+
 +    void clear(ChunkPos pos) throws IOException;
-+
 +    void close() throws IOException;
-+
 +    void setStatus(int x, int z, ChunkStatus status);
-+
 +    void setOversized(int x, int z, boolean b) throws IOException;
 +
 +    boolean hasChunk(ChunkPos pos);
-+
 +    boolean doesChunkExist(ChunkPos pos) throws Exception;
-+
 +    boolean isOversized(int x, int z);
-+
 +    boolean recalculateHeader() throws IOException;
 +
 +    DataOutputStream getChunkDataOutputStream(ChunkPos pos) throws IOException;
-+
 +    DataInputStream getChunkDataInputStream(ChunkPos pos) throws IOException;
-+
 +    CompoundTag getOversizedData(int x, int z) throws IOException;
-+
 +    ChunkStatus getStatusIfCached(int x, int z);
-+
 +    ReentrantLock getFileLock();
-+
 +    Path getRegionFile();
 +}
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
