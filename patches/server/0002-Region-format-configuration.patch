@@ -53,10 +53,10 @@ index efc91ff91827872c62b8bd060282549ccdcf67dd..fa5fc8148baffe455c038555b2f885b0
  
      public class Anticheat extends ConfigurationPart {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index c814d92940fa46a6211fe5f8587414b7f6fb0232..f67a21d09d09a7968eff831cc6606f93b9504c89 100644
+index 6a04f0ed36bd92b408591ae81b5870f63da28f17..31da4e94e10673ecdd27dd2213575b2de3ce8ea9 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -888,7 +888,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -890,7 +890,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              // Paper start - rewrite chunk system
              worldserver.save((ProgressListener) null, flush, worldserver.noSave && !force, close);
              if (flush) {
@@ -65,7 +65,7 @@ index c814d92940fa46a6211fe5f8587414b7f6fb0232..f67a21d09d09a7968eff831cc6606f93
              }
              // Paper end - rewrite chunk system
          }
-@@ -912,7 +912,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -914,7 +914,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  //MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // Paper - move up
              }
  

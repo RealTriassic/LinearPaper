@@ -2,7 +2,7 @@
 
 # requires curl & jq
 
-# upstreamCommit <baseHash>
+# upstreamCommit <baseHash> <HEAD>
 # param: bashHash - the commit hash to use for comparing commits (baseHash...HEAD)
 
 (

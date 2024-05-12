@@ -5,15 +5,14 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 079bf6878538a1c223ac912f29f6df79a1167218..97fcb1d9639635693800f1b76054b43bdbe01cb3 100644
+index 87bb3fd9b97506f61734ae7f2e6860610ba794e7..97fcb1d9639635693800f1b76054b43bdbe01cb3 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -12,8 +12,12 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
+@@ -12,7 +12,12 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
  val alsoShade: Configuration by configurations.creating
  
  dependencies {
 -    implementation(project(":paper-api"))
--    implementation(project(":paper-mojangapi"))
 +    // LinearPaper start
 +    implementation(project(":linearpaper-api"))
 +    implementation("io.papermc.paper:paper-mojangapi:${project.version}") {
@@ -23,7 +22,7 @@ index 079bf6878538a1c223ac912f29f6df79a1167218..97fcb1d9639635693800f1b76054b43b
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -79,7 +83,7 @@ tasks.jar {
+@@ -78,7 +83,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -95,10 +94,10 @@ index 9d687da5bdf398bb3f6c84cdf1249a7213d09f2e..cd6e2d6dfb538feca64b68679a0afd28
          switch (distance) {
              case -1:
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 8dc2f9df367c849ca333bf1a1fd92ff91617b548..c814d92940fa46a6211fe5f8587414b7f6fb0232 100644
+index 39303bb4e336732db0ab19dee0c1f8b609bbb134..6a04f0ed36bd92b408591ae81b5870f63da28f17 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1924,7 +1924,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1926,7 +1926,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {
@@ -108,10 +107,10 @@ index 8dc2f9df367c849ca333bf1a1fd92ff91617b548..c814d92940fa46a6211fe5f8587414b7
  
      public SystemReport fillSystemReport(SystemReport details) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 57db399bc1d3b6b015740b059987bc8d9bcc3101..98fd031a98e3327c14e5f32ab6190be2a496620b 100644
+index da1aed63af837b193900bb85393611edbd56c363..c63889ad02984a9c990144ec6167ca4b77827ae4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -268,7 +268,7 @@ import javax.annotation.Nullable; // Paper
+@@ -269,7 +269,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
