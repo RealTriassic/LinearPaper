@@ -20,23 +20,39 @@ index dd44de960db4faf8c71430c28b501fd2156ba4c3..ec8a3f139d984dc461c5d214bd7d58e6
      implementation("org.ow2.asm:asm-commons:9.7")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
 diff --git a/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java b/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
-index 7f6d1ccd147e5593412567bb2934ce5662da7ef0..744befe41533a117384cb78e2ad93ff9d6aa73ce 100644
+index 7f6d1ccd147e5593412567bb2934ce5662da7ef0..25786a06c987ba6bd1ef13e8334e64eeb5033f4a 100644
 --- a/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
 +++ b/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
-@@ -97,8 +97,10 @@ public class ThreadedWorldUpgrader {
+@@ -33,10 +33,10 @@ import java.util.function.Supplier;
+ public class ThreadedWorldUpgrader {
+ 
+     private static final Logger LOGGER = LogManager.getLogger();
+-
+     private final ResourceKey<LevelStem> dimensionType;
+     private final String worldName;
+     private final File worldDir;
++    private final org.stupidcraft.linearpaper.region.RegionFileFormat regionFormat; // LinearPaper
+     private final ExecutorService threadPool;
+     private final DataFixer dataFixer;
+     private final RegistryAccess registryLookup;
+@@ -50,6 +50,7 @@ public class ThreadedWorldUpgrader {
+         this.dimensionType = dimensionType;
+         this.worldName = worldName;
+         this.worldDir = worldDir;
++        this.regionFormat = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.regionFormat;
+         this.threadPool = Executors.newFixedThreadPool(Math.max(1, threads), new ThreadFactory() {
+             private final AtomicInteger threadCounter = new AtomicInteger();
+ 
+@@ -92,6 +93,7 @@ public class ThreadedWorldUpgrader {
+ 
+         // Only used for profiling, let's fill it anyways just in case
+         final RegionStorageInfo storageInfo = new RegionStorageInfo(
++            this.regionFormat,
+             this.worldName,
+             ResourceKey.create(Registries.DIMENSION, this.dimensionType.location()),
              "region"
-         );
- 
-+        org.stupidcraft.linearpaper.region.RegionFileFormat formatName = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.regionFormat;
-+        int linearCompression = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.linearCompressionLevel;
-         final WorldInfo info = new WorldInfo(() -> worldPersistentData,
--                new ChunkStorage(storageInfo, regionFolder.toPath(), this.dataFixer, false), this.removeCaches, this.dimensionType, this.generatorKey);
-+                new ChunkStorage(formatName, linearCompression, storageInfo, regionFolder.toPath(), this.dataFixer, false), this.removeCaches, this.dimensionType, this.generatorKey);
- 
-         long expectedChunks = (long)regionFiles.length * (32L * 32L);
- 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 228c1d184d93ee2f054f48f74e3bf7d85b773d08..96af90d3d3019672cc46cd1cb10b4af516dd40c4 100644
+index 228c1d184d93ee2f054f48f74e3bf7d85b773d08..928ed9553e73ea7e71c5ff4b0e459add751f1cc2 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -250,7 +250,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -44,7 +60,7 @@ index 228c1d184d93ee2f054f48f74e3bf7d85b773d08..96af90d3d3019672cc46cd1cb10b4af5
  
      public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop<Runnable> mainThreadExecutor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
 -        super(new RegionStorageInfo(session.getLevelId(), world.dimension(), "chunk"), session.getDimensionPath(world.dimension()).resolve("region"), dataFixer, dsync);
-+        super(world.getLevel().linearConfig.regionFormat, world.getLevel().linearConfig.linearCompressionLevel, new RegionStorageInfo(session.getLevelId(), world.dimension(), "chunk"), session.getDimensionPath(world.dimension()).resolve("region"), dataFixer, dsync);
++        super(new RegionStorageInfo(world.linearConfig.regionFormat, session.getLevelId(), world.dimension(), "chunk"), session.getDimensionPath(world.dimension()).resolve("region"), dataFixer, dsync);
          // Paper - rewrite chunk system
          this.tickingGenerated = new AtomicInteger();
          this.playerMap = new PlayerMap();
@@ -53,39 +69,52 @@ index 228c1d184d93ee2f054f48f74e3bf7d85b773d08..96af90d3d3019672cc46cd1cb10b4af5
          this.distanceManager = new ChunkMap.ChunkDistanceManager(executor, mainThreadExecutor);
          this.overworldDataStorage = persistentStateManagerFactory;
 -        this.poiManager = new PoiManager(new RegionStorageInfo(session.getLevelId(), world.dimension(), "poi"), path.resolve("poi"), dataFixer, dsync, iregistrycustom, world);
-+        this.poiManager = new PoiManager(world.getLevel().linearConfig.regionFormat, world.getLevel().linearConfig.linearCompressionLevel, new RegionStorageInfo(session.getLevelId(), world.dimension(), "poi"), path.resolve("poi"), dataFixer, dsync, iregistrycustom, world);
++        this.poiManager = new PoiManager(new RegionStorageInfo(world.linearConfig.regionFormat, session.getLevelId(), world.dimension(), "poi"), path.resolve("poi"), dataFixer, dsync, iregistrycustom, world);
          this.setServerViewDistance(viewDistance);
          this.worldGenContext = new WorldGenContext(world, chunkGenerator, structureTemplateManager, this.lightEngine);
          // Paper start
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index ca56a0b596976448da6bb2a0e82b3d5cd4133e12..20c5a79d6d4118ed591fbeb38c46c73d21961f2f 100644
+index ca56a0b596976448da6bb2a0e82b3d5cd4133e12..83a0a93c344e8bf9886e27774d8d1fddec55cc71 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -423,8 +423,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -196,6 +196,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+     public final ServerChunkCache chunkSource;
+     private final MinecraftServer server;
+     public final PrimaryLevelData serverLevelData; // CraftBukkit - type
++    private final org.stupidcraft.linearpaper.region.RegionFileFormat regionFormat; // LinearPaper
+     private int lastSpawnChunkRadius;
+     final EntityTickList entityTickList;
+     //public final PersistentEntitySectionManager<Entity> entityManager; // Paper - rewrite chunk system
+@@ -718,6 +719,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         ChunkGenerator chunkgenerator = worlddimension.generator();
+         // CraftBukkit start
+         this.serverLevelData.setWorld(this);
++        this.regionFormat = this.getLevel().linearConfig.regionFormat;
  
-     private static final class EntityRegionFileStorage extends net.minecraft.world.level.chunk.storage.RegionFileStorage {
- 
--        public EntityRegionFileStorage(RegionStorageInfo storageKey, Path directory, boolean dsync) {
--            super(storageKey, directory, dsync);
-+        public EntityRegionFileStorage(org.stupidcraft.linearpaper.region.RegionFileFormat format, int linearCompression, RegionStorageInfo storageKey, Path directory, boolean dsync) {
-+            super(format, linearCompression, storageKey, directory, dsync);
-         }
- 
-         protected void write(ChunkPos pos, net.minecraft.nbt.CompoundTag nbt) throws IOException {
-@@ -734,7 +734,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         if (biomeProvider != null) {
+             BiomeSource worldChunkManager = new CustomWorldChunkManager(this.getWorld(), biomeProvider, this.server.registryAccess().registryOrThrow(Registries.BIOME));
+@@ -734,7 +736,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
          // CraftBukkit end
          boolean flag2 = minecraftserver.forceSynchronousWrites();
          DataFixer datafixer = minecraftserver.getFixerUpper();
 -        this.entityStorage = new EntityRegionFileStorage(new RegionStorageInfo(convertable_conversionsession.getLevelId(), resourcekey, "entities"), convertable_conversionsession.getDimensionPath(resourcekey).resolve("entities"), flag2); // Paper - rewrite chunk system
-+        this.entityStorage = new EntityRegionFileStorage(this.getLevel().linearConfig.regionFormat, this.getLevel().linearConfig.linearCompressionLevel, new RegionStorageInfo(convertable_conversionsession.getLevelId(), resourcekey, "entities"), convertable_conversionsession.getDimensionPath(resourcekey).resolve("entities"), flag2); // Paper - rewrite chunk system
++        this.entityStorage = new EntityRegionFileStorage(new RegionStorageInfo(regionFormat, convertable_conversionsession.getLevelId(), resourcekey, "entities"), convertable_conversionsession.getDimensionPath(resourcekey).resolve("entities"), flag2); // Paper - rewrite chunk system
  
          // this.entityManager = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage, this.entitySliceManager); // Paper // Paper - rewrite chunk system
          StructureTemplateManager structuretemplatemanager = minecraftserver.getStructureManager();
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..a497cd7816d5e52e1e2e70861199c7dbe06196b2 100644
+index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..3a8b645cad3efd1c3f8160142e01d6e44ade5e0a 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-@@ -76,7 +76,7 @@ public class WorldUpgrader {
+@@ -65,6 +65,7 @@ public class WorldUpgrader {
+     final boolean eraseCache;
+     final boolean recreateRegionFiles;
+     final LevelStorageSource.LevelStorageAccess levelStorage;
++    private final org.stupidcraft.linearpaper.region.RegionFileFormat regionFormat; // LinearPaper
+     private final Thread thread;
+     final DataFixer dataFixer;
+     volatile boolean running = true;
+@@ -76,7 +77,7 @@ public class WorldUpgrader {
      volatile int skipped;
      final Reference2FloatMap<ResourceKey<Level>> progressMap = Reference2FloatMaps.synchronize(new Reference2FloatOpenHashMap());
      volatile Component status = Component.translatable("optimizeWorld.stage.counting");
@@ -94,31 +123,24 @@ index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..a497cd7816d5e52e1e2e70861199c7db
      final DimensionDataStorage overworldDataStorage;
  
      public WorldUpgrader(LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, RegistryAccess dynamicRegistryManager, boolean eraseCache, boolean recreateRegionFiles) {
-@@ -249,7 +249,10 @@ public class WorldUpgrader {
+@@ -85,6 +86,7 @@ public class WorldUpgrader {
+         this.eraseCache = eraseCache;
+         this.dataFixer = dataFixer;
+         this.levelStorage = session;
++        this.regionFormat = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(levelStorage.getLevelId())).getHandle().linearConfig.regionFormat;
+         this.overworldDataStorage = new DimensionDataStorage(this.levelStorage.getDimensionPath(Level.OVERWORLD).resolve("data").toFile(), dataFixer, dynamicRegistryManager);
+         this.recreateRegionFiles = recreateRegionFiles;
+         this.thread = WorldUpgrader.THREAD_FACTORY.newThread(this::work);
+@@ -381,7 +383,7 @@ public class WorldUpgrader {
  
-         @Override
-         protected ChunkStorage createStorage(RegionStorageInfo key, Path worldDirectory) {
--            return (ChunkStorage) (WorldUpgrader.this.recreateRegionFiles ? new RecreatingChunkStorage(key.withTypeSuffix("source"), worldDirectory, key.withTypeSuffix("target"), WorldUpgrader.resolveRecreateDirectory(worldDirectory), WorldUpgrader.this.dataFixer, true) : new ChunkStorage(key, worldDirectory, WorldUpgrader.this.dataFixer, true));
-+            String worldName = levelStorage.getLevelId();
-+            org.stupidcraft.linearpaper.region.RegionFileFormat formatName = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.regionFormat;
-+            int linearCompression = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.linearCompressionLevel;
-+            return (ChunkStorage) (WorldUpgrader.this.recreateRegionFiles ? new RecreatingChunkStorage(formatName, linearCompression, key.withTypeSuffix("source"), worldDirectory, key.withTypeSuffix("target"), WorldUpgrader.resolveRecreateDirectory(worldDirectory), WorldUpgrader.this.dataFixer, true) : new ChunkStorage(formatName, linearCompression, key, worldDirectory, WorldUpgrader.this.dataFixer, true));
-         }
-     }
- 
-@@ -261,7 +264,10 @@ public class WorldUpgrader {
- 
-         @Override
-         protected SimpleRegionStorage createStorage(RegionStorageInfo key, Path worldDirectory) {
--            return (SimpleRegionStorage) (WorldUpgrader.this.recreateRegionFiles ? new RecreatingSimpleRegionStorage(key.withTypeSuffix("source"), worldDirectory, key.withTypeSuffix("target"), WorldUpgrader.resolveRecreateDirectory(worldDirectory), WorldUpgrader.this.dataFixer, true, this.dataFixType) : new SimpleRegionStorage(key, worldDirectory, WorldUpgrader.this.dataFixer, true, this.dataFixType));
-+            String worldName = levelStorage.getLevelId();
-+            org.stupidcraft.linearpaper.region.RegionFileFormat formatName = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.regionFormat;
-+            int linearCompression = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.linearCompressionLevel;
-+            return (SimpleRegionStorage) (WorldUpgrader.this.recreateRegionFiles ? new RecreatingSimpleRegionStorage(formatName, linearCompression, key.withTypeSuffix("source"), worldDirectory, key.withTypeSuffix("target"), WorldUpgrader.resolveRecreateDirectory(worldDirectory), WorldUpgrader.this.dataFixer, true, this.dataFixType) : new SimpleRegionStorage(formatName, linearCompression, key, worldDirectory, WorldUpgrader.this.dataFixer, true, this.dataFixType));
-         }
- 
-         protected boolean tryProcessOnePosition(SimpleRegionStorage storage, ChunkPos chunkPos, ResourceKey<Level> worldKey) {
-@@ -406,7 +412,7 @@ public class WorldUpgrader {
+             while (iterator.hasNext()) {
+                 ResourceKey<Level> resourcekey = (ResourceKey) iterator.next();
+-                RegionStorageInfo regionstorageinfo = new RegionStorageInfo(WorldUpgrader.this.levelStorage.getLevelId(), resourcekey, this.type);
++                RegionStorageInfo regionstorageinfo = new RegionStorageInfo(WorldUpgrader.this.regionFormat, WorldUpgrader.this.levelStorage.getLevelId(), resourcekey, this.type);
+                 Path path = WorldUpgrader.this.levelStorage.getDimensionPath(resourcekey).resolve(this.folderName);
+                 T t0 = this.createStorage(regionstorageinfo, path);
+                 ListIterator<WorldUpgrader.FileToUpgrade> listiterator = this.getFilesToProcess(regionstorageinfo, path);
+@@ -406,7 +408,7 @@ public class WorldUpgrader {
  
          private static List<WorldUpgrader.FileToUpgrade> getAllChunkPositions(RegionStorageInfo key, Path regionDirectory) {
              File[] afile = regionDirectory.toFile().listFiles((file, s) -> {
@@ -127,7 +149,7 @@ index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..a497cd7816d5e52e1e2e70861199c7db
              });
  
              if (afile == null) {
-@@ -426,7 +432,7 @@ public class WorldUpgrader {
+@@ -426,7 +428,7 @@ public class WorldUpgrader {
                          List<ChunkPos> list1 = Lists.newArrayList();
  
                          try {
@@ -136,144 +158,26 @@ index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..a497cd7816d5e52e1e2e70861199c7db
  
                              try {
                                  for (int i1 = 0; i1 < 32; ++i1) {
-diff --git a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-index c6f193339fdcbcc938d4eafdcad0b112cf1698d5..78bd3f0846d46ca2f590ade955b86ab3c4ac74a7 100644
---- a/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-+++ b/src/main/java/net/minecraft/world/entity/ai/village/poi/PoiManager.java
-@@ -59,15 +59,19 @@ public class PoiManager extends SectionStorage<PoiSection> {
-     // Paper end - rewrite chunk system
- 
-     public PoiManager(
--        RegionStorageInfo storageKey, Path directory, DataFixer dataFixer, boolean dsync, RegistryAccess registryManager, LevelHeightAccessor world
-+        org.stupidcraft.linearpaper.region.RegionFileFormat formatName, int linearCompression, RegionStorageInfo storageKey, Path directory, DataFixer dataFixer, boolean dsync, RegistryAccess registryManager, LevelHeightAccessor world
-     ) {
-         super(
-+            // LinearPaper start
-+            formatName,
-+            linearCompression,
-+            // LinearPaper end
-             // Paper start
-             storageKey,
-             directory,
-             dsync,
-             // Paper end
--            new SimpleRegionStorage(storageKey, directory, dataFixer, dsync, DataFixTypes.POI_CHUNK),
-+            new SimpleRegionStorage(formatName, linearCompression, storageKey, directory, dataFixer, dsync, DataFixTypes.POI_CHUNK),
-             PoiSection::codec,
-             PoiSection::new,
-             registryManager,
-diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
-index 7801fac96d728f951989fca36f6a4890a0638c36..979d1c962c7e8406a363de3060bbbc49d3a9c631 100644
---- a/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/storage/ChunkStorage.java
-@@ -39,9 +39,9 @@ public class ChunkStorage implements AutoCloseable {
-     @Nullable
-     private volatile LegacyStructureDataHandler legacyStructureHandler;
- 
--    public ChunkStorage(RegionStorageInfo storageKey, Path directory, DataFixer dataFixer, boolean dsync) {
-+    public ChunkStorage(org.stupidcraft.linearpaper.region.RegionFileFormat format, int linearCompression, RegionStorageInfo storageKey, Path directory, DataFixer dataFixer, boolean dsync) {
-         this.fixerUpper = dataFixer;
--        this.regionFileCache = new RegionFileStorage(storageKey, directory, dsync, true); // Paper - rewrite chunk system; async chunk IO & Attempt to recalculate regionfile header if it is corrupt
-+        this.regionFileCache = new RegionFileStorage(format, linearCompression, storageKey, directory, dsync, true); // Paper - rewrite chunk system; async chunk IO & Attempt to recalculate regionfile header if it is corrupt
-     }
- 
-     public boolean isOldChunkAround(ChunkPos chunkPos, int checkRadius) {
-diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/IOWorker.java b/src/main/java/net/minecraft/world/level/chunk/storage/IOWorker.java
-index 5165683b6ba4921663a3d564b87b6561a0744e53..91ab62499aa6e7c52beb8bb8766b9901fae21d17 100644
---- a/src/main/java/net/minecraft/world/level/chunk/storage/IOWorker.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/storage/IOWorker.java
-@@ -37,8 +37,8 @@ public class IOWorker implements ChunkScanAccess, AutoCloseable {
-     private final Long2ObjectLinkedOpenHashMap<CompletableFuture<BitSet>> regionCacheForBlender = new Long2ObjectLinkedOpenHashMap<>();
-     private static final int REGION_CACHE_SIZE = 1024;
- 
--    protected IOWorker(RegionStorageInfo storageKey, Path directory, boolean dsync) {
--        this.storage = new RegionFileStorage(storageKey, directory, dsync);
-+    protected IOWorker(org.stupidcraft.linearpaper.region.RegionFileFormat format, int linearCompression, RegionStorageInfo storageKey, Path directory, boolean dsync) {
-+        this.storage = new RegionFileStorage(format, linearCompression, storageKey, directory, dsync);
-         this.mailbox = new ProcessorMailbox<>(
-             new StrictQueue.FixedPriorityQueue(IOWorker.Priority.values().length), Util.ioPool(), "IOWorker-" + storageKey.type()
-         );
-diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RecreatingChunkStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RecreatingChunkStorage.java
-index 97ac637766cc2d870b404fdf398a6a052ae91f4a..9939d44f67d9fc67584db31e6889316eebb4bb6a 100644
---- a/src/main/java/net/minecraft/world/level/chunk/storage/RecreatingChunkStorage.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/storage/RecreatingChunkStorage.java
-@@ -13,11 +13,11 @@ public class RecreatingChunkStorage extends ChunkStorage {
-     private final Path writeFolder;
- 
-     public RecreatingChunkStorage(
--        RegionStorageInfo storageKey, Path directory, RegionStorageInfo outputStorageKey, Path outputDirectory, DataFixer dataFixer, boolean dsync
-+        org.stupidcraft.linearpaper.region.RegionFileFormat format, int linearCompression, RegionStorageInfo storageKey, Path directory, RegionStorageInfo outputStorageKey, Path outputDirectory, DataFixer dataFixer, boolean dsync
-     ) {
--        super(storageKey, directory, dataFixer, dsync);
-+        super(format, linearCompression, storageKey, directory, dataFixer, dsync);
-         this.writeFolder = outputDirectory;
--        this.writeWorker = new IOWorker(outputStorageKey, outputDirectory, dsync);
-+        this.writeWorker = new IOWorker(format, linearCompression, outputStorageKey, outputDirectory, dsync);
-     }
- 
-     @Override
-diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RecreatingSimpleRegionStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RecreatingSimpleRegionStorage.java
-index 23adc60c8a066f9acde3c18c48629e07a1ec56a6..413556c9ac5659f9f46e7bd5433e6ed5abb308b6 100644
---- a/src/main/java/net/minecraft/world/level/chunk/storage/RecreatingSimpleRegionStorage.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/storage/RecreatingSimpleRegionStorage.java
-@@ -15,6 +15,10 @@ public class RecreatingSimpleRegionStorage extends SimpleRegionStorage {
-     private final Path writeFolder;
- 
-     public RecreatingSimpleRegionStorage(
-+        // LinearPaper start
-+        org.stupidcraft.linearpaper.region.RegionFileFormat format,
-+        int linearCompression,
-+        // LinearPaper end
-         RegionStorageInfo storageKey,
-         Path directory,
-         RegionStorageInfo outputStorageKey,
-@@ -23,9 +27,9 @@ public class RecreatingSimpleRegionStorage extends SimpleRegionStorage {
-         boolean dsync,
-         DataFixTypes dataFixTypes
-     ) {
--        super(storageKey, directory, dataFixer, dsync, dataFixTypes);
-+        super(format, linearCompression, storageKey, directory, dataFixer, dsync, dataFixTypes);
-         this.writeFolder = outputDirectory;
--        this.writeWorker = new IOWorker(outputStorageKey, outputDirectory, dsync);
-+        this.writeWorker = new IOWorker(format, linearCompression, outputStorageKey, outputDirectory, dsync);
-     }
- 
-     @Override
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 0d6f458d2830eadc0938c75a80666f9d3603cbee..99104c3bfb83b34014fcc11c4905ff7045ef145b 100644
+index 0d6f458d2830eadc0938c75a80666f9d3603cbee..d58c8d3445bf9d0a77312cd3239a21cb413ddb53 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-@@ -25,6 +25,10 @@ public class RegionFileStorage implements AutoCloseable {
-     private final RegionStorageInfo info;
-     private final Path folder;
-     private final boolean sync;
-+    // LinearPaper start
-+    public final org.stupidcraft.linearpaper.region.RegionFileFormat format;
-+    public final int linearCompression;
-+    // LinearPaper end
-     private final boolean isChunkData; // Paper
- 
-     // Paper start - cache regionfile does not exist state
-@@ -56,11 +60,15 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -56,11 +56,11 @@ public class RegionFileStorage implements AutoCloseable {
      }
      // Paper end - cache regionfile does not exist state
  
 -    protected RegionFileStorage(RegionStorageInfo storageKey, Path directory, boolean dsync) { // Paper - protected constructor
-+    protected RegionFileStorage(org.stupidcraft.linearpaper.region.RegionFileFormat format, int linearCompression, RegionStorageInfo storageKey, Path directory, boolean dsync) { // Paper - protected constructor // LinearPaper
++    protected RegionFileStorage(RegionStorageInfo storageKey, Path directory, boolean dsync) { // Paper - protected constructor // LinearPaper
          // Paper start - add isChunkData param
 -        this(storageKey, directory, dsync, false);
-+        this(format, linearCompression, storageKey, directory, dsync, false); // LinearPaper
++        this(storageKey, directory, dsync, false); // LinearPaper
      }
 -    RegionFileStorage(RegionStorageInfo storageKey, Path directory, boolean dsync, boolean isChunkData) {
-+    RegionFileStorage(org.stupidcraft.linearpaper.region.RegionFileFormat format, int linearCompression, RegionStorageInfo storageKey, Path directory, boolean dsync, boolean isChunkData) { // LinearPaper
-+        // LinearPaper start
-+        this.format = format;
-+        this.linearCompression = linearCompression;
-+        // LinearPaper end
++    RegionFileStorage(RegionStorageInfo storageKey, Path directory, boolean dsync, boolean isChunkData) { // LinearPaper
          this.isChunkData = isChunkData;
          // Paper end - add isChunkData param
          this.folder = directory;
-@@ -72,7 +80,7 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -72,7 +72,7 @@ public class RegionFileStorage implements AutoCloseable {
      @Nullable
      public static ChunkPos getRegionFileCoordinates(Path file) {
          String fileName = file.getFileName().toString();
@@ -282,7 +186,7 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..99104c3bfb83b34014fcc11c4905ff70
              return null;
          }
  
-@@ -131,16 +139,29 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -131,16 +131,29 @@ public class RegionFileStorage implements AutoCloseable {
              // Paper - only create directory if not existing only - moved down
              Path path = this.folder;
              int j = chunkcoordintpair.getRegionX();
@@ -302,7 +206,7 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..99104c3bfb83b34014fcc11c4905ff70
 +                    return null;
 +                }
              } else {
-+                String extension = switch (this.format) {
++                String extension = switch (this.info.format()) {
 +                    case LINEAR -> "linear";
 +                    default -> "mca";
 +                };
@@ -313,51 +217,38 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..99104c3bfb83b34014fcc11c4905ff70
              // Paper end - cache regionfile does not exist state
              FileUtil.createDirectoriesSafe(this.folder); // Paper - only create directory if not existing only - moved from above
 -            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile1 = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(this.info, path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // LinearPaper
-+            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile1 = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(this.linearCompression, this.info, path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // LinearPaper
++            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile1 = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(1, this.info, path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // LinearPaper
  
              this.regionCache.putAndMoveToFirst(i, regionfile1);
              // Paper start
+diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
+index 6111631c6673948b266286894603cc5e30451b02..31485b8017c5fad028bdc05ccdc5827b4e5d9805 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
++++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
+@@ -3,8 +3,8 @@ package net.minecraft.world.level.chunk.storage;
+ import net.minecraft.resources.ResourceKey;
+ import net.minecraft.world.level.Level;
+ 
+-public record RegionStorageInfo(String level, ResourceKey<Level> dimension, String type) {
++public record RegionStorageInfo(org.stupidcraft.linearpaper.region.RegionFileFormat format, String level, ResourceKey<Level> dimension, String type) { // LinearPaper
+     public RegionStorageInfo withTypeSuffix(String suffix) {
+-        return new RegionStorageInfo(this.level, this.dimension, this.type + suffix);
++        return new RegionStorageInfo(this.format, this.level, this.dimension, this.type + suffix);
+     }
+ }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
-index a4a919d8373f1535e336de7e648d41a07efb1cba..ddea645cd3a29fa1d8105d0d2d919b6508ce855d 100644
+index a4a919d8373f1535e336de7e648d41a07efb1cba..5d28042ccdc5a10f172891d5d3fe7c0a58065219 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/SectionStorage.java
-@@ -44,6 +44,10 @@ public class SectionStorage<R> extends RegionFileStorage implements AutoCloseabl
-     protected final LevelHeightAccessor levelHeightAccessor;
- 
-     public SectionStorage(
-+        // LinearPaper start
-+        org.stupidcraft.linearpaper.region.RegionFileFormat format,
-+        int linearCompression,
-+        // LinearPaper end
-         // Paper start
-         RegionStorageInfo regionStorageInfo,
-         Path path,
-@@ -55,7 +59,7 @@ public class SectionStorage<R> extends RegionFileStorage implements AutoCloseabl
+@@ -55,7 +55,7 @@ public class SectionStorage<R> extends RegionFileStorage implements AutoCloseabl
          RegistryAccess registryManager,
          LevelHeightAccessor world
      ) {
 -        super(regionStorageInfo, path, dsync); // Paper - remove mojang I/O thread
-+        super(format, linearCompression, regionStorageInfo, path, dsync); // Paper - remove mojang I/O thread // LinearPaper
++        super(regionStorageInfo, path, dsync); // Paper - remove mojang I/O thread // LinearPaper
          this.codec = codecFactory;
          this.factory = factory;
          this.registryAccess = registryManager;
-diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java
-index fa4f9afb421c7924557372cbb2f20caf9e13c81c..8a3492b5d2c291ffb5bb8de5e3bca71cc026f0e0 100644
---- a/src/main/java/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/storage/SimpleRegionStorage.java
-@@ -18,10 +18,10 @@ public class SimpleRegionStorage implements AutoCloseable {
-     private final DataFixer fixerUpper;
-     private final DataFixTypes dataFixType;
- 
--    public SimpleRegionStorage(RegionStorageInfo storageKey, Path directory, DataFixer dataFixer, boolean dsync, DataFixTypes dataFixTypes) {
-+    public SimpleRegionStorage(org.stupidcraft.linearpaper.region.RegionFileFormat format, int linearCompression, RegionStorageInfo storageKey, Path directory, DataFixer dataFixer, boolean dsync, DataFixTypes dataFixTypes) {
-         this.fixerUpper = dataFixer;
-         this.dataFixType = dataFixTypes;
--        this.worker = new IOWorker(storageKey, directory, dsync);
-+        this.worker = new IOWorker(format, linearCompression, storageKey, directory, dsync);
-     }
- 
-     public CompletableFuture<Optional<CompoundTag>> read(ChunkPos pos) {
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
 index a2ac8e822564ce0bc903c902aa5566afdc400314..935305bd84d5280db39e10ba4fa88bea914beaa3 100644
 --- a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java

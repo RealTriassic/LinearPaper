@@ -13,7 +13,4 @@
 #     mc_data dimension_type/overworld.json
 #
 
-minecraft net.minecraft.world.level.chunk.storage.IOWorker
-minecraft net.minecraft.world.level.chunk.storage.RecreatingChunkStorage
-minecraft net.minecraft.world.level.chunk.storage.RecreatingSimpleRegionStorage
-
+minecraft net.minecraft.world.level.chunk.storage.RegionStorageInfo

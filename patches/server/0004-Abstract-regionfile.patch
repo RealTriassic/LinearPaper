@@ -148,7 +148,7 @@ index 3e582c49069f2a820ba3baac03917493877d9875..6c1faa9b5cf099029bcb122731e3e50e
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
-index 1362a47943cf1a51a185a15094b1f74c94bf40ef..b3ab95f3577ec35689ffc6f019f2e19e1079331d 100644
+index 1362a47943cf1a51a185a15094b1f74c94bf40ef..340b9d9fdfa54b7bef05b8ca47b8f3c2a6e31f17 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 @@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtIo; // Paper
@@ -164,11 +164,11 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..b3ab95f3577ec35689ffc6f019f2e19e
          long sign = -remainingBytes; // sign is 1 if nonzero
          return sectors + (sign >>> 63);
      }
++    
 +    // LinearPaper start - Abstract getters
 +    public Path getRegionFile() {
 +        return this.path;
 +    }
-+
 +    public java.util.concurrent.locks.ReentrantLock getFileLock() {
 +        return this.fileLock;
 +    }
