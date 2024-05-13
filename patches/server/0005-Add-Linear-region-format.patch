@@ -20,18 +20,19 @@ index dd44de960db4faf8c71430c28b501fd2156ba4c3..ec8a3f139d984dc461c5d214bd7d58e6
      implementation("org.ow2.asm:asm-commons:9.7")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
 diff --git a/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java b/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
-index 7f6d1ccd147e5593412567bb2934ce5662da7ef0..c061303661b98b1fb1ee939230d66ca07602def4 100644
+index 7f6d1ccd147e5593412567bb2934ce5662da7ef0..ab346bc29807c5a63fb90766a37dbe0c9a45dbcb 100644
 --- a/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
 +++ b/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
-@@ -33,7 +33,6 @@ import java.util.function.Supplier;
+@@ -33,7 +33,7 @@ import java.util.function.Supplier;
  public class ThreadedWorldUpgrader {
  
      private static final Logger LOGGER = LogManager.getLogger();
 -
++    
      private final ResourceKey<LevelStem> dimensionType;
      private final String worldName;
      private final File worldDir;
-@@ -92,6 +91,7 @@ public class ThreadedWorldUpgrader {
+@@ -92,6 +92,7 @@ public class ThreadedWorldUpgrader {
  
          // Only used for profiling, let's fill it anyways just in case
          final RegionStorageInfo storageInfo = new RegionStorageInfo(
