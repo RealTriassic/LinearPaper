@@ -67,7 +67,7 @@ index ca56a0b596976448da6bb2a0e82b3d5cd4133e12..515413417c11c8390cf82faf8864d472
          // this.entityManager = new PersistentEntitySectionManager<>(Entity.class, new ServerLevel.EntityCallbacks(), entitypersistentstorage, this.entitySliceManager); // Paper // Paper - rewrite chunk system
          StructureTemplateManager structuretemplatemanager = minecraftserver.getStructureManager();
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..0e2ca7ea45a40da99a15dd66859148008ecfb614 100644
+index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..c6635cf314931f00a514351e5e6b148e495a0b0d 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -76,7 +76,7 @@ public class WorldUpgrader {
@@ -93,7 +93,7 @@ index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..0e2ca7ea45a40da99a15dd6685914800
          private static List<WorldUpgrader.FileToUpgrade> getAllChunkPositions(RegionStorageInfo key, Path regionDirectory) {
              File[] afile = regionDirectory.toFile().listFiles((file, s) -> {
 -                return s.endsWith(".mca");
-+                return s.endsWith(".mca") || s.endsWith(".linear"); // LinearPaper
++                return s.endsWith(".linear") || s.endsWith(".mca"); // LinearPaper
              });
  
              if (afile == null) {
@@ -107,7 +107,7 @@ index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..0e2ca7ea45a40da99a15dd6685914800
                              try {
                                  for (int i1 = 0; i1 < 32; ++i1) {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 0d6f458d2830eadc0938c75a80666f9d3603cbee..9f1f211e08f98b00e984bf08e3ce8a90ad3d3303 100644
+index 0d6f458d2830eadc0938c75a80666f9d3603cbee..0158185ea07c0713a544b50c233007fc2be0ff63 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -72,7 +72,7 @@ public class RegionFileStorage implements AutoCloseable {
@@ -115,7 +115,7 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..9f1f211e08f98b00e984bf08e3ce8a90
      public static ChunkPos getRegionFileCoordinates(Path file) {
          String fileName = file.getFileName().toString();
 -        if (!fileName.startsWith("r.") || !fileName.endsWith(".mca")) {
-+        if (!fileName.startsWith("r.") || !fileName.endsWith(".mca") || !fileName.endsWith(".linear")) { // LinearPaper
++        if (!fileName.startsWith("r.") || !fileName.endsWith(".linear") || !fileName.endsWith(".mca")) { // LinearPaper
              return null;
          }
  
