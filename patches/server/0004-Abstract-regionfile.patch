@@ -148,7 +148,7 @@ index 3e582c49069f2a820ba3baac03917493877d9875..6c1faa9b5cf099029bcb122731e3e50e
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
-index 1362a47943cf1a51a185a15094b1f74c94bf40ef..3a8dca55e169b627ad071e4f21a773962be42ac9 100644
+index 1362a47943cf1a51a185a15094b1f74c94bf40ef..b3ab95f3577ec35689ffc6f019f2e19e1079331d 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 @@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtIo; // Paper
@@ -160,7 +160,7 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..3a8dca55e169b627ad071e4f21a77396
  
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int SECTOR_BYTES = 4096;
-@@ -59,6 +59,14 @@ public class RegionFile implements AutoCloseable {
+@@ -59,6 +59,15 @@ public class RegionFile implements AutoCloseable {
          long sign = -remainingBytes; // sign is 1 if nonzero
          return sectors + (sign >>> 63);
      }
@@ -172,10 +172,11 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..3a8dca55e169b627ad071e4f21a77396
 +    public java.util.concurrent.locks.ReentrantLock getFileLock() {
 +        return this.fileLock;
 +    }
++    // LinearPaper end
  
      private static final CompoundTag OVERSIZED_COMPOUND = new CompoundTag();
  
-@@ -130,7 +138,7 @@ public class RegionFile implements AutoCloseable {
+@@ -130,7 +139,7 @@ public class RegionFile implements AutoCloseable {
      }
  
      // note: only call for CHUNK regionfiles
@@ -184,7 +185,7 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..3a8dca55e169b627ad071e4f21a77396
          if (!this.canRecalcHeader) {
              return false;
          }
-@@ -972,10 +980,10 @@ public class RegionFile implements AutoCloseable {
+@@ -972,10 +981,10 @@ public class RegionFile implements AutoCloseable {
      private static int getChunkIndex(int x, int z) {
          return (x & 31) + (z & 31) * 32;
      }
@@ -197,7 +198,7 @@ index 1362a47943cf1a51a185a15094b1f74c94bf40ef..3a8dca55e169b627ad071e4f21a77396
          final int offset = getChunkIndex(x, z);
          boolean previous = this.oversized[offset] == 1;
          this.oversized[offset] = (byte) (oversized ? 1 : 0);
-@@ -1014,7 +1022,7 @@ public class RegionFile implements AutoCloseable {
+@@ -1014,7 +1023,7 @@ public class RegionFile implements AutoCloseable {
          return this.path.getParent().resolve(this.path.getFileName().toString().replaceAll("\\.mca$", "") + "_oversized_" + x + "_" + z + ".nbt");
      }
  
