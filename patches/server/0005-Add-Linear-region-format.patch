@@ -20,31 +20,15 @@ index dd44de960db4faf8c71430c28b501fd2156ba4c3..ec8a3f139d984dc461c5d214bd7d58e6
      implementation("org.ow2.asm:asm-commons:9.7")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
 diff --git a/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java b/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
-index 7f6d1ccd147e5593412567bb2934ce5662da7ef0..5c3888f28805b5d04258f139a7bc52d69b17d68b 100644
+index 7f6d1ccd147e5593412567bb2934ce5662da7ef0..744befe41533a117384cb78e2ad93ff9d6aa73ce 100644
 --- a/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
 +++ b/src/main/java/io/papermc/paper/world/ThreadedWorldUpgrader.java
-@@ -9,7 +9,6 @@ import net.minecraft.nbt.CompoundTag;
- import net.minecraft.resources.ResourceKey;
- import net.minecraft.util.worldupdate.WorldUpgrader;
- import net.minecraft.world.level.ChunkPos;
--import net.minecraft.world.level.Level;
- import net.minecraft.world.level.chunk.ChunkGenerator;
- import net.minecraft.world.level.chunk.storage.ChunkStorage;
- import net.minecraft.world.level.chunk.storage.RegionFileStorage;
-@@ -19,6 +18,7 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
- import net.minecraft.world.level.storage.LevelStorageSource;
- import org.apache.logging.log4j.LogManager;
- import org.apache.logging.log4j.Logger;
-+import org.bukkit.Bukkit;
- import java.io.File;
- import java.io.IOException;
- import java.text.DecimalFormat;
 @@ -97,8 +97,10 @@ public class ThreadedWorldUpgrader {
              "region"
          );
  
-+        org.stupidcraft.linearpaper.region.RegionFileFormat formatName = ((org.bukkit.craftbukkit.CraftWorld) Bukkit.getWorld(worldName)).getHandle().linearConfig.regionFormat;
-+        int linearCompression = ((org.bukkit.craftbukkit.CraftWorld) Bukkit.getWorld(worldName)).getHandle().linearConfig.linearCompressionLevel;
++        org.stupidcraft.linearpaper.region.RegionFileFormat formatName = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.regionFormat;
++        int linearCompression = ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(worldName)).getHandle().linearConfig.linearCompressionLevel;
          final WorldInfo info = new WorldInfo(() -> worldPersistentData,
 -                new ChunkStorage(storageInfo, regionFolder.toPath(), this.dataFixer, false), this.removeCaches, this.dimensionType, this.generatorKey);
 +                new ChunkStorage(formatName, linearCompression, storageInfo, regionFolder.toPath(), this.dataFixer, false), this.removeCaches, this.dimensionType, this.generatorKey);
