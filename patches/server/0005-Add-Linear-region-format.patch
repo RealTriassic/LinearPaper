@@ -107,7 +107,7 @@ index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..0e2ca7ea45a40da99a15dd6685914800
                              try {
                                  for (int i1 = 0; i1 < 32; ++i1) {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 0d6f458d2830eadc0938c75a80666f9d3603cbee..d185f1c1c8a785617bb4c55f4cf43b81b2b98877 100644
+index 0d6f458d2830eadc0938c75a80666f9d3603cbee..9f1f211e08f98b00e984bf08e3ce8a90ad3d3303 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -72,7 +72,7 @@ public class RegionFileStorage implements AutoCloseable {
@@ -119,7 +119,7 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..d185f1c1c8a785617bb4c55f4cf43b81
              return null;
          }
  
-@@ -131,16 +131,23 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -131,16 +131,25 @@ public class RegionFileStorage implements AutoCloseable {
              // Paper - only create directory if not existing only - moved down
              Path path = this.folder;
              int j = chunkcoordintpair.getRegionX();
@@ -133,8 +133,10 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..d185f1c1c8a785617bb4c55f4cf43b81
 +                Path linear = path.resolve("r." + j + "." + chunkcoordintpair.getRegionZ() + ".linear");
 +                Path anvil = path.resolve("r." + j + "." + chunkcoordintpair.getRegionZ() + ".mca");
 +                path1 = java.nio.file.Files.exists(linear) ? linear : java.nio.file.Files.exists(anvil) ? anvil : null;
-+                if (path1 == null)
++                if (path1 == null) {
 +                    this.markNonExisting(regionPos);
++                    return null; // CraftBukkit
++                }
              } else {
 +                String extension = this.info.format() == org.stupidcraft.linearpaper.region.RegionFileFormat.LINEAR ? "linear" : "mca";
 +                path1 = path.resolve("r." + j + "." + chunkcoordintpair.getRegionZ() + "." + extension);
