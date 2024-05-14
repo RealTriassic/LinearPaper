@@ -27,10 +27,10 @@ index 6a04f0ed36bd92b408591ae81b5870f63da28f17..31da4e94e10673ecdd27dd2213575b2d
  
          return flag3;
 diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
-index 1b74e1800ca9cf892cdf10b9c006a77e5be725ee..2add25762a9ded65a832481e2a1f8323b2352d15 100644
+index 1b74e1800ca9cf892cdf10b9c006a77e5be725ee..5e3b99cbde0aa59754fb6376af67b5e1e3a1e6e6 100644
 --- a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 +++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
-@@ -167,4 +167,12 @@ public class LinearConfig {
+@@ -167,4 +167,17 @@ public class LinearConfig {
          }
          return builder.build();
      }
@@ -41,21 +41,40 @@ index 1b74e1800ca9cf892cdf10b9c006a77e5be725ee..2add25762a9ded65a832481e2a1f8323
 +    private static void linearSettings() {
 +        linearFlushFrequency = getInt("linear.flush-frequency", linearFlushFrequency);
 +        linearFlushThreads = getInt("linear.flush-max-threads", linearFlushThreads);
++
++        if (linearFlushThreads < 0)
++            linearFlushThreads = Math.max(Runtime.getRuntime().availableProcessors() + linearFlushThreads, 1);
++        else
++            linearFlushThreads = Math.max(linearFlushThreads, 1);
 +    }
  }
 diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
-index c1e15de29d24b33a6abb16f641c1fffaf2ac0939..c240f481508f93cf80572e5cfabea20da0e145cc 100644
+index c1e15de29d24b33a6abb16f641c1fffaf2ac0939..267474bdf5969b8028a3b4573828ebd47e60d378 100644
 --- a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
 +++ b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
-@@ -5,6 +5,7 @@ import java.util.Map;
+@@ -3,8 +3,12 @@ package org.stupidcraft.linearpaper;
+ import java.util.List;
+ import java.util.Map;
  import java.util.function.Predicate;
++import java.util.logging.Level;
  import org.apache.commons.lang.BooleanUtils;
  import org.bukkit.configuration.ConfigurationSection;
 +import org.stupidcraft.linearpaper.region.RegionFileFormat;
++
++import static org.stupidcraft.linearpaper.LinearConfig.log;
  
  @SuppressWarnings("unused")
  public class LinearWorldConfig {
-@@ -108,4 +109,12 @@ public class LinearWorldConfig {
+@@ -17,7 +21,7 @@ public class LinearWorldConfig {
+     }
+ 
+     public void init() {
+-        LinearConfig.log("-------- World Settings For [" + worldName + "] --------");
++        log("-------- World Settings For [" + worldName + "] --------");
+         LinearConfig.readConfig(LinearWorldConfig.class, this);
+     }
+ 
+@@ -108,4 +112,23 @@ public class LinearWorldConfig {
          final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null);
          return value.isEmpty() ? fallback : value;
      }
@@ -65,7 +84,18 @@ index c1e15de29d24b33a6abb16f641c1fffaf2ac0939..c240f481508f93cf80572e5cfabea20d
 +
 +    private void regionFormatSettings() {
 +        regionFormat = RegionFileFormat.fromString(getString("format", regionFormat.name()));
++        if (regionFormat.equals(RegionFileFormat.INVALID)) {
++            log(Level.SEVERE, "Unknown region format in linear.yml: " + regionFormat);
++            log(Level.SEVERE, "Falling back to ANVIL region file format.");
++            regionFormat = RegionFileFormat.ANVIL;
++        }
++
 +        linearCompressionLevel = getInt("linear.compression-level", linearCompressionLevel);
++        if (linearCompressionLevel > 23 || linearCompressionLevel < 1) {
++            log(Level.SEVERE, "Linear region compression level should be between 1 and 22 in linear.yml: " + linearCompressionLevel);
++            log(Level.SEVERE, "Falling back to compression level 1.");
++            linearCompressionLevel = 1;
++        }
 +    }
  }
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java b/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java
