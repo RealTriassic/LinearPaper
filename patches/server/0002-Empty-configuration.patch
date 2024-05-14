@@ -266,10 +266,10 @@ index 0000000000000000000000000000000000000000..1b74e1800ca9cf892cdf10b9c006a77e
 +}
 diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c1e15de29d24b33a6abb16f641c1fffaf2ac0939
+index 0000000000000000000000000000000000000000..4e4bafaec9b8d40ba9252d53167e34e8f684c5b8
 --- /dev/null
 +++ b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
-@@ -0,0 +1,111 @@
+@@ -0,0 +1,113 @@
 +package org.stupidcraft.linearpaper;
 +
 +import java.util.List;
@@ -277,6 +277,8 @@ index 0000000000000000000000000000000000000000..c1e15de29d24b33a6abb16f641c1fffa
 +import java.util.function.Predicate;
 +import org.apache.commons.lang.BooleanUtils;
 +import org.bukkit.configuration.ConfigurationSection;
++
++import static org.stupidcraft.linearpaper.LinearConfig.log;
 +
 +@SuppressWarnings("unused")
 +public class LinearWorldConfig {
@@ -289,7 +291,7 @@ index 0000000000000000000000000000000000000000..c1e15de29d24b33a6abb16f641c1fffa
 +    }
 +
 +    public void init() {
-+        LinearConfig.log("-------- World Settings For [" + worldName + "] --------");
++        log("-------- World Settings For [" + worldName + "] --------");
 +        LinearConfig.readConfig(LinearWorldConfig.class, this);
 +    }
 +
