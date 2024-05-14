@@ -20,7 +20,7 @@ index dd44de960db4faf8c71430c28b501fd2156ba4c3..ec8a3f139d984dc461c5d214bd7d58e6
      implementation("org.ow2.asm:asm-commons:9.7")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..45ede7d4a2fa2921fdb63c0cc0039e4e3e245f51 100644
+index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..f8935b34d387aab443810b7babce77ca5effd0d3 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -76,7 +76,7 @@ public class WorldUpgrader {
@@ -41,17 +41,8 @@ index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..45ede7d4a2fa2921fdb63c0cc0039e4e
              });
  
              if (afile == null) {
-@@ -426,7 +426,7 @@ public class WorldUpgrader {
-                         List<ChunkPos> list1 = Lists.newArrayList();
- 
-                         try {
--                            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(key, file.toPath(), regionDirectory, true); // LinearPaper
-+                            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(1, key, file.toPath(), regionDirectory, true); // LinearPaper // TODO Set linear compression value.
- 
-                             try {
-                                 for (int i1 = 0; i1 < 32; ++i1) {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 0d6f458d2830eadc0938c75a80666f9d3603cbee..17a15fd370507e9c630de12cdac760edaf031929 100644
+index 0d6f458d2830eadc0938c75a80666f9d3603cbee..c498de083be3af49714ab5d697133735235002c8 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -72,7 +72,7 @@ public class RegionFileStorage implements AutoCloseable {
@@ -63,7 +54,7 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..17a15fd370507e9c630de12cdac760ed
              return null;
          }
  
-@@ -131,16 +131,25 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -131,11 +131,20 @@ public class RegionFileStorage implements AutoCloseable {
              // Paper - only create directory if not existing only - moved down
              Path path = this.folder;
              int j = chunkcoordintpair.getRegionX();
@@ -88,17 +79,11 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..17a15fd370507e9c630de12cdac760ed
                  this.createRegionFile(regionPos);
              }
              // Paper end - cache regionfile does not exist state
-             FileUtil.createDirectoriesSafe(this.folder); // Paper - only create directory if not existing only - moved from above
--            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile1 = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(this.info, path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // LinearPaper
-+            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile1 = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(1, this.info, path1, this.folder, this.sync, this.isChunkData); // Paper - allow for chunk regionfiles to regen header // LinearPaper
- 
-             this.regionCache.putAndMoveToFirst(i, regionfile1);
-             // Paper start
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
-index 6111631c6673948b266286894603cc5e30451b02..6fc7cfac99f40f328a824d43cbdf2f9bc9ed1d43 100644
+index 6111631c6673948b266286894603cc5e30451b02..a17428f1fb14adf865f3a8edd24bd5d5444087ca 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
-@@ -7,4 +7,13 @@ public record RegionStorageInfo(String level, ResourceKey<Level> dimension, Stri
+@@ -7,4 +7,20 @@ public record RegionStorageInfo(String level, ResourceKey<Level> dimension, Stri
      public RegionStorageInfo withTypeSuffix(String suffix) {
          return new RegionStorageInfo(this.level, this.dimension, this.type + suffix);
      }
@@ -110,39 +95,26 @@ index 6111631c6673948b266286894603cc5e30451b02..6fc7cfac99f40f328a824d43cbdf2f9b
 +            .linearConfig
 +            .regionFormat;
 +    }
++
++    public int linearCompressionLevel() {
++        return ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(level))
++            .getHandle()
++            .linearConfig
++            .linearCompressionLevel;
++    }
 +    // LinearPaper end
  }
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
-index a2ac8e822564ce0bc903c902aa5566afdc400314..935305bd84d5280db39e10ba4fa88bea914beaa3 100644
+index a2ac8e822564ce0bc903c902aa5566afdc400314..28cd1b1b4bd60596f6439208feacbff97bd84161 100644
 --- a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
 +++ b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
-@@ -7,19 +7,23 @@ import net.minecraft.world.level.chunk.storage.RegionFileVersion;
- import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
- 
- public class AbstractRegionFileFactory {
--    public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path directory, Path path, boolean dsync) throws IOException {
--        return getAbstractRegionFile(storageKey, directory, path, RegionFileVersion.getCompressionFormat(), dsync);
-+    public static AbstractRegionFile getAbstractRegionFile(int linearCompression, RegionStorageInfo storageKey, Path directory, Path path, boolean dsync) throws IOException {
-+        return getAbstractRegionFile(linearCompression, storageKey, directory, path, RegionFileVersion.getCompressionFormat(), dsync);
+@@ -20,6 +20,10 @@ public class AbstractRegionFileFactory {
      }
  
--    public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path directory, Path path, boolean dsync, boolean canRecalcHeader) throws IOException {
--        return getAbstractRegionFile(storageKey, directory, path, RegionFileVersion.getCompressionFormat(), dsync, canRecalcHeader);
-+    public static AbstractRegionFile getAbstractRegionFile(int linearCompression, RegionStorageInfo storageKey, Path directory, Path path, boolean dsync, boolean canRecalcHeader) throws IOException {
-+        return getAbstractRegionFile(linearCompression, storageKey, directory, path, RegionFileVersion.getCompressionFormat(), dsync, canRecalcHeader);
-     }
- 
--    public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync) throws IOException {
--        return getAbstractRegionFile(storageKey, path, directory, compressionFormat, dsync, true);
-+    public static AbstractRegionFile getAbstractRegionFile(int linearCompression, RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync) throws IOException {
-+        return getAbstractRegionFile(linearCompression, storageKey, path, directory, compressionFormat, dsync, true);
-     }
- 
--    public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync, boolean canRecalcHeader) throws IOException {
+     public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync, boolean canRecalcHeader) throws IOException {
 -        return new RegionFile(storageKey, path, directory, compressionFormat, dsync, canRecalcHeader);
-+    public static AbstractRegionFile getAbstractRegionFile(int linearCompression, RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync, boolean canRecalcHeader) throws IOException {
 +        if (path.toString().endsWith(".linear")) {
-+            return new LinearRegionFile(path, linearCompression);
++            return new LinearRegionFile(path, storageKey.linearCompressionLevel());
 +        } else {
 +            return new RegionFile(storageKey, path, directory, compressionFormat, dsync, canRecalcHeader);
 +        }
