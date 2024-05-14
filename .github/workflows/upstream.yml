@@ -32,8 +32,8 @@ jobs:
       - name: Upload Paperclip Jar
         uses: actions/upload-artifact@v4
         with:
-          name: linearpurpur-artifacts
-          path: build/libs/linearpurpur-paperclip-*-reobf.jar
+          name: linearpaper-artifacts
+          path: build/libs/linearpaper-paperclip-*-reobf.jar
           compression-level: 0
 
       - name: Push changes
