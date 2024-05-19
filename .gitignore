@@ -1,59 +1,8 @@
-# JVM crash related
-core.*
-hs_err_pid*
-
-# Intellij
-.idea/
-*.iml
-*.ipr
-*.iws
-out/
-
-# Eclipse
-.classpath
-.project
-.settings/
-
-# netbeans
-nbproject/
-nbactions.xml
-
-# Gradle
-!gradle-wrapper.jar
-.gradle/
-build/
-*/build/
-
-# we use maven!
-build.xml
-
-# Maven
-log/
-target/
-dependency-reduced-pom.xml
-
-# various other potential build files
-bin/
-dist/
-manifest.mf
-
-# Mac
-.DS_Store/
-.DS_Store
-
-# vim
-.*.sw[a-p]
-
-# Linux temp files
-*~
-
-# other stuff
-run/
-
 LinearPaper-API
-LinearPaper-MojangAPI
 LinearPaper-Server
 paper-api-generator
-*.jar
-test-plugin.settings.gradle.kts
 
+build/
+.gradle/
+
+.idea/
