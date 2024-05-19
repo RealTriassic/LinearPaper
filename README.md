@@ -1,6 +1,6 @@
 # LinearPaper
 
-A fork of [Paper](https://github.com/PaperMC/Purpur) which adds support for the **experimental** [Linear region file format](https://github.com/xymb-endcrystalme/LinearRegionFileFormatTools) to the dedicated server.
+A fork of [Paper](https://github.com/PaperMC/Paper) which adds support for the **experimental** [Linear region file format](https://github.com/xymb-endcrystalme/LinearRegionFileFormatTools) to the dedicated server.
 
 > [!CAUTION]
 Starting with Minecraft 1.20.6, we are based on Paper, instead of Purpur. All Linear configuration options
