@@ -45,11 +45,7 @@ rm -rf "$temp_dir"
 # If local and upstream commits differ, update and apply changes
 if [ "$currentCommit" != "$upstreamCommit" ]; then
     sed -i 's/paperCommit = .*/paperCommit = '"$upstreamCommit"'/' gradle.properties \
-    && { ./gradlew applyPatches --stacktrace && ./gradlew build --stacktrace && ./gradlew rebuildPatches --stacktrace; } \
-    || exit
-    git add . && ./scripts/upstreamCommit.sh "$currentCommit" "$upstreamCommit"
+    && git add . && ./scripts/upstreamCommit.sh "$currentCommit" "$upstreamCommit"
 else
     echo "Exiting, current commit is already up-to-date."
 fi
-
-
