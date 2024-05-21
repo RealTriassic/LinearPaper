@@ -5,10 +5,10 @@ Subject: [PATCH] Region format configuration
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index dbc86b8d4d2af6e5f7e678f2bb77fd39b85c04c5..d06865118568988744a5a3d2ba93f4038f77cbb2 100644
+index 0ed42fa899721f83b598db05be1b5f321af3614a..f13ce474aa0ef792b5dc5592235c7033e5bc2708 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -887,7 +887,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -884,7 +884,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              // Paper start - rewrite chunk system
              worldserver.save((ProgressListener) null, flush, worldserver.noSave && !force, close);
              if (flush) {
@@ -17,7 +17,7 @@ index dbc86b8d4d2af6e5f7e678f2bb77fd39b85c04c5..d06865118568988744a5a3d2ba93f403
              }
              // Paper end - rewrite chunk system
          }
-@@ -911,7 +911,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -908,7 +908,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  //MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // Paper - move up
              }
  

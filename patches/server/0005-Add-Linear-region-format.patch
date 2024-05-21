@@ -5,7 +5,7 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 27196190a858075d1295983a180342399c826b94..6e0bd2e210cb1e8182fcbdd17cec6e62e0442ea2 100644
+index 1cd5099c3643d85f1148aa0f439808a3b476cdae..ce7b3544e670551ccc02e090d7c25b8370731171 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -30,6 +30,10 @@ dependencies {
@@ -20,15 +20,15 @@ index 27196190a858075d1295983a180342399c826b94..6e0bd2e210cb1e8182fcbdd17cec6e62
      implementation("org.ow2.asm:asm-commons:9.7")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..f8935b34d387aab443810b7babce77ca5effd0d3 100644
+index fdbae0c9300e2e47147d0e1eb2a108de92c8d588..71e1b030d226315bf4b4d79532130d3928c81585 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -76,7 +76,7 @@ public class WorldUpgrader {
      volatile int skipped;
      final Reference2FloatMap<ResourceKey<Level>> progressMap = Reference2FloatMaps.synchronize(new Reference2FloatOpenHashMap());
      volatile Component status = Component.translatable("optimizeWorld.stage.counting");
--    public static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
-+    public static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.(linear | mca)$"); // LinearPaper
+-    static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
++    static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.(linear | mca)$"); // LinearPaper
      final DimensionDataStorage overworldDataStorage;
  
      public WorldUpgrader(LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, RegistryAccess dynamicRegistryManager, boolean eraseCache, boolean recreateRegionFiles) {
@@ -42,7 +42,7 @@ index 6c1faa9b5cf099029bcb122731e3e50e46a4abf0..f8935b34d387aab443810b7babce77ca
  
              if (afile == null) {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 0d6f458d2830eadc0938c75a80666f9d3603cbee..c498de083be3af49714ab5d697133735235002c8 100644
+index 37342b281bf9595f21cc0fb2e6f8ab0011cbc348..5e2668ced9aa7ad1d4ab09f55cd009b4ec335f89 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -72,7 +72,7 @@ public class RegionFileStorage implements AutoCloseable {
@@ -54,7 +54,7 @@ index 0d6f458d2830eadc0938c75a80666f9d3603cbee..c498de083be3af49714ab5d697133735
              return null;
          }
  
-@@ -131,11 +131,20 @@ public class RegionFileStorage implements AutoCloseable {
+@@ -133,11 +133,20 @@ public class RegionFileStorage implements AutoCloseable {
              // Paper - only create directory if not existing only - moved down
              Path path = this.folder;
              int j = chunkcoordintpair.getRegionX();
