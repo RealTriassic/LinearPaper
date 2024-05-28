@@ -17,10 +17,10 @@ index 2eb9c584cc77237f1c82d880a51a3f8b51008d73..edbcbbb0a6cbc2d278cec861a0670cd5
          if (this.convertOldUsers()) {
              this.getProfileCache().save(false); // Paper
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 0a8eeebb2d702ebcefd9f26cc0f41d1eab497902..420248eb3508f85e454d064acfbb05090c5b7d22 100644
+index 14281a4e72f49dc4eb2ca3da8479c1f81a3a175d..b1b459b73fc81358544f4599384d7f79fdfb20a6 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -168,6 +168,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -169,6 +169,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          return this.paperConfig;
      }
      // Paper end - add paper world config
@@ -28,7 +28,7 @@ index 0a8eeebb2d702ebcefd9f26cc0f41d1eab497902..420248eb3508f85e454d064acfbb0509
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
-@@ -207,6 +208,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -208,6 +209,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config; Async-Anti-Xray: Pass executor
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
@@ -37,7 +37,7 @@ index 0a8eeebb2d702ebcefd9f26cc0f41d1eab497902..420248eb3508f85e454d064acfbb0509
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index af015237214cebc4d1c4bb9e9c5f939d433e365c..1526caeac98a8934101ec022d578b0c9fdbe5dd5 100644
+index 94a31c8f903eb61eb6d203e8e6fe8fb0beca28b1..47c77653c34ae1775166aa121ea174ec28b6c1c3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1033,6 +1033,7 @@ public final class CraftServer implements Server {
@@ -56,7 +56,7 @@ index af015237214cebc4d1c4bb9e9c5f939d433e365c..1526caeac98a8934101ec022d578b0c9
          }
  
          Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
-@@ -3029,6 +3031,12 @@ public final class CraftServer implements Server {
+@@ -3030,6 +3032,12 @@ public final class CraftServer implements Server {
              return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
          }
  
