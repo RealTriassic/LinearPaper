@@ -5,7 +5,7 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 63454390ae806598a389f200e845c1ee7d4b901b..ddb020e991b332fa44cafc20e6e267d5663ad14d 100644
+index e664b6da71c8891a7b5740af50ea74f6b4669db2..893ebe7534949597bd7d846c69dbd0d386adcfc1 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -30,6 +30,10 @@ dependencies {
@@ -118,10 +118,10 @@ index fb05d7b09fde10e42de42987df64152d7a8099d6..3cf9093fd657a68ad3b99714472d8140
  }
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da587b24a5ee
+index 0000000000000000000000000000000000000000..491a318503d39870e480f639fb3294b873b67352
 --- /dev/null
 +++ b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java
-@@ -0,0 +1,313 @@
+@@ -0,0 +1,300 @@
 +package org.stupidcraft.linearpaper.region;
 +
 +import com.github.luben.zstd.ZstdInputStream;
@@ -151,10 +151,10 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +import net.jpountz.lz4.LZ4FastDecompressor;
 +import net.minecraft.nbt.CompoundTag;
 +import net.minecraft.world.level.ChunkPos;
-+import net.minecraft.world.level.chunk.status.ChunkStatus;
 +import org.slf4j.Logger;
 +
 +public class LinearRegionFile implements AbstractRegionFile, AutoCloseable {
++
 +    private static final long SUPERBLOCK = -4323716122432332390L;
 +    private static final byte VERSION = 2;
 +    private static final int HEADER_SIZE = 32;
@@ -165,13 +165,12 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +    private final byte[][] buffer = new byte[1024][];
 +    private final int[] bufferUncompressedSize = new int[1024];
 +    private final int[] chunkTimestamps = new int[1024];
-+    private final ChunkStatus[] statuses = new ChunkStatus[1024];
 +    private final LZ4Compressor compressor;
 +    private final LZ4FastDecompressor decompressor;
 +    private final int compressionLevel;
++    private final AtomicBoolean markedToSave = new AtomicBoolean(false);
 +    public boolean closed = false;
 +    public Path path;
-+    private final AtomicBoolean markedToSave = new AtomicBoolean(false);
 +
 +
 +    public LinearRegionFile(Path file, int compression) throws IOException {
@@ -271,7 +270,7 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +        try {
 +            save();
 +        } catch (IOException e) {
-+            LOGGER.error("Failed to flush region file " + path.toAbsolutePath(), e);
++            LOGGER.error("Failed to flush region file {}", path.toAbsolutePath(), e);
 +        }
 +    }
 +
@@ -333,10 +332,6 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +        Files.move(tempFile.toPath(), this.path, StandardCopyOption.REPLACE_EXISTING);
 +    }
 +
-+    public void setStatus(int x, int z, ChunkStatus status) {
-+        this.statuses[getChunkIndex(x, z)] = status;
-+    }
-+
 +    public synchronized void write(ChunkPos pos, ByteBuffer buffer) {
 +        try {
 +            byte[] b = toByteArray(new ByteArrayInputStream(buffer.array()));
@@ -353,7 +348,7 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +            this.chunkTimestamps[index] = getTimestamp();
 +            this.bufferUncompressedSize[getChunkIndex(pos.x, pos.z)] = uncompressedSize;
 +        } catch (IOException e) {
-+            LOGGER.error("Chunk write IOException " + e + " " + this.path);
++            LOGGER.error("Chunk write IOException {} {}", e, this.path);
 +        }
 +        markToSave();
 +    }
@@ -384,10 +379,6 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +        return null;
 +    }
 +
-+    public ChunkStatus getStatusIfCached(int x, int z) {
-+        return this.statuses[getChunkIndex(x, z)];
-+    }
-+
 +    public void clear(ChunkPos pos) {
 +        int i = getChunkIndex(pos.x, pos.z);
 +        this.buffer[i] = null;
@@ -404,10 +395,6 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +        if (closed) return;
 +        closed = true;
 +        flush(); // sync
-+    }
-+
-+    public boolean recalculateHeader() {
-+        return false;
 +    }
 +
 +    public void setOversized(int x, int z, boolean something) {
@@ -429,7 +416,7 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +            this.pos = chunkcoordintpair;
 +        }
 +
-+        public void close() throws IOException {
++        public void close() {
 +            ByteBuffer bytebuffer = ByteBuffer.wrap(this.buf, 0, this.count);
 +            LinearRegionFile.this.write(this.pos, bytebuffer);
 +        }
@@ -437,10 +424,10 @@ index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da58
 +}
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFileFlusher.java b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFileFlusher.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..11c5dbdc855df513242e57e198aa0d752a781c80
+index 0000000000000000000000000000000000000000..ea22ee01532df5f03c7a6abcd3c6b15823ce7a6b
 --- /dev/null
 +++ b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFileFlusher.java
-@@ -0,0 +1,49 @@
+@@ -0,0 +1,50 @@
 +package org.stupidcraft.linearpaper.region;
 +
 +import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -454,6 +441,7 @@ index 0000000000000000000000000000000000000000..11c5dbdc855df513242e57e198aa0d75
 +import org.stupidcraft.linearpaper.LinearConfig;
 +
 +public class LinearRegionFileFlusher {
++
 +    private final Queue<LinearRegionFile> savingQueue = new LinkedBlockingQueue<>();
 +    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
 +        new ThreadFactoryBuilder()

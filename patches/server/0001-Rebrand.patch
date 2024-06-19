@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 4998aff0b7cb084dcda15c6a18bbe45e99b6000a..1cd5099c3643d85f1148aa0f439808a3b476cdae 100644
+index 299b7b029384c58fed80d53cc0b77c420d62eed7..e664b6da71c8891a7b5740af50ea74f6b4669db2 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,7 +13,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -37,15 +37,6 @@ index 4998aff0b7cb084dcda15c6a18bbe45e99b6000a..1cd5099c3643d85f1148aa0f439808a3
              "Build-Number" to (build ?: ""),
              "Build-Time" to Instant.now().toString(),
              "Git-Branch" to gitBranch, // Paper
-@@ -144,7 +144,7 @@ fun TaskContainer.registerRunTask(
-     name: String,
-     block: JavaExec.() -> Unit
- ): TaskProvider<JavaExec> = register<JavaExec>(name) {
--    group = "paper"
-+    group = "paperweight"
-     mainClass.set("org.bukkit.craftbukkit.Main")
-     standardInput = System.`in`
-     workingDir = rootProject.layout.projectDirectory
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..c6514ebc545a051e7090e600ab62dbed9dd3d688 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java

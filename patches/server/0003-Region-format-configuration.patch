@@ -22,10 +22,10 @@ index eb0a740f884fde081cabaec5a61c9b642a85a1b4..61345a0287aacaa4187c4d15dba2a634
  
          return flag3;
 diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
-index 1b74e1800ca9cf892cdf10b9c006a77e5be725ee..5e3b99cbde0aa59754fb6376af67b5e1e3a1e6e6 100644
+index 5870e361d964fef1e27fae753a501ae945264e62..df670041d260567ec6d9889085b512ec79b7abb3 100644
 --- a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 +++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
-@@ -167,4 +167,17 @@ public class LinearConfig {
+@@ -170,4 +170,17 @@ public class LinearConfig {
          }
          return builder.build();
      }
