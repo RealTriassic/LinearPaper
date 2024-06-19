@@ -5,20 +5,15 @@ Subject: [PATCH] Region format configuration
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 0ed42fa899721f83b598db05be1b5f321af3614a..f13ce474aa0ef792b5dc5592235c7033e5bc2708 100644
+index eb0a740f884fde081cabaec5a61c9b642a85a1b4..61345a0287aacaa4187c4d15dba2a634ceb0dd41 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -884,7 +884,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             // Paper start - rewrite chunk system
-             worldserver.save((ProgressListener) null, flush, worldserver.noSave && !force, close);
-             if (flush) {
--                MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName());
-+                MinecraftServer.LOGGER.info("ThreadedChunkStorage ({}): All chunks are saved", worldserver.getChunkSource().chunkMap.getStorageName()); // LinearPaper
-             }
-             // Paper end - rewrite chunk system
-         }
-@@ -908,7 +908,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-                 //MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // Paper - move up
+@@ -915,10 +915,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             while (iterator1.hasNext()) {
+                 ServerLevel worldserver2 = (ServerLevel) iterator1.next();
+ 
+-                MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName());
++                MinecraftServer.LOGGER.info("ThreadedChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // LinearPaper
              }
  
 -            MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");

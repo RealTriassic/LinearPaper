@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Triassic <techbyteofficial9@gmail.com>
-Date: Sat, 23 Sep 2023 01:18:14 +0300
+Date: Wed, 19 Jun 2024 19:54:13 +0300
 Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 1cd5099c3643d85f1148aa0f439808a3b476cdae..ce7b3544e670551ccc02e090d7c25b8370731171 100644
+index 63454390ae806598a389f200e845c1ee7d4b901b..ddb020e991b332fa44cafc20e6e267d5663ad14d 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -30,6 +30,10 @@ dependencies {
@@ -20,7 +20,7 @@ index 1cd5099c3643d85f1148aa0f439808a3b476cdae..ce7b3544e670551ccc02e090d7c25b83
      implementation("org.ow2.asm:asm-commons:9.7")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index fdbae0c9300e2e47147d0e1eb2a108de92c8d588..71e1b030d226315bf4b4d79532130d3928c81585 100644
+index 15706b49370ef379fe38b49d21ae721f7ca90e94..b13dd725fea382ccb78a20e0b71c5e420c382fd1 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -76,7 +76,7 @@ public class WorldUpgrader {
@@ -32,7 +32,7 @@ index fdbae0c9300e2e47147d0e1eb2a108de92c8d588..71e1b030d226315bf4b4d79532130d39
      final DimensionDataStorage overworldDataStorage;
  
      public WorldUpgrader(LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, RegistryAccess dynamicRegistryManager, boolean eraseCache, boolean recreateRegionFiles) {
-@@ -406,7 +406,7 @@ public class WorldUpgrader {
+@@ -394,7 +394,7 @@ public class WorldUpgrader {
  
          private static List<WorldUpgrader.FileToUpgrade> getAllChunkPositions(RegionStorageInfo key, Path regionDirectory) {
              File[] afile = regionDirectory.toFile().listFiles((file, s) -> {
@@ -42,43 +42,39 @@ index fdbae0c9300e2e47147d0e1eb2a108de92c8d588..71e1b030d226315bf4b4d79532130d39
  
              if (afile == null) {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 37342b281bf9595f21cc0fb2e6f8ab0011cbc348..5e2668ced9aa7ad1d4ab09f55cd009b4ec335f89 100644
+index ee34b0a87858fb5b54374d6530a1073efbb9a489..af27e8d95efff3ed6717e6bc0a97fdce8f4ff84a 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-@@ -72,7 +72,7 @@ public class RegionFileStorage implements AutoCloseable {
-     @Nullable
-     public static ChunkPos getRegionFileCoordinates(Path file) {
-         String fileName = file.getFileName().toString();
--        if (!fileName.startsWith("r.") || !fileName.endsWith(".mca")) {
-+        if (!fileName.startsWith("r.") || !fileName.endsWith(".linear") || !fileName.endsWith(".mca")) { // LinearPaper
-             return null;
+@@ -30,7 +30,10 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+     private static final int REGION_SHIFT = 5;
+     private static final int MAX_NON_EXISTING_CACHE = 1024 * 64;
+     private final it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet nonExistingRegionFiles = new it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet(MAX_NON_EXISTING_CACHE+1);
+-    private static String getRegionFileName(final int chunkX, final int chunkZ) {
++    // LinearPaper start - Linear region format
++    private static String getRegionFileName(final RegionStorageInfo info, final int chunkX, final int chunkZ) {
++        if (info.regionFormat().equals(org.stupidcraft.linearpaper.region.RegionFileFormat.LINEAR))
++            return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".linear";
+         return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".mca";
+     }
+ 
+@@ -87,7 +90,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+             this.regionCache.removeLast().close();
          }
  
-@@ -133,11 +133,20 @@ public class RegionFileStorage implements AutoCloseable {
-             // Paper - only create directory if not existing only - moved down
-             Path path = this.folder;
-             int j = chunkcoordintpair.getRegionX();
--            Path path1 = path.resolve("r." + j + "." + chunkcoordintpair.getRegionZ() + ".mca"); // Paper - diff on change
--            if (existingOnly && !java.nio.file.Files.exists(path1)) { // Paper start - cache regionfile does not exist state
--                this.markNonExisting(regionPos);
--                return null; // CraftBukkit
-+            // LinearPaper start
-+            Path path1;
-+            if (existingOnly) {
-+                Path linear = path.resolve("r." + j + "." + chunkcoordintpair.getRegionZ() + ".linear");
-+                Path anvil = path.resolve("r." + j + "." + chunkcoordintpair.getRegionZ() + ".mca");
-+                path1 = java.nio.file.Files.exists(linear) ? linear : java.nio.file.Files.exists(anvil) ? anvil : null;
-+                if (path1 == null) {
-+                    this.markNonExisting(regionPos);
-+                    return null; // CraftBukkit
-+                }
-             } else {
-+                String extension = this.info.regionFormat() == org.stupidcraft.linearpaper.region.RegionFileFormat.LINEAR ? "linear" : "mca";
-+                path1 = path.resolve("r." + j + "." + chunkcoordintpair.getRegionZ() + "." + extension);
-+                // LinearPaper end
-                 this.createRegionFile(regionPos);
+-        final Path regionPath = this.folder.resolve(getRegionFileName(chunkX, chunkZ));
++        final Path regionPath = this.folder.resolve(getRegionFileName(this.info, chunkX, chunkZ));
+ 
+         if (!java.nio.file.Files.exists(regionPath)) {
+             this.markNonExisting(key);
+@@ -129,7 +132,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+                 this.regionCache.removeLast().close();
              }
-             // Paper end - cache regionfile does not exist state
+ 
+-            final Path regionPath = this.folder.resolve(getRegionFileName(chunkcoordintpair.x, chunkcoordintpair.z));
++            final Path regionPath = this.folder.resolve(getRegionFileName(this.info, chunkcoordintpair.x, chunkcoordintpair.z)); // LinearPaper
+ 
+             this.createRegionFile(key);
+ 
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
 index 6111631c6673948b266286894603cc5e30451b02..a17428f1fb14adf865f3a8edd24bd5d5444087ca 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
@@ -105,27 +101,27 @@ index 6111631c6673948b266286894603cc5e30451b02..a17428f1fb14adf865f3a8edd24bd5d5
 +    // LinearPaper end
  }
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
-index a2ac8e822564ce0bc903c902aa5566afdc400314..28cd1b1b4bd60596f6439208feacbff97bd84161 100644
+index fb05d7b09fde10e42de42987df64152d7a8099d6..3cf9093fd657a68ad3b99714472d8140445515ce 100644
 --- a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
 +++ b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
-@@ -20,6 +20,10 @@ public class AbstractRegionFileFactory {
+@@ -13,6 +13,10 @@ public class AbstractRegionFileFactory {
      }
  
-     public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync, boolean canRecalcHeader) throws IOException {
--        return new RegionFile(storageKey, path, directory, compressionFormat, dsync, canRecalcHeader);
+     public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync) throws IOException {
+-        return new RegionFile(storageKey, path, directory, compressionFormat, dsync);
 +        if (path.toString().endsWith(".linear")) {
 +            return new LinearRegionFile(path, storageKey.linearCompressionLevel());
 +        } else {
-+            return new RegionFile(storageKey, path, directory, compressionFormat, dsync, canRecalcHeader);
++            return new RegionFile(storageKey, path, directory, compressionFormat, dsync);
 +        }
      }
  }
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6df6847721003c18647f8dc8d4e4b10d537bce0c
+index 0000000000000000000000000000000000000000..e032fa3e3c4c6403a02882391728da587b24a5ee
 --- /dev/null
 +++ b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java
-@@ -0,0 +1,319 @@
+@@ -0,0 +1,313 @@
 +package org.stupidcraft.linearpaper.region;
 +
 +import com.github.luben.zstd.ZstdInputStream;
@@ -149,7 +145,6 @@ index 0000000000000000000000000000000000000000..6df6847721003c18647f8dc8d4e4b10d
 +import java.util.Arrays;
 +import java.util.List;
 +import java.util.concurrent.atomic.AtomicBoolean;
-+import java.util.concurrent.locks.ReentrantLock;
 +import javax.annotation.Nullable;
 +import net.jpountz.lz4.LZ4Compressor;
 +import net.jpountz.lz4.LZ4Factory;
@@ -167,7 +162,6 @@ index 0000000000000000000000000000000000000000..6df6847721003c18647f8dc8d4e4b10d
 +    private static final Logger LOGGER = LogUtils.getLogger();
 +    private static final List<Byte> SUPPORTED_VERSIONS = Arrays.asList((byte) 1, (byte) 2);
 +    private static final LinearRegionFileFlusher linearRegionFileFlusher = new LinearRegionFileFlusher();
-+    public final ReentrantLock fileLock = new ReentrantLock(true);
 +    private final byte[][] buffer = new byte[1024][];
 +    private final int[] bufferUncompressedSize = new int[1024];
 +    private final int[] chunkTimestamps = new int[1024];
@@ -256,12 +250,8 @@ index 0000000000000000000000000000000000000000..6df6847721003c18647f8dc8d4e4b10d
 +        return (int) (System.currentTimeMillis() / 1000L);
 +    }
 +
-+    public Path getRegionFile() {
++    public Path getPath() {
 +        return this.path;
-+    }
-+
-+    public ReentrantLock getFileLock() {
-+        return this.fileLock;
 +    }
 +
 +    public void flush() throws IOException {
@@ -285,8 +275,8 @@ index 0000000000000000000000000000000000000000..6df6847721003c18647f8dc8d4e4b10d
 +        }
 +    }
 +
-+    public boolean doesChunkExist(ChunkPos pos) throws Exception {
-+        throw new Exception("doesChunkExist is a stub");
++    public boolean doesChunkExist(ChunkPos pos) {
++        return false;
 +    }
 +
 +    private synchronized void save() throws IOException {
