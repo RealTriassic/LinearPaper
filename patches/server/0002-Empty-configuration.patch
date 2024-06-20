@@ -90,7 +90,7 @@ index 6e1f92b45504cef0c4dcbbebf3df339ef4cad0a1..1638789729b1f1d50a7d29dd5956a923
  
 diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5870e361d964fef1e27fae753a501ae945264e62
+index 0000000000000000000000000000000000000000..0c58b470a16f0705c17d1fb7d8108e2f73e5f9bd
 --- /dev/null
 +++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 @@ -0,0 +1,173 @@
@@ -113,8 +113,8 @@ index 0000000000000000000000000000000000000000..5870e361d964fef1e27fae753a501ae9
 +@SuppressWarnings("unused")
 +public class LinearConfig {
 +
-+    protected static File CONFIG_FILE;
-+    protected static final List<String> HEADER = List.of(
++    private static File CONFIG_FILE;
++    private static final List<String> HEADER = List.of(
 +        "Linear Region Format Configuration File",
 +        "",
 +        "Linear is an experimental region file format that",
@@ -126,7 +126,7 @@ index 0000000000000000000000000000000000000000..5870e361d964fef1e27fae753a501ae9
 +    );
 +
 +    public static YamlConfiguration config;
-+    public static int version;
++    static int version;
 +    static boolean verbose;
 +
 +    public static void init(File configFile) {
