@@ -44,7 +44,7 @@ cd LinearPaper
 ```
 4. #### Create Paperclip Jar
 ```sh
-./gradlew createReobfPaperclipJar
+./gradlew createMojmapPaperclipJar
 ```
 
 You will find a compiled Paperclip Jar file in `build/libs/`.
