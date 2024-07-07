@@ -5,10 +5,10 @@ Subject: [PATCH] Region format configuration
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index eb0a740f884fde081cabaec5a61c9b642a85a1b4..61345a0287aacaa4187c4d15dba2a634ceb0dd41 100644
+index 330bee331335454a61cf8350a6654217c8124445..af0ba30f4553524080e526d08c3f69126eff1ae0 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -915,10 +915,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -977,10 +977,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              while (iterator1.hasNext()) {
                  ServerLevel worldserver2 = (ServerLevel) iterator1.next();
  
@@ -22,7 +22,7 @@ index eb0a740f884fde081cabaec5a61c9b642a85a1b4..61345a0287aacaa4187c4d15dba2a634
  
          return flag3;
 diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
-index 5870e361d964fef1e27fae753a501ae945264e62..df670041d260567ec6d9889085b512ec79b7abb3 100644
+index 0c58b470a16f0705c17d1fb7d8108e2f73e5f9bd..65b823390d0a8ee79c2b8e576c670b195a70827e 100644
 --- a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 +++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
 @@ -170,4 +170,17 @@ public class LinearConfig {

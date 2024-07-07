@@ -5,7 +5,7 @@ Subject: [PATCH] Empty configuration
 
 
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 1bfab581e59c607c7a30eeda17c88bb2938536f2..ba89754e6b0e19e5d3ffd32ecf75bf407becd65d 100644
+index 7d82cc6b847124cf4225428ba310309544928148..df9ca3fe6164a04b7a0e7b768f03aff31953d379 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -226,6 +226,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -17,7 +17,7 @@ index 1bfab581e59c607c7a30eeda17c88bb2938536f2..ba89754e6b0e19e5d3ffd32ecf75bf40
          if (this.convertOldUsers()) {
              this.getProfileCache().save(false); // Paper
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index f1e085c712e4f128c813c3cf5340e6d2e4e55ccc..3794c1998535653888f7e65912d77096cc2928ef 100644
+index 0d202ce8eb88bfdb8ca3306593d758fa483d8612..5d0219860d2467af1ad68010b3ec8820d94f5a03 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -170,6 +170,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -28,7 +28,7 @@ index f1e085c712e4f128c813c3cf5340e6d2e4e55ccc..3794c1998535653888f7e65912d77096
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
-@@ -261,6 +262,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -266,6 +267,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config & Anti-Xray
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
@@ -70,7 +70,7 @@ index caf6ff33b42472d30f28629470e12889f50490cc..11cf1575a06d658954a5cd4189221ac2
          public void restart() {
              org.spigotmc.RestartCommand.restart();
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 6e1f92b45504cef0c4dcbbebf3df339ef4cad0a1..1638789729b1f1d50a7d29dd5956a923ef1d61bd 100644
+index 1acc0a579804dee7bb3d0f755c24240413ed7540..985511f8641e9c259265a935409a8673809f2625 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -183,6 +183,14 @@ public class Main {
