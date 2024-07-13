@@ -48,10 +48,10 @@ index c833f78d083b8f661087471c35bc90f65af1b525..e65af627d0e6ea23d73a758ae50643ef
              synchronized (cache) {
                  regionFile = ((ChunkSystemRegionFileStorage)(Object)cache).moonrise$getRegionFileIfLoaded(chunkX, chunkZ);
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index 0382b6597a130d746f8954a93a756a9d1ac81d50..15706b49370ef379fe38b49d21ae721f7ca90e94 100644
+index cb39c629af1827078f35904a373d35a63fea17ff..cf6f3fd4268c55547c1834d91a5967dd842358d4 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-@@ -414,7 +414,7 @@ public class WorldUpgrader {
+@@ -420,7 +420,7 @@ public class WorldUpgrader {
                          List<ChunkPos> list1 = Lists.newArrayList();
  
                          try {
@@ -60,7 +60,7 @@ index 0382b6597a130d746f8954a93a756a9d1ac81d50..15706b49370ef379fe38b49d21ae721f
  
                              try {
                                  for (int i1 = 0; i1 < 32; ++i1) {
-@@ -477,7 +477,7 @@ public class WorldUpgrader {
+@@ -483,7 +483,7 @@ public class WorldUpgrader {
  
          protected abstract boolean tryProcessOnePosition(T storage, ChunkPos chunkPos, ResourceKey<Level> worldKey);
  
@@ -69,7 +69,7 @@ index 0382b6597a130d746f8954a93a756a9d1ac81d50..15706b49370ef379fe38b49d21ae721f
              if (WorldUpgrader.this.recreateRegionFiles) {
                  if (this.previousWriteFuture != null) {
                      this.previousWriteFuture.join();
-@@ -502,7 +502,7 @@ public class WorldUpgrader {
+@@ -508,7 +508,7 @@ public class WorldUpgrader {
          }
      }
  
