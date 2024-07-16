@@ -17,7 +17,7 @@ index 7d82cc6b847124cf4225428ba310309544928148..df9ca3fe6164a04b7a0e7b768f03aff3
          if (this.convertOldUsers()) {
              this.getProfileCache().save(false); // Paper
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index c1f392cd7928a142192c87cf46ef2a4fc2495562..82ef654dd9f18e3d400817e85075366d14d9394d 100644
+index bbb0d543197001fe8bb5179dde7201327fec4274..65206fa8820d0ddcbd1f583319785c74b1c7ec72 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -171,6 +171,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -28,7 +28,7 @@ index c1f392cd7928a142192c87cf46ef2a4fc2495562..82ef654dd9f18e3d400817e85075366d
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
-@@ -643,6 +644,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -687,6 +688,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config & Anti-Xray
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config

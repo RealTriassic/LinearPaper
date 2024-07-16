@@ -42,7 +42,7 @@ index cf6f3fd4268c55547c1834d91a5967dd842358d4..2900e8e9685704eab5ed9a4fd2ab48a5
  
              if (afile == null) {
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index ee34b0a87858fb5b54374d6530a1073efbb9a489..af27e8d95efff3ed6717e6bc0a97fdce8f4ff84a 100644
+index 23917b903a978a3ac25c397080e92642f1674107..aa3a8f43f110ad493b1de26b6e9193c872a1f7d8 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -30,7 +30,10 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
@@ -66,7 +66,7 @@ index ee34b0a87858fb5b54374d6530a1073efbb9a489..af27e8d95efff3ed6717e6bc0a97fdce
  
          if (!java.nio.file.Files.exists(regionPath)) {
              this.markNonExisting(key);
-@@ -129,7 +132,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+@@ -160,7 +163,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
                  this.regionCache.removeLast().close();
              }
  
@@ -118,10 +118,10 @@ index fb05d7b09fde10e42de42987df64152d7a8099d6..3cf9093fd657a68ad3b99714472d8140
  }
 diff --git a/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..491a318503d39870e480f639fb3294b873b67352
+index 0000000000000000000000000000000000000000..6c954ff634512b95e947bcbab80b41cb66f3ef70
 --- /dev/null
 +++ b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java
-@@ -0,0 +1,300 @@
+@@ -0,0 +1,304 @@
 +package org.stupidcraft.linearpaper.region;
 +
 +import com.github.luben.zstd.ZstdInputStream;
@@ -395,6 +395,10 @@ index 0000000000000000000000000000000000000000..491a318503d39870e480f639fb3294b8
 +        if (closed) return;
 +        closed = true;
 +        flush(); // sync
++    }
++
++    public boolean recalculateHeader() {
++        return false;
 +    }
 +
 +    public void setOversized(int x, int z, boolean something) {
