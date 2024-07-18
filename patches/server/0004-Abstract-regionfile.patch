@@ -20,10 +20,10 @@ index 73df26b27146bbad2106d57b22dd3c792ed3dd1d..62680e5c23483ee20b730a91fbace9b9
  
  }
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java
-index c833f78d083b8f661087471c35bc90f65af1b525..e65af627d0e6ea23d73a758ae50643ef3ede9273 100644
+index 3218cbf84f54daf06e84442d5eb1a36d8da6b215..cb0ced73599398ba9a9ec0bc6e708e7c85e73c98 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java
-@@ -1042,9 +1042,9 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -1043,9 +1043,9 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
              return ((ChunkSystemRegionFileStorage)(Object)this.getCache()).moonrise$doesRegionFileNotExistNoIO(chunkX, chunkZ);
          }
  
@@ -35,7 +35,7 @@ index c833f78d083b8f661087471c35bc90f65af1b525..e65af627d0e6ea23d73a758ae50643ef
              synchronized (cache) {
                  try {
                      if (existingOnly) {
-@@ -1060,9 +1060,9 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
+@@ -1061,9 +1061,9 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
              }
          }
  
