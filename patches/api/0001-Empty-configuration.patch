@@ -5,10 +5,10 @@ Subject: [PATCH] Empty configuration
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index c043d239c449bf4bb13a24467f2f6c67b4d28d2d..cb812f8cc17af4c2ddf660afc440a79487728179 100644
+index 5aa64ea39ebd92e5067c53cea49a8685c0b9eee4..6667f35c6cd09d1c833aed90e42d8a20430bc0ee 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2254,6 +2254,14 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2265,6 +2265,14 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
          }
          // Paper end
  
