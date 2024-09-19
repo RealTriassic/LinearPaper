@@ -5,7 +5,7 @@ on:
   pull_request:
   push:
     branches:
-      - "ver/**"
+      - "ver/1.21"
 
 jobs:
   build:
