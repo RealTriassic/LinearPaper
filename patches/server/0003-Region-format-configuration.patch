@@ -5,10 +5,10 @@ Subject: [PATCH] Region format configuration
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 23ddd26af762c1cd7fb3920669abb96b3213ab37..9b7001f3c372b57b8c786f90f4146cc4aa4490e4 100644
+index 696d075ca2883f3c37e35f983c4d020e5db89d16..f75e1e6e3d68e4156fd9723aa96dba4e890b07cb 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -981,10 +981,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -980,10 +980,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              while (iterator1.hasNext()) {
                  ServerLevel worldserver2 = (ServerLevel) iterator1.next();
  
