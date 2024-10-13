@@ -32,9 +32,8 @@ jobs:
       - name: Upload Paperclip Jar
         uses: actions/upload-artifact@v4
         with:
-          name: linearpaper-artifacts
+          name: linearpaper
           path: build/libs/linearpaper-paperclip-*-mojmap.jar
-          compression-level: 0
 
       - name: Push changes
         uses: ad-m/github-push-action@master
