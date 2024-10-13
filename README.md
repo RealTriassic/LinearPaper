@@ -32,7 +32,7 @@ Plugin developers need to manually update their plugins to support Linear.
 ## Compiling
 1. #### Clone LinearPaper
 ```sh
-git clone https://github.com/StupidCraft/LinearPaper.git
+git clone https://github.com/RealTriassic/LinearPaper.git
 ```
 2. #### Change directory to LinearPaper
 ```sh

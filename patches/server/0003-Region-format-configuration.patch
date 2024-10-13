@@ -21,10 +21,10 @@ index 696d075ca2883f3c37e35f983c4d020e5db89d16..f75e1e6e3d68e4156fd9723aa96dba4e
          }
  
          return flag3;
-diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
+diff --git a/src/main/java/com/triassic/linearpaper/LinearConfig.java b/src/main/java/com/triassic/linearpaper/LinearConfig.java
 index 0c58b470a16f0705c17d1fb7d8108e2f73e5f9bd..65b823390d0a8ee79c2b8e576c670b195a70827e 100644
---- a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
-+++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
+--- a/src/main/java/com/triassic/linearpaper/LinearConfig.java
++++ b/src/main/java/com/triassic/linearpaper/LinearConfig.java
 @@ -170,4 +170,17 @@ public class LinearConfig {
          }
          return builder.build();
@@ -43,20 +43,20 @@ index 0c58b470a16f0705c17d1fb7d8108e2f73e5f9bd..65b823390d0a8ee79c2b8e576c670b19
 +            linearFlushThreads = Math.max(linearFlushThreads, 1);
 +    }
  }
-diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
+diff --git a/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java b/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java
 index 4e4bafaec9b8d40ba9252d53167e34e8f684c5b8..267474bdf5969b8028a3b4573828ebd47e60d378 100644
---- a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
-+++ b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
-@@ -3,8 +3,10 @@ package org.stupidcraft.linearpaper;
+--- a/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java
++++ b/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java
+@@ -3,8 +3,10 @@ package com.triassic.linearpaper;
  import java.util.List;
  import java.util.Map;
  import java.util.function.Predicate;
 +import java.util.logging.Level;
  import org.apache.commons.lang.BooleanUtils;
  import org.bukkit.configuration.ConfigurationSection;
-+import org.stupidcraft.linearpaper.region.RegionFileFormat;
++import com.triassic.linearpaper.region.RegionFileFormat;
  
- import static org.stupidcraft.linearpaper.LinearConfig.log;
+ import static com.triassic.linearpaper.LinearConfig.log;
  
 @@ -110,4 +112,23 @@ public class LinearWorldConfig {
          final Map<String, Object> value = getMap("world-settings." + worldName + "." + path, null);
@@ -82,13 +82,13 @@ index 4e4bafaec9b8d40ba9252d53167e34e8f684c5b8..267474bdf5969b8028a3b4573828ebd4
 +        }
 +    }
  }
-diff --git a/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java b/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java
+diff --git a/src/main/java/com/triassic/linearpaper/region/RegionFileFormat.java b/src/main/java/com/triassic/linearpaper/region/RegionFileFormat.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..64831ea14eef5cd7a9c3bcf87517ea8dd7d26795
 --- /dev/null
-+++ b/src/main/java/org/stupidcraft/linearpaper/region/RegionFileFormat.java
++++ b/src/main/java/com/triassic/linearpaper/region/RegionFileFormat.java
 @@ -0,0 +1,16 @@
-+package org.stupidcraft.linearpaper.region;
++package com.triassic.linearpaper.region;
 +
 +public enum RegionFileFormat {
 +    ANVIL,

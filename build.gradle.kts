@@ -4,7 +4,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
     java
     `maven-publish`
-    id("io.papermc.paperweight.patcher") version "1.7.2"
+    id("io.papermc.paperweight.patcher") version "1.7.3"
 }
 
 allprojects {
@@ -86,7 +86,7 @@ paperweight {
 }
 
 tasks.generateDevelopmentBundle {
-    apiCoordinates = "org.stupidcraft.linearpaper:linearpaper-api"
+    apiCoordinates = "com.triassic.linearpaper:linearpaper-api"
     libraryRepositories = listOf(
         "https://repo.maven.apache.org/maven2/",
         paperMavenPublicUrl,

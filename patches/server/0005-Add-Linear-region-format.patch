@@ -52,7 +52,7 @@ index 23917b903a978a3ac25c397080e92642f1674107..aa3a8f43f110ad493b1de26b6e9193c8
 -    private static String getRegionFileName(final int chunkX, final int chunkZ) {
 +    // LinearPaper start - Linear region format
 +    private static String getRegionFileName(final RegionStorageInfo info, final int chunkX, final int chunkZ) {
-+        if (info.regionFormat().equals(org.stupidcraft.linearpaper.region.RegionFileFormat.LINEAR))
++        if (info.regionFormat().equals(com.triassic.linearpaper.region.RegionFileFormat.LINEAR))
 +            return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".linear";
          return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".mca";
      }
@@ -85,7 +85,7 @@ index 6111631c6673948b266286894603cc5e30451b02..a17428f1fb14adf865f3a8edd24bd5d5
      }
 +
 +    // LinearPaper start
-+    public org.stupidcraft.linearpaper.region.RegionFileFormat regionFormat() {
++    public com.triassic.linearpaper.region.RegionFileFormat regionFormat() {
 +        return ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(level))
 +            .getHandle()
 +            .linearConfig
@@ -100,10 +100,10 @@ index 6111631c6673948b266286894603cc5e30451b02..a17428f1fb14adf865f3a8edd24bd5d5
 +    }
 +    // LinearPaper end
  }
-diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
+diff --git a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
 index fb05d7b09fde10e42de42987df64152d7a8099d6..3cf9093fd657a68ad3b99714472d8140445515ce 100644
---- a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
-+++ b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
+--- a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
++++ b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
 @@ -13,6 +13,10 @@ public class AbstractRegionFileFactory {
      }
  
@@ -116,13 +116,13 @@ index fb05d7b09fde10e42de42987df64152d7a8099d6..3cf9093fd657a68ad3b99714472d8140
 +        }
      }
  }
-diff --git a/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java
+diff --git a/src/main/java/com/triassic/linearpaper/region/LinearRegionFile.java b/src/main/java/com/triassic/linearpaper/region/LinearRegionFile.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..6c954ff634512b95e947bcbab80b41cb66f3ef70
 --- /dev/null
-+++ b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFile.java
++++ b/src/main/java/com/triassic/linearpaper/region/LinearRegionFile.java
 @@ -0,0 +1,304 @@
-+package org.stupidcraft.linearpaper.region;
++package com.triassic.linearpaper.region;
 +
 +import com.github.luben.zstd.ZstdInputStream;
 +import com.github.luben.zstd.ZstdOutputStream;
@@ -426,13 +426,13 @@ index 0000000000000000000000000000000000000000..6c954ff634512b95e947bcbab80b41cb
 +        }
 +    }
 +}
-diff --git a/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFileFlusher.java b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFileFlusher.java
+diff --git a/src/main/java/com/triassic/linearpaper/region/LinearRegionFileFlusher.java b/src/main/java/com/triassic/linearpaper/region/LinearRegionFileFlusher.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..ea22ee01532df5f03c7a6abcd3c6b15823ce7a6b
 --- /dev/null
-+++ b/src/main/java/org/stupidcraft/linearpaper/region/LinearRegionFileFlusher.java
++++ b/src/main/java/com/triassic/linearpaper/region/LinearRegionFileFlusher.java
 @@ -0,0 +1,50 @@
-+package org.stupidcraft.linearpaper.region;
++package com.triassic.linearpaper.region;
 +
 +import com.google.common.util.concurrent.ThreadFactoryBuilder;
 +import java.util.Queue;
@@ -442,7 +442,7 @@ index 0000000000000000000000000000000000000000..ea22ee01532df5f03c7a6abcd3c6b158
 +import java.util.concurrent.ScheduledExecutorService;
 +import java.util.concurrent.TimeUnit;
 +import org.bukkit.Bukkit;
-+import org.stupidcraft.linearpaper.LinearConfig;
++import com.triassic.linearpaper.LinearConfig;
 +
 +public class LinearRegionFileFlusher {
 +

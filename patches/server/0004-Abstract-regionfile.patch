@@ -13,10 +13,10 @@ index 73df26b27146bbad2106d57b22dd3c792ed3dd1d..62680e5c23483ee20b730a91fbace9b9
      public boolean moonrise$doesRegionFileNotExistNoIO(final int chunkX, final int chunkZ);
  
 -    public RegionFile moonrise$getRegionFileIfLoaded(final int chunkX, final int chunkZ);
-+    public org.stupidcraft.linearpaper.region.AbstractRegionFile moonrise$getRegionFileIfLoaded(final int chunkX, final int chunkZ); // LinearPaper
++    public com.triassic.linearpaper.region.AbstractRegionFile moonrise$getRegionFileIfLoaded(final int chunkX, final int chunkZ); // LinearPaper
  
 -    public RegionFile moonrise$getRegionFileIfExists(final int chunkX, final int chunkZ) throws IOException;
-+    public org.stupidcraft.linearpaper.region.AbstractRegionFile moonrise$getRegionFileIfExists(final int chunkX, final int chunkZ) throws IOException; // LinearPaper
++    public com.triassic.linearpaper.region.AbstractRegionFile moonrise$getRegionFileIfExists(final int chunkX, final int chunkZ) throws IOException; // LinearPaper
  
  }
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java
@@ -28,10 +28,10 @@ index 3218cbf84f54daf06e84442d5eb1a36d8da6b215..cb0ced73599398ba9a9ec0bc6e708e7c
          }
  
 -        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<RegionFile, T> function) {
-+        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<org.stupidcraft.linearpaper.region.AbstractRegionFile, T> function) { // LinearPaper
++        public <T> T computeForRegionFile(final int chunkX, final int chunkZ, final boolean existingOnly, final Function<com.triassic.linearpaper.region.AbstractRegionFile, T> function) { // LinearPaper
              final RegionFileStorage cache = this.getCache();
 -            final RegionFile regionFile;
-+            final org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile; // LinearPaper
++            final com.triassic.linearpaper.region.AbstractRegionFile regionFile; // LinearPaper
              synchronized (cache) {
                  try {
                      if (existingOnly) {
@@ -40,10 +40,10 @@ index 3218cbf84f54daf06e84442d5eb1a36d8da6b215..cb0ced73599398ba9a9ec0bc6e708e7c
          }
  
 -        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<RegionFile, T> function) {
-+        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<org.stupidcraft.linearpaper.region.AbstractRegionFile, T> function) { // LinearPaper
++        public <T> T computeForRegionFileIfLoaded(final int chunkX, final int chunkZ, final Function<com.triassic.linearpaper.region.AbstractRegionFile, T> function) { // LinearPaper
              final RegionFileStorage cache = this.getCache();
 -            final RegionFile regionFile;
-+            final org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile; // LinearPaper
++            final com.triassic.linearpaper.region.AbstractRegionFile regionFile; // LinearPaper
  
              synchronized (cache) {
                  regionFile = ((ChunkSystemRegionFileStorage)(Object)cache).moonrise$getRegionFileIfLoaded(chunkX, chunkZ);
@@ -56,7 +56,7 @@ index cb39c629af1827078f35904a373d35a63fea17ff..cf6f3fd4268c55547c1834d91a5967dd
  
                          try {
 -                            RegionFile regionfile = new RegionFile(key, file.toPath(), regionDirectory, true);
-+                            org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(key, file.toPath(), regionDirectory, true); // LinearPaper
++                            com.triassic.linearpaper.region.AbstractRegionFile regionfile = com.triassic.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(key, file.toPath(), regionDirectory, true); // LinearPaper
  
                              try {
                                  for (int i1 = 0; i1 < 32; ++i1) {
@@ -65,7 +65,7 @@ index cb39c629af1827078f35904a373d35a63fea17ff..cf6f3fd4268c55547c1834d91a5967dd
          protected abstract boolean tryProcessOnePosition(T storage, ChunkPos chunkPos, ResourceKey<Level> worldKey);
  
 -        private void onFileFinished(RegionFile regionFile) {
-+        private void onFileFinished(org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile) { // LinearPaper
++        private void onFileFinished(com.triassic.linearpaper.region.AbstractRegionFile regionFile) { // LinearPaper
              if (WorldUpgrader.this.recreateRegionFiles) {
                  if (this.previousWriteFuture != null) {
                      this.previousWriteFuture.join();
@@ -74,7 +74,7 @@ index cb39c629af1827078f35904a373d35a63fea17ff..cf6f3fd4268c55547c1834d91a5967dd
      }
  
 -    static record FileToUpgrade(RegionFile file, List<ChunkPos> chunksToUpgrade) {
-+    static record FileToUpgrade(org.stupidcraft.linearpaper.region.AbstractRegionFile file, List<ChunkPos> chunksToUpgrade) { // LinearPaper
++    static record FileToUpgrade(com.triassic.linearpaper.region.AbstractRegionFile file, List<ChunkPos> chunksToUpgrade) { // LinearPaper
  
      }
  
@@ -87,7 +87,7 @@ index eb0389ad86300665b6e057bcfa1d7c068dc6c6ab..62a8742b2e36b5fd7cc2bf316d37583d
  import org.slf4j.Logger;
  
 -public class RegionFile implements AutoCloseable {
-+public class RegionFile implements AutoCloseable, org.stupidcraft.linearpaper.region.AbstractRegionFile { // LinearPaper
++public class RegionFile implements AutoCloseable, com.triassic.linearpaper.region.AbstractRegionFile { // LinearPaper
  
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int SECTOR_BYTES = 4096;
@@ -131,7 +131,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
      public static final String ANVIL_EXTENSION = ".mca";
      private static final int MAX_CACHE_SIZE = 256;
 -    public final Long2ObjectLinkedOpenHashMap<RegionFile> regionCache = new Long2ObjectLinkedOpenHashMap();
-+    public final Long2ObjectLinkedOpenHashMap<org.stupidcraft.linearpaper.region.AbstractRegionFile> regionCache = new Long2ObjectLinkedOpenHashMap(); // LinearPaper
++    public final Long2ObjectLinkedOpenHashMap<com.triassic.linearpaper.region.AbstractRegionFile> regionCache = new Long2ObjectLinkedOpenHashMap(); // LinearPaper
      private final RegionStorageInfo info;
      private final Path folder;
      private final boolean sync;
@@ -140,17 +140,17 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
  
      @Override
 -    public synchronized final RegionFile moonrise$getRegionFileIfLoaded(final int chunkX, final int chunkZ) {
-+    public synchronized final org.stupidcraft.linearpaper.region.AbstractRegionFile moonrise$getRegionFileIfLoaded(final int chunkX, final int chunkZ) { // LinearPaper
++    public synchronized final com.triassic.linearpaper.region.AbstractRegionFile moonrise$getRegionFileIfLoaded(final int chunkX, final int chunkZ) { // LinearPaper
          return this.regionCache.getAndMoveToFirst(ChunkPos.asLong(chunkX >> REGION_SHIFT, chunkZ >> REGION_SHIFT));
      }
  
      @Override
 -    public synchronized final RegionFile moonrise$getRegionFileIfExists(final int chunkX, final int chunkZ) throws IOException {
-+    public synchronized final org.stupidcraft.linearpaper.region.AbstractRegionFile moonrise$getRegionFileIfExists(final int chunkX, final int chunkZ) throws IOException { // LinearPaper
++    public synchronized final com.triassic.linearpaper.region.AbstractRegionFile moonrise$getRegionFileIfExists(final int chunkX, final int chunkZ) throws IOException { // LinearPaper
          final long key = ChunkPos.asLong(chunkX >> REGION_SHIFT, chunkZ >> REGION_SHIFT);
  
 -        RegionFile ret = this.regionCache.getAndMoveToFirst(key);
-+        org.stupidcraft.linearpaper.region.AbstractRegionFile ret = this.regionCache.getAndMoveToFirst(key); // LinearPaper
++        com.triassic.linearpaper.region.AbstractRegionFile ret = this.regionCache.getAndMoveToFirst(key); // LinearPaper
          if (ret != null) {
              return ret;
          }
@@ -159,7 +159,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
          FileUtil.createDirectoriesSafe(this.folder);
  
 -        ret = new RegionFile(this.info, regionPath, this.folder, this.sync);
-+        ret = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(this.info, regionPath, this.folder, this.sync); // LinearPaper
++        ret = com.triassic.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(this.info, regionPath, this.folder, this.sync); // LinearPaper
  
          this.regionCache.putAndMoveToFirst(key, ret);
  
@@ -168,7 +168,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
      }
  
 -    public RegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit // Paper - public
-+    public org.stupidcraft.linearpaper.region.AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit // Paper - public // LinearPaper
++    public com.triassic.linearpaper.region.AbstractRegionFile getRegionFile(ChunkPos chunkcoordintpair, boolean existingOnly) throws IOException { // CraftBukkit // Paper - public // LinearPaper
          // Paper start - rewrite chunk system
          if (existingOnly) {
              return this.moonrise$getRegionFileIfExists(chunkcoordintpair.x, chunkcoordintpair.z);
@@ -177,7 +177,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
              final long key = ChunkPos.asLong(chunkcoordintpair.x >> REGION_SHIFT, chunkcoordintpair.z >> REGION_SHIFT);
  
 -            RegionFile ret = this.regionCache.getAndMoveToFirst(key);
-+            org.stupidcraft.linearpaper.region.AbstractRegionFile ret = this.regionCache.getAndMoveToFirst(key); // LinearPaper
++            com.triassic.linearpaper.region.AbstractRegionFile ret = this.regionCache.getAndMoveToFirst(key); // LinearPaper
              if (ret != null) {
                  return ret;
              }
@@ -186,7 +186,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
              FileUtil.createDirectoriesSafe(this.folder);
  
 -            ret = new RegionFile(this.info, regionPath, this.folder, this.sync);
-+            ret = org.stupidcraft.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(this.info, regionPath, this.folder, this.sync); // LinearPaper
++            ret = com.triassic.linearpaper.region.AbstractRegionFileFactory.getAbstractRegionFile(this.info, regionPath, this.folder, this.sync); // LinearPaper
  
              this.regionCache.putAndMoveToFirst(key, ret);
  
@@ -195,7 +195,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
      }
  
 -    private static CompoundTag readOversizedChunk(RegionFile regionfile, ChunkPos chunkCoordinate) throws IOException {
-+    private static CompoundTag readOversizedChunk(org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile, ChunkPos chunkCoordinate) throws IOException { // LinearPaper
++    private static CompoundTag readOversizedChunk(com.triassic.linearpaper.region.AbstractRegionFile regionfile, ChunkPos chunkCoordinate) throws IOException { // LinearPaper
          synchronized (regionfile) {
              try (DataInputStream datainputstream = regionfile.getChunkDataInputStream(chunkCoordinate)) {
                  CompoundTag oversizedData = regionfile.getOversizedData(chunkCoordinate.x, chunkCoordinate.z);
@@ -204,7 +204,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
      public CompoundTag read(ChunkPos pos) throws IOException {
          // CraftBukkit start - SPIGOT-5680: There's no good reason to preemptively create files on read, save that for writing
 -        RegionFile regionfile = this.getRegionFile(pos, true);
-+        org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(pos, true); // LinearPaper
++        com.triassic.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(pos, true); // LinearPaper
          if (regionfile == null) {
              return null;
          }
@@ -213,7 +213,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
      public void scanChunk(ChunkPos chunkPos, StreamTagVisitor scanner) throws IOException {
          // CraftBukkit start - SPIGOT-5680: There's no good reason to preemptively create files on read, save that for writing
 -        RegionFile regionfile = this.getRegionFile(chunkPos, true);
-+        org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(chunkPos, true); // LinearPaper
++        com.triassic.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(chunkPos, true); // LinearPaper
          if (regionfile == null) {
              return;
          }
@@ -222,7 +222,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
  
      public void write(ChunkPos pos, @Nullable CompoundTag nbt) throws IOException { // Paper - public
 -        RegionFile regionfile = this.getRegionFile(pos, nbt == null); // CraftBukkit // Paper - rewrite chunk system
-+        org.stupidcraft.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(pos, nbt == null); // CraftBukkit // Paper - rewrite chunk system // LinearPaper
++        com.triassic.linearpaper.region.AbstractRegionFile regionfile = this.getRegionFile(pos, nbt == null); // CraftBukkit // Paper - rewrite chunk system // LinearPaper
          // Paper start - rewrite chunk system
          if (regionfile == null) {
              // if the RegionFile doesn't exist, no point in deleting from it
@@ -231,7 +231,7 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
          synchronized (this) {
              final ExceptionCollector<IOException> exceptionCollector = new ExceptionCollector<>();
 -            for (final RegionFile regionFile : this.regionCache.values()) {
-+            for (final org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile : this.regionCache.values()) { // LinearPaper
++            for (final com.triassic.linearpaper.region.AbstractRegionFile regionFile : this.regionCache.values()) { // LinearPaper
                  try {
                      regionFile.close();
                  } catch (final IOException ex) {
@@ -240,17 +240,17 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
          synchronized (this) {
              final ExceptionCollector<IOException> exceptionCollector = new ExceptionCollector<>();
 -            for (final RegionFile regionFile : this.regionCache.values()) {
-+            for (final org.stupidcraft.linearpaper.region.AbstractRegionFile regionFile : this.regionCache.values()) { // LinearPaper
++            for (final com.triassic.linearpaper.region.AbstractRegionFile regionFile : this.regionCache.values()) { // LinearPaper
                  try {
                      regionFile.flush();
                  } catch (final IOException ex) {
-diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java
+diff --git a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..432e12a19f2141f167c8d22248eb67bc05ee2e19
 --- /dev/null
-+++ b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFile.java
++++ b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java
 @@ -0,0 +1,26 @@
-+package org.stupidcraft.linearpaper.region;
++package com.triassic.linearpaper.region;
 +
 +import java.io.DataInputStream;
 +import java.io.DataOutputStream;
@@ -276,13 +276,13 @@ index 0000000000000000000000000000000000000000..432e12a19f2141f167c8d22248eb67bc
 +    void clear(ChunkPos pos) throws IOException;
 +    void setOversized(int x, int z, boolean oversized) throws IOException;
 +}
-diff --git a/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
+diff --git a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..fb05d7b09fde10e42de42987df64152d7a8099d6
 --- /dev/null
-+++ b/src/main/java/org/stupidcraft/linearpaper/region/AbstractRegionFileFactory.java
++++ b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
 @@ -0,0 +1,18 @@
-+package org.stupidcraft.linearpaper.region;
++package com.triassic.linearpaper.region;
 +
 +import java.io.IOException;
 +import java.nio.file.Path;

@@ -31,8 +31,8 @@ index 421f6b3dc8890d63d2e7aa774d0bf8f7e15890ab..da156e89cc7f325d267ad5b47c77e065
 -            "Specification-Vendor" to "Paper Team",
 -            "Brand-Id" to "papermc:paper",
 -            "Brand-Name" to "Paper",
-+            "Specification-Vendor" to "StupidCraft Team", // LinearPaper
-+            "Brand-Id" to "stupidcraft:linearpaper", // LinearPaper
++            "Specification-Vendor" to "Triassic", // LinearPaper
++            "Brand-Id" to "triassic:linearpaper", // LinearPaper
 +            "Brand-Name" to "LinearPaper", // LinearPaper
              "Build-Number" to (build ?: ""),
              "Build-Time" to Instant.now().toString(),
@@ -46,7 +46,7 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..c6514ebc545a051e7090e600ab62dbed
      private static final int DISTANCE_ERROR = -1;
      private static final int DISTANCE_UNKNOWN = -2;
 -    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/paper";
-+    private static final String DOWNLOAD_PAGE = "https://github.com/StupidCraft/LinearPaper"; // LinearPaper
++    private static final String DOWNLOAD_PAGE = "https://github.com/RealTriassic/LinearPaper"; // LinearPaper
  
      @Override
      public long getCacheTime() {
@@ -55,7 +55,7 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..c6514ebc545a051e7090e600ab62dbed
              updateMessage = text("You are running a development version without access to version information", color(0xFF5300));
          } else {
 -            updateMessage = getUpdateStatusMessage("PaperMC/Paper", build);
-+            updateMessage = getUpdateStatusMessage("StupidCraft/LinearPaper", build); // LinearPaper
++            updateMessage = getUpdateStatusMessage("RealTriassic/LinearPaper", build); // LinearPaper
          }
          final @Nullable Component history = this.getHistory();
  
@@ -68,7 +68,7 @@ index 774556a62eb240da42e84db4502e2ed43495be17..de4febc4bc24230f5bd051293030eb41
          String result = "Unknown-Version";
  
 -        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/io.papermc.paper/paper-api/pom.properties");
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.stupidcraft.linearpaper/linearpaper-api/pom.properties"); // LinearPaper
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/com.triassic.linearpaper/linearpaper-api/pom.properties"); // LinearPaper
          Properties properties = new Properties();
  
          if (stream != null) {

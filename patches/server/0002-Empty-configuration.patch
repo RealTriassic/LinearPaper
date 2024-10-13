@@ -12,7 +12,7 @@ index dd56c8e041116ef3602a9f89c998c8208ab89b51..d0dbad852d4ea26a023ae6b94d41f61c
          this.paperConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
          // Paper end - initialize global and world-defaults configuration
          this.server.spark.enableEarlyIfRequested(); // Paper - spark
-+        org.stupidcraft.linearpaper.LinearConfig.init((java.io.File) this.options.valueOf("linear-settings")); // LinearPaper
++        com.triassic.linearpaper.LinearConfig.init((java.io.File) this.options.valueOf("linear-settings")); // LinearPaper
          // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
          if (this.convertOldUsers()) {
              this.getProfileCache().save(false); // Paper
@@ -24,7 +24,7 @@ index e2a0487089eb5a7bdc1433e4c75f69d8e9f9d5f9..5661d122a105223e2e40a89f04eb26be
          return this.paperConfig;
      }
      // Paper end - add paper world config
-+    public final org.stupidcraft.linearpaper.LinearWorldConfig linearConfig; // LinearPaper
++    public final com.triassic.linearpaper.LinearWorldConfig linearConfig; // LinearPaper
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
@@ -32,7 +32,7 @@ index e2a0487089eb5a7bdc1433e4c75f69d8e9f9d5f9..5661d122a105223e2e40a89f04eb26be
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config & Anti-Xray
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
-+        this.linearConfig = new org.stupidcraft.linearpaper.LinearWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // LinearPaper
++        this.linearConfig = new com.triassic.linearpaper.LinearWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // LinearPaper
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
@@ -44,7 +44,7 @@ index b7af2d4300facf41a025c8ca322bf6541949b3ab..aa6e819cdb7bfb219764def341dc14d1
  
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
-+        org.stupidcraft.linearpaper.LinearConfig.init((File) console.options.valueOf("linear-settings")); // LinearPaper
++        com.triassic.linearpaper.LinearConfig.init((File) console.options.valueOf("linear-settings")); // LinearPaper
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
@@ -63,7 +63,7 @@ index b7af2d4300facf41a025c8ca322bf6541949b3ab..aa6e819cdb7bfb219764def341dc14d1
 +        @Override
 +        public YamlConfiguration getLinearConfig()
 +        {
-+            return org.stupidcraft.linearpaper.LinearConfig.config;
++            return com.triassic.linearpaper.LinearConfig.config;
 +        }
 +
          @Override
@@ -88,13 +88,13 @@ index c1e88c31910e96ef07cece05046c0b55e708b52d..c2cd67260a0c954fe59e3c330e6efce3
              }
          };
  
-diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
+diff --git a/src/main/java/com/triassic/linearpaper/LinearConfig.java b/src/main/java/com/triassic/linearpaper/LinearConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..0c58b470a16f0705c17d1fb7d8108e2f73e5f9bd
 --- /dev/null
-+++ b/src/main/java/org/stupidcraft/linearpaper/LinearConfig.java
++++ b/src/main/java/com/triassic/linearpaper/LinearConfig.java
 @@ -0,0 +1,173 @@
-+package org.stupidcraft.linearpaper;
++package com.triassic.linearpaper;
 +
 +import com.google.common.collect.ImmutableMap;
 +import java.io.File;
@@ -122,7 +122,7 @@ index 0000000000000000000000000000000000000000..0c58b470a16f0705c17d1fb7d8108e2f
 +        "to always keep and create backups, even if not using Linear.",
 +        "",
 +        "Report any issues on our GitHub repository:",
-+        "https://github.com/StupidCraft/LinearPaper"
++        "https://github.com/RealTriassic/LinearPaper"
 +    );
 +
 +    public static YamlConfiguration config;
@@ -267,13 +267,13 @@ index 0000000000000000000000000000000000000000..0c58b470a16f0705c17d1fb7d8108e2f
 +        return builder.build();
 +    }
 +}
-diff --git a/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
+diff --git a/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java b/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..4e4bafaec9b8d40ba9252d53167e34e8f684c5b8
 --- /dev/null
-+++ b/src/main/java/org/stupidcraft/linearpaper/LinearWorldConfig.java
++++ b/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java
 @@ -0,0 +1,113 @@
-+package org.stupidcraft.linearpaper;
++package com.triassic.linearpaper;
 +
 +import java.util.List;
 +import java.util.Map;
@@ -281,7 +281,7 @@ index 0000000000000000000000000000000000000000..4e4bafaec9b8d40ba9252d53167e34e8
 +import org.apache.commons.lang.BooleanUtils;
 +import org.bukkit.configuration.ConfigurationSection;
 +
-+import static org.stupidcraft.linearpaper.LinearConfig.log;
++import static com.triassic.linearpaper.LinearConfig.log;
 +
 +@SuppressWarnings("unused")
 +public class LinearWorldConfig {
