@@ -13,7 +13,7 @@ index fcd8ebb22937bd1c4023036ecf7e56a729a6ade7..12580dd1e292710c3ffaf59ecb4dabd3
      implementation("io.netty:netty-codec-haproxy:4.1.97.Final") // Paper - Add support for proxy protocol
      // Paper end
 +    // LinearPaper start
-+    implementation("com.github.luben:zstd-jni:1.5.6-3")
++    implementation("com.github.luben:zstd-jni:1.5.6-6")
 +    implementation("org.lz4:lz4-java:1.8.0")
 +    // LinearPaper end
      implementation("org.apache.logging.log4j:log4j-iostreams:2.22.1") // Paper - remove exclusion
