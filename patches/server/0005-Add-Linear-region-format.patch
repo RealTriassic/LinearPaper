@@ -5,7 +5,7 @@ Subject: [PATCH] Add Linear region format
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index fcd8ebb22937bd1c4023036ecf7e56a729a6ade7..12580dd1e292710c3ffaf59ecb4dabd37bb81fd6 100644
+index 3e9d60201f7878f7da39edf8084f247b838d7067..9e80ec518569cdcf77c6991f85237d8bd080d505 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -30,6 +30,10 @@ dependencies {
@@ -19,89 +19,8 @@ index fcd8ebb22937bd1c4023036ecf7e56a729a6ade7..12580dd1e292710c3ffaf59ecb4dabd3
      implementation("org.apache.logging.log4j:log4j-iostreams:2.22.1") // Paper - remove exclusion
      implementation("org.ow2.asm:asm-commons:9.7")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
-diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index cf6f3fd4268c55547c1834d91a5967dd842358d4..2900e8e9685704eab5ed9a4fd2ab48a54f2886c5 100644
---- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-+++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-@@ -76,7 +76,7 @@ public class WorldUpgrader {
-     volatile int skipped;
-     final Reference2FloatMap<ResourceKey<Level>> progressMap = Reference2FloatMaps.synchronize(new Reference2FloatOpenHashMap());
-     volatile Component status = Component.translatable("optimizeWorld.stage.counting");
--    static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
-+    static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.(linear | mca)$"); // LinearPaper
-     final DimensionDataStorage overworldDataStorage;
- 
-     public WorldUpgrader(LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, RegistryAccess dynamicRegistryManager, boolean eraseCache, boolean recreateRegionFiles) {
-@@ -400,7 +400,7 @@ public class WorldUpgrader {
- 
-         private static List<WorldUpgrader.FileToUpgrade> getAllChunkPositions(RegionStorageInfo key, Path regionDirectory) {
-             File[] afile = regionDirectory.toFile().listFiles((file, s) -> {
--                return s.endsWith(".mca");
-+                return s.endsWith(".linear") || s.endsWith(".mca"); // LinearPaper
-             });
- 
-             if (afile == null) {
-diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 23917b903a978a3ac25c397080e92642f1674107..aa3a8f43f110ad493b1de26b6e9193c872a1f7d8 100644
---- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-@@ -30,7 +30,10 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
-     private static final int REGION_SHIFT = 5;
-     private static final int MAX_NON_EXISTING_CACHE = 1024 * 64;
-     private final it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet nonExistingRegionFiles = new it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet(MAX_NON_EXISTING_CACHE+1);
--    private static String getRegionFileName(final int chunkX, final int chunkZ) {
-+    // LinearPaper start - Linear region format
-+    private static String getRegionFileName(final RegionStorageInfo info, final int chunkX, final int chunkZ) {
-+        if (info.regionFormat().equals(com.triassic.linearpaper.region.RegionFileFormat.LINEAR))
-+            return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".linear";
-         return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".mca";
-     }
- 
-@@ -87,7 +90,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
-             this.regionCache.removeLast().close();
-         }
- 
--        final Path regionPath = this.folder.resolve(getRegionFileName(chunkX, chunkZ));
-+        final Path regionPath = this.folder.resolve(getRegionFileName(this.info, chunkX, chunkZ));
- 
-         if (!java.nio.file.Files.exists(regionPath)) {
-             this.markNonExisting(key);
-@@ -160,7 +163,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
-                 this.regionCache.removeLast().close();
-             }
- 
--            final Path regionPath = this.folder.resolve(getRegionFileName(chunkcoordintpair.x, chunkcoordintpair.z));
-+            final Path regionPath = this.folder.resolve(getRegionFileName(this.info, chunkcoordintpair.x, chunkcoordintpair.z)); // LinearPaper
- 
-             this.createRegionFile(key);
- 
-diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
-index 6111631c6673948b266286894603cc5e30451b02..a17428f1fb14adf865f3a8edd24bd5d5444087ca 100644
---- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
-+++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
-@@ -7,4 +7,20 @@ public record RegionStorageInfo(String level, ResourceKey<Level> dimension, Stri
-     public RegionStorageInfo withTypeSuffix(String suffix) {
-         return new RegionStorageInfo(this.level, this.dimension, this.type + suffix);
-     }
-+
-+    // LinearPaper start
-+    public com.triassic.linearpaper.region.RegionFileFormat regionFormat() {
-+        return ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(level))
-+            .getHandle()
-+            .linearConfig
-+            .regionFormat;
-+    }
-+
-+    public int linearCompressionLevel() {
-+        return ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(level))
-+            .getHandle()
-+            .linearConfig
-+            .linearCompressionLevel;
-+    }
-+    // LinearPaper end
- }
 diff --git a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
-index fb05d7b09fde10e42de42987df64152d7a8099d6..3cf9093fd657a68ad3b99714472d8140445515ce 100644
+index c010b45b2aefeb1394a27b11b787ff58eecc432d..f32226dd652f6129b4d0d2b262da3555e9be34a9 100644
 --- a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
 +++ b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
 @@ -13,6 +13,10 @@ public class AbstractRegionFileFactory {
@@ -118,7 +37,7 @@ index fb05d7b09fde10e42de42987df64152d7a8099d6..3cf9093fd657a68ad3b99714472d8140
  }
 diff --git a/src/main/java/com/triassic/linearpaper/region/LinearRegionFile.java b/src/main/java/com/triassic/linearpaper/region/LinearRegionFile.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6c954ff634512b95e947bcbab80b41cb66f3ef70
+index 0000000000000000000000000000000000000000..516f6c684058e542d01eeabde7e0a43e150478d8
 --- /dev/null
 +++ b/src/main/java/com/triassic/linearpaper/region/LinearRegionFile.java
 @@ -0,0 +1,304 @@
@@ -428,7 +347,7 @@ index 0000000000000000000000000000000000000000..6c954ff634512b95e947bcbab80b41cb
 +}
 diff --git a/src/main/java/com/triassic/linearpaper/region/LinearRegionFileFlusher.java b/src/main/java/com/triassic/linearpaper/region/LinearRegionFileFlusher.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ea22ee01532df5f03c7a6abcd3c6b15823ce7a6b
+index 0000000000000000000000000000000000000000..f7c5b51f5ab7c3ca5cd31e62bbc599ab600baad0
 --- /dev/null
 +++ b/src/main/java/com/triassic/linearpaper/region/LinearRegionFileFlusher.java
 @@ -0,0 +1,50 @@
@@ -482,3 +401,84 @@ index 0000000000000000000000000000000000000000..ea22ee01532df5f03c7a6abcd3c6b158
 +        scheduler.shutdown();
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
+index efcd9739337624cbea00d8f134916547d2b5a231..850403308847abb5d3a325133520629ebce6f0ba 100644
+--- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
++++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
+@@ -76,7 +76,7 @@ public class WorldUpgrader {
+     volatile int skipped;
+     final Reference2FloatMap<ResourceKey<Level>> progressMap = Reference2FloatMaps.synchronize(new Reference2FloatOpenHashMap());
+     volatile Component status = Component.translatable("optimizeWorld.stage.counting");
+-    static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
++    static final Pattern REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.(linear | mca)$"); // LinearPaper
+     final DimensionDataStorage overworldDataStorage;
+ 
+     public WorldUpgrader(LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, RegistryAccess dynamicRegistryManager, boolean eraseCache, boolean recreateRegionFiles) {
+@@ -400,7 +400,7 @@ public class WorldUpgrader {
+ 
+         private static List<WorldUpgrader.FileToUpgrade> getAllChunkPositions(RegionStorageInfo key, Path regionDirectory) {
+             File[] afile = regionDirectory.toFile().listFiles((file, s) -> {
+-                return s.endsWith(".mca");
++                return s.endsWith(".linear") || s.endsWith(".mca"); // LinearPaper
+             });
+ 
+             if (afile == null) {
+diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
+index f533d13efe1458aa421b51abb6f8604ba71c48c8..8090df00723d54d36033f8f245f87c7c94ee81ac 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
++++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
+@@ -30,7 +30,10 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+     private static final int REGION_SHIFT = 5;
+     private static final int MAX_NON_EXISTING_CACHE = 1024 * 64;
+     private final it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet nonExistingRegionFiles = new it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet(MAX_NON_EXISTING_CACHE+1);
+-    private static String getRegionFileName(final int chunkX, final int chunkZ) {
++    // LinearPaper start - Linear region format
++    private static String getRegionFileName(final RegionStorageInfo info, final int chunkX, final int chunkZ) {
++        if (info.regionFormat().equals(com.triassic.linearpaper.region.RegionFileFormat.LINEAR))
++            return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".linear";
+         return "r." + (chunkX >> REGION_SHIFT) + "." + (chunkZ >> REGION_SHIFT) + ".mca";
+     }
+ 
+@@ -87,7 +90,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+             this.regionCache.removeLast().close();
+         }
+ 
+-        final Path regionPath = this.folder.resolve(getRegionFileName(chunkX, chunkZ));
++        final Path regionPath = this.folder.resolve(getRegionFileName(this.info, chunkX, chunkZ));
+ 
+         if (!java.nio.file.Files.exists(regionPath)) {
+             this.markNonExisting(key);
+@@ -160,7 +163,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+                 this.regionCache.removeLast().close();
+             }
+ 
+-            final Path regionPath = this.folder.resolve(getRegionFileName(chunkcoordintpair.x, chunkcoordintpair.z));
++            final Path regionPath = this.folder.resolve(getRegionFileName(this.info, chunkcoordintpair.x, chunkcoordintpair.z)); // LinearPaper
+ 
+             this.createRegionFile(key);
+ 
+diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
+index 6111631c6673948b266286894603cc5e30451b02..f8b4b3bebc684bf012b37505afd28c2a8008f06f 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
++++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionStorageInfo.java
+@@ -7,4 +7,20 @@ public record RegionStorageInfo(String level, ResourceKey<Level> dimension, Stri
+     public RegionStorageInfo withTypeSuffix(String suffix) {
+         return new RegionStorageInfo(this.level, this.dimension, this.type + suffix);
+     }
++
++    // LinearPaper start
++    public com.triassic.linearpaper.region.RegionFileFormat regionFormat() {
++        return ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(level))
++            .getHandle()
++            .linearConfig
++            .regionFormat;
++    }
++
++    public int linearCompressionLevel() {
++        return ((org.bukkit.craftbukkit.CraftWorld) org.bukkit.Bukkit.getWorld(level))
++            .getHandle()
++            .linearConfig
++            .linearCompressionLevel;
++    }
++    // LinearPaper end
+ }

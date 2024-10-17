@@ -5,7 +5,7 @@ Subject: [PATCH] Abstract regionfile
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java
-index 73df26b27146bbad2106d57b22dd3c792ed3dd1d..62680e5c23483ee20b730a91fbace9b9c325809c 100644
+index 73df26b27146bbad2106d57b22dd3c792ed3dd1d..f698bed17cd0f7ff14f1507d8c476f008bae86b3 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java
 @@ -7,8 +7,8 @@ public interface ChunkSystemRegionFileStorage {
@@ -20,7 +20,7 @@ index 73df26b27146bbad2106d57b22dd3c792ed3dd1d..62680e5c23483ee20b730a91fbace9b9
  
  }
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java
-index 3218cbf84f54daf06e84442d5eb1a36d8da6b215..cb0ced73599398ba9a9ec0bc6e708e7c85e73c98 100644
+index 3218cbf84f54daf06e84442d5eb1a36d8da6b215..3d4543485131d447e7eb617de827900374912b6b 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/RegionFileIOThread.java
 @@ -1043,9 +1043,9 @@ public final class RegionFileIOThread extends PrioritisedQueueExecutorThread {
@@ -47,8 +47,64 @@ index 3218cbf84f54daf06e84442d5eb1a36d8da6b215..cb0ced73599398ba9a9ec0bc6e708e7c
  
              synchronized (cache) {
                  regionFile = ((ChunkSystemRegionFileStorage)(Object)cache).moonrise$getRegionFileIfLoaded(chunkX, chunkZ);
+diff --git a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..854397f73a02fbfd6668e0dc9d577cd4ee1765cb
+--- /dev/null
++++ b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java
+@@ -0,0 +1,26 @@
++package com.triassic.linearpaper.region;
++
++import java.io.DataInputStream;
++import java.io.DataOutputStream;
++import java.io.IOException;
++import java.nio.file.Path;
++import net.minecraft.nbt.CompoundTag;
++import net.minecraft.world.level.ChunkPos;
++
++public interface AbstractRegionFile {
++
++    Path getPath();
++    DataInputStream getChunkDataInputStream(ChunkPos pos) throws IOException;
++    DataOutputStream getChunkDataOutputStream(ChunkPos pos) throws IOException;
++    CompoundTag getOversizedData(int x, int z) throws IOException;
++
++    boolean hasChunk(ChunkPos pos);
++    boolean doesChunkExist(ChunkPos pos);
++    boolean isOversized(int x, int z);
++    boolean recalculateHeader() throws IOException;
++
++    void flush() throws IOException;
++    void close() throws IOException;
++    void clear(ChunkPos pos) throws IOException;
++    void setOversized(int x, int z, boolean oversized) throws IOException;
++}
+diff --git a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..c010b45b2aefeb1394a27b11b787ff58eecc432d
+--- /dev/null
++++ b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
+@@ -0,0 +1,18 @@
++package com.triassic.linearpaper.region;
++
++import java.io.IOException;
++import java.nio.file.Path;
++import net.minecraft.world.level.chunk.storage.RegionFile;
++import net.minecraft.world.level.chunk.storage.RegionFileVersion;
++import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
++
++public class AbstractRegionFileFactory {
++
++    public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path directory, Path path, boolean dsync) throws IOException {
++        return getAbstractRegionFile(storageKey, directory, path, RegionFileVersion.getCompressionFormat(), dsync);
++    }
++
++    public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync) throws IOException {
++        return new RegionFile(storageKey, path, directory, compressionFormat, dsync);
++    }
++}
 diff --git a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
-index cb39c629af1827078f35904a373d35a63fea17ff..cf6f3fd4268c55547c1834d91a5967dd842358d4 100644
+index cb39c629af1827078f35904a373d35a63fea17ff..efcd9739337624cbea00d8f134916547d2b5a231 100644
 --- a/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 +++ b/src/main/java/net/minecraft/util/worldupdate/WorldUpgrader.java
 @@ -420,7 +420,7 @@ public class WorldUpgrader {
@@ -79,7 +135,7 @@ index cb39c629af1827078f35904a373d35a63fea17ff..cf6f3fd4268c55547c1834d91a5967dd
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
-index eb0389ad86300665b6e057bcfa1d7c068dc6c6ab..62a8742b2e36b5fd7cc2bf316d37583d5a8de18b 100644
+index 1e0439cf3f4008fa430acb90b45f5bc4cdd6d7f2..7604ae5709c9768b63a96a9defa62718defc2da4 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFile.java
 @@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtIo; // Paper
@@ -123,7 +179,7 @@ index eb0389ad86300665b6e057bcfa1d7c068dc6c6ab..62a8742b2e36b5fd7cc2bf316d37583d
          try (DataInputStream out = new DataInputStream(new java.io.BufferedInputStream(new InflaterInputStream(Files.newInputStream(file))))) {
              return NbtIo.read((java.io.DataInput) out);
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642f1674107 100644
+index 40689256711cc94a806ca1da346f4f62eda31526..f533d13efe1458aa421b51abb6f8604ba71c48c8 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 @@ -21,7 +21,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
@@ -244,59 +300,3 @@ index 40689256711cc94a806ca1da346f4f62eda31526..23917b903a978a3ac25c397080e92642
                  try {
                      regionFile.flush();
                  } catch (final IOException ex) {
-diff --git a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..432e12a19f2141f167c8d22248eb67bc05ee2e19
---- /dev/null
-+++ b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFile.java
-@@ -0,0 +1,26 @@
-+package com.triassic.linearpaper.region;
-+
-+import java.io.DataInputStream;
-+import java.io.DataOutputStream;
-+import java.io.IOException;
-+import java.nio.file.Path;
-+import net.minecraft.nbt.CompoundTag;
-+import net.minecraft.world.level.ChunkPos;
-+
-+public interface AbstractRegionFile {
-+
-+    Path getPath();
-+    DataInputStream getChunkDataInputStream(ChunkPos pos) throws IOException;
-+    DataOutputStream getChunkDataOutputStream(ChunkPos pos) throws IOException;
-+    CompoundTag getOversizedData(int x, int z) throws IOException;
-+
-+    boolean hasChunk(ChunkPos pos);
-+    boolean doesChunkExist(ChunkPos pos);
-+    boolean isOversized(int x, int z);
-+    boolean recalculateHeader() throws IOException;
-+
-+    void flush() throws IOException;
-+    void close() throws IOException;
-+    void clear(ChunkPos pos) throws IOException;
-+    void setOversized(int x, int z, boolean oversized) throws IOException;
-+}
-diff --git a/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..fb05d7b09fde10e42de42987df64152d7a8099d6
---- /dev/null
-+++ b/src/main/java/com/triassic/linearpaper/region/AbstractRegionFileFactory.java
-@@ -0,0 +1,18 @@
-+package com.triassic.linearpaper.region;
-+
-+import java.io.IOException;
-+import java.nio.file.Path;
-+import net.minecraft.world.level.chunk.storage.RegionFile;
-+import net.minecraft.world.level.chunk.storage.RegionFileVersion;
-+import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
-+
-+public class AbstractRegionFileFactory {
-+
-+    public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path directory, Path path, boolean dsync) throws IOException {
-+        return getAbstractRegionFile(storageKey, directory, path, RegionFileVersion.getCompressionFormat(), dsync);
-+    }
-+
-+    public static AbstractRegionFile getAbstractRegionFile(RegionStorageInfo storageKey, Path path, Path directory, RegionFileVersion compressionFormat, boolean dsync) throws IOException {
-+        return new RegionFile(storageKey, path, directory, compressionFormat, dsync);
-+    }
-+}

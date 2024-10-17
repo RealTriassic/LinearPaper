@@ -4,25 +4,8 @@ Date: Fri, 22 Sep 2023 23:27:14 +0300
 Subject: [PATCH] Region format configuration
 
 
-diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 696d075ca2883f3c37e35f983c4d020e5db89d16..f75e1e6e3d68e4156fd9723aa96dba4e890b07cb 100644
---- a/src/main/java/net/minecraft/server/MinecraftServer.java
-+++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -980,10 +980,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             while (iterator1.hasNext()) {
-                 ServerLevel worldserver2 = (ServerLevel) iterator1.next();
- 
--                MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName());
-+                MinecraftServer.LOGGER.info("ThreadedChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // LinearPaper
-             }
- 
--            MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
-+            MinecraftServer.LOGGER.info("ThreadedChunkStorage: All dimensions are saved"); // LinearPaper
-         }
- 
-         return flag3;
 diff --git a/src/main/java/com/triassic/linearpaper/LinearConfig.java b/src/main/java/com/triassic/linearpaper/LinearConfig.java
-index 0c58b470a16f0705c17d1fb7d8108e2f73e5f9bd..65b823390d0a8ee79c2b8e576c670b195a70827e 100644
+index ad7400a1d200ff93c75d44d4c5b06cc4172d305b..96fae6a58b2f27fd344913b0a6c3456768dcb064 100644
 --- a/src/main/java/com/triassic/linearpaper/LinearConfig.java
 +++ b/src/main/java/com/triassic/linearpaper/LinearConfig.java
 @@ -170,4 +170,17 @@ public class LinearConfig {
@@ -44,7 +27,7 @@ index 0c58b470a16f0705c17d1fb7d8108e2f73e5f9bd..65b823390d0a8ee79c2b8e576c670b19
 +    }
  }
 diff --git a/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java b/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java
-index 4e4bafaec9b8d40ba9252d53167e34e8f684c5b8..267474bdf5969b8028a3b4573828ebd47e60d378 100644
+index 562200dd06f5c30219746be01441a7de69c8757d..20091964e6dddd3b15a6134a2afbbe928d72b849 100644
 --- a/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java
 +++ b/src/main/java/com/triassic/linearpaper/LinearWorldConfig.java
 @@ -3,8 +3,10 @@ package com.triassic.linearpaper;
@@ -84,7 +67,7 @@ index 4e4bafaec9b8d40ba9252d53167e34e8f684c5b8..267474bdf5969b8028a3b4573828ebd4
  }
 diff --git a/src/main/java/com/triassic/linearpaper/region/RegionFileFormat.java b/src/main/java/com/triassic/linearpaper/region/RegionFileFormat.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..64831ea14eef5cd7a9c3bcf87517ea8dd7d26795
+index 0000000000000000000000000000000000000000..1285e3c410c9f6b5ed8c3ac11da60d1e1be4fe34
 --- /dev/null
 +++ b/src/main/java/com/triassic/linearpaper/region/RegionFileFormat.java
 @@ -0,0 +1,16 @@
@@ -104,3 +87,20 @@ index 0000000000000000000000000000000000000000..64831ea14eef5cd7a9c3bcf87517ea8d
 +        return RegionFileFormat.INVALID;
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 696d075ca2883f3c37e35f983c4d020e5db89d16..f75e1e6e3d68e4156fd9723aa96dba4e890b07cb 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -980,10 +980,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             while (iterator1.hasNext()) {
+                 ServerLevel worldserver2 = (ServerLevel) iterator1.next();
+ 
+-                MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName());
++                MinecraftServer.LOGGER.info("ThreadedChunkStorage ({}): All chunks are saved", worldserver2.getChunkSource().chunkMap.getStorageName()); // LinearPaper
+             }
+ 
+-            MinecraftServer.LOGGER.info("ThreadedAnvilChunkStorage: All dimensions are saved");
++            MinecraftServer.LOGGER.info("ThreadedChunkStorage: All dimensions are saved"); // LinearPaper
+         }
+ 
+         return flag3;
