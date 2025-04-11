@@ -2,11 +2,15 @@
 
 A fork of [Paper](https://github.com/PaperMC/Paper) which adds support for the **experimental** [Linear region file format](https://github.com/xymb-endcrystalme/LinearRegionFileFormatTools) to the dedicated server.
 
+> [!WARNING]
+**This project is no longer maintained** and is now formally archived. As mentioned in https://github.com/RealTriassic/LinearPaper/issues/16#issuecomment-2568175657, I do not have any motivation to keep maintaining this software, especially considering all the large changes Paper has been making, which increases the amount of work required to keep this project going and as I do not have any use for this software any longer, I cannot justify such time investment, the software should remain functional on 1.21.1, but it will no longer be receiving any updates.
+
+## Configuration
+
 > [!CAUTION]
 Starting with Minecraft 1.20.6, we are based on Paper, instead of Purpur. All Linear configuration options
 have been migrated to `config/linear.yml`, the format is pretty much almost the same as before. **You need to manually update your configuration**.
 
-## Configuration
 All configuration regarding anything Linear-related is stored in `config/linear.yml`. You must restart your server for any edits to be applied, **reloading is not supported and may even break your server**.
 
 ### Global Configuration
